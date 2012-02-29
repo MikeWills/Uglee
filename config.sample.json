@@ -1,0 +1,21 @@
+{"botinfo":
+	{"auth":"auth+live+##############",
+	"userid":"##############",
+	"laptoptype":"chrome"},
+"roomid":"##################",
+"admins":
+	{"mainadmin":"#############",
+	"admins": ["################", "###########"] },
+"consolelog":false,
+"enforcement":
+	{"enforceroom":true,
+	"songstoplay":2,
+	"stepuprules":
+		{"waittostepup":true,
+		"waittype":"SONGS",
+		"length":4},
+	"ffarules":
+		{"multiplespotffa":true,
+		"timerffa":true,
+		"timeout":10},
+	"waitlist":false}}
