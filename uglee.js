@@ -55,7 +55,7 @@ bot.on('speak', function (data) {
 
   /* ========== Public  ======== */
   if (data.text.match(/^@Uglee$/i)) {
-    bot.speak('Yes Master @'+data.name+'? Here is what I can do for you: speak | dance | beer');
+    bot.speak('Yes Master @'+data.name+'? Here is what I can do for you: speak | dance | beer | water');
   } 
 
 	if (data.text.match(/^\@Uglee speak$/i)) {
