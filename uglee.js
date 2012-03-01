@@ -55,7 +55,7 @@ bot.on('speak', function (data) {
 
   /* ========== Public  ======== */
   if (data.text.match(/^@Uglee$/i)) {
-    bot.speak('Yes Master @'+data.name+'? Here is what I can do for you: speak | dance | beer | water');
+    bot.speak('Yes Master @'+data.name+'? Here is what I can do for you: speak | dance | beer | water | whois');
   } 
 
 	if (data.text.match(/^\@Uglee speak$/i)) {
@@ -76,11 +76,15 @@ bot.on('speak', function (data) {
     bot.speak("Dwarves don't dance Master @"+data.name+".");
   }
 
+  if (data.text.match(/^\@Uglee whois$/i)) {
+    bot.speak("Me is a bot that is created by @PodcastMike. Me guts are at https://github.com/MikeWills/Uglee.");
+  }
+
 
   /* ========== ADMIN ONLY ======== */
   if ((data.text.match(/^\@Uglee awesome$/i)) || (data.text.match(/^\@Uglee a$/i))) {
     if (!admin(data.userid)) { 
-      bot.speak("I was abused and now you can't controll me."); 
+      bot.speak("I was abused and now you can't control me."); 
     } else { 
       bot.vote('up');
       bot.speak('Me like this song.');
@@ -92,7 +96,7 @@ bot.on('speak', function (data) {
       bot.speak("That's not a nice thing to do to people @"+data.name); 
     } else { 
       bot.vote('down');
-      bot.speak('Gah! I have heard drunken dwarves sing better!');
+      bot.speak('Wow! Me NOT like this song');
     }
   }
 
