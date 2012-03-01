@@ -58,8 +58,12 @@ bot.on('speak', function (data) {
   }
 
   if ((data.text.match(/^\@Uglee awesome$/)) || (data.text.match(/^\@Uglee a$/))) {
-    bot.vote('up');
-    bot.speak('Me like this song.');
+    if (!admin(data.userid)) { 
+      bot.speak("Your not me master @"+data.name+"."); 
+    } else { 
+      bot.vote('up');
+      bot.speak('Me like this song.');
+    }
   }
 
   if ((data.text.match(/^\@Uglee lame$/)) || (data.text.match(/^\@Uglee l$/))) {
