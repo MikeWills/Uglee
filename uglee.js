@@ -126,7 +126,8 @@ bot.on('speak', function (data) {
 });
 
 bot.on('newsong', function (data) {
-
+  
+  delete require.cache['./actions.js'];
   var Actions = require('./actions.js');
 
   //console.log('newsong',  data);
@@ -173,7 +174,6 @@ bot.on('pmmed', function(data){
       bot.pm("Your not me master @"+data.name+".",data.senderid); 
     } else { 
       bot.vote('up');
-      bot.speak('Me like this song.');
     }
   }
 
