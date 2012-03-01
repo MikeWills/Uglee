@@ -1,5 +1,8 @@
+/* AMM = "roomid":"4ea390ac14169c0cc3caa078", */
+/* Bootcamp = "roomid":"4f46ecd8590ca24b66000bfb", */
+
 var fs = require('fs');
-var Bot    = require('ttapi');
+var Bot = require('ttapi');
 
 var config;
 
@@ -20,7 +23,7 @@ var bot = new Bot(config.botinfo.auth, config.botinfo.userid);
 
   //Checks if the user id is present in the admin list. Authentication
 //for admin-only privileges.
-admin = function (userid) {
+function admin(userid) {
   for (i in config.admins.admins) {
     if (userid == config.admins.admins[i]) {
       return true;
@@ -28,6 +31,17 @@ admin = function (userid) {
   };
   return false;
 };
+
+function findAction(query, arr){
+  query = escape(query);
+  for (var i = 0, l = arr.length; i < l; i++){
+    var item = arr[i];
+    var reg = RegExp(escape(item.name), "i");
+    if (reg.test(query)) 
+      return i;
+  }
+  return -1;
+}
 
 bot.on('ready',        function (data) { bot.roomRegister(config.roomid); });
 //bot.on('roomChanged',  function (data) { console.log('The bot has changed room.', data); });
@@ -39,25 +53,25 @@ bot.on('ready',        function (data) { bot.roomRegister(config.roomid); });
 
 bot.on('speak', function (data) {	
 
-	if (data.text.match(/^\@Uglee speak$/)) {
+	if (data.text.match(/^\@Uglee speak$/i)) {
     bot.speak('GWAAAARRRRR!!!!!');
   }	
 
-	if (data.text.match(/^\@Uglee beer$/)) {
+	if (data.text.match(/^\@Uglee beer$/i)) {
     bot.speak('/me hands @'+data.name+' a cold one.');
     bot.speak('Here you go Master @'+data.name+'.');
   } 
 
-  if (data.text.match(/^\@Uglee water$/)) {
+  if (data.text.match(/^\@Uglee water$/i)) {
     bot.speak('Do we serve water here??');
     bot.speak('HELL NO H2O!!');
   }
 
-  if (data.text.match(/^\@Uglee dance$/)) {
+  if (data.text.match(/^\@Uglee dance$/i)) {
     bot.speak("Dwarves don't dance Master @"+data.name+".");
   }
 
-  if ((data.text.match(/^\@Uglee awesome$/)) || (data.text.match(/^\@Uglee a$/))) {
+  if ((data.text.match(/^\@Uglee awesome$/i)) || (data.text.match(/^\@Uglee a$/i))) {
     if (!admin(data.userid)) { 
       bot.speak("Your not me master @"+data.name+"."); 
     } else { 
@@ -66,7 +80,7 @@ bot.on('speak', function (data) {
     }
   }
 
-  if ((data.text.match(/^\@Uglee lame$/)) || (data.text.match(/^\@Uglee l$/))) {
+  if ((data.text.match(/^\@Uglee lame$/i)) || (data.text.match(/^\@Uglee l$/i))) {
     if (!admin(data.userid)) { 
       bot.speak("That's not a nice thing to do to people @"+data.name); 
     } else { 
@@ -75,7 +89,7 @@ bot.on('speak', function (data) {
     }
   }
 
-  if (data.text.match(/^\@Uglee addsong$/)) {
+  if (data.text.match(/^\@Uglee addsong$/i)) {
     if (!admin(data.userid)) { 
       bot.speak("You ain't my master. Screw you!"); 
     } else {
@@ -88,7 +102,7 @@ bot.on('speak', function (data) {
     }
   }
 
-  if (data.text.match(/^\@Uglee step up$/)) {
+  if (data.text.match(/^\@Uglee step up$/i)) {
     if (!admin(data.userid)) { 
       bot.speak("You ain't my master. Screw you!"); 
     } else { 
@@ -96,7 +110,7 @@ bot.on('speak', function (data) {
     }
   }
 
-  if (data.text.match(/^\@Uglee skip$/)) {
+  if (data.text.match(/^\@Uglee skip$/i)) {
     if (!admin(data.userid)) { 
       bot.speak("You ain't my master. Screw you!"); 
     } else { 
@@ -104,7 +118,7 @@ bot.on('speak', function (data) {
     }
   }
 
-  if (data.text.match(/^\@Uglee step down$/)) {
+  if (data.text.match(/^\@Uglee step down$/i)) {
     if (!admin(data.userid)) { 
       bot.speak("You ain't my master. Screw you!"); 
     } else { 
@@ -112,7 +126,7 @@ bot.on('speak', function (data) {
     }
   }
 
-  if (data.text.match(/^\@Uglee goto AMM$/)) {
+  if (data.text.match(/^\@Uglee goto AMM$/i)) {
     if (!admin(data.userid)) { 
       bot.speak("You ain't my master. Screw you!"); 
     } else { 
@@ -121,7 +135,7 @@ bot.on('speak', function (data) {
     }
   }
 
-  if (data.text.match(/^\@Uglee goto bootcamp$/)) {
+  if (data.text.match(/^\@Uglee goto bootcamp$/i)) {
     if (!admin(data.userid)) { 
       bot.speak("You ain't my master. Screw you!"); 
     } else { 
@@ -130,7 +144,7 @@ bot.on('speak', function (data) {
     }
   }   
 
-  if (data.text.match(/^\@Uglee die$/)) {
+  if (data.text.match(/^@Uglee die$/i)) {
     if (!admin(data.userid)) { 
       bot.speak("Fuck you! Me take orders from no one!"); 
     } else { 
@@ -141,7 +155,7 @@ bot.on('speak', function (data) {
     }
   }   
 
-  if (data.text.match(/^\@Uglee regenerate$/)) {
+  if (data.text.match(/^@Uglee regenerate$/i)) {
     if (!admin(data.userid)) { 
       bot.speak("Fuck you! Me take orders from no one!"); 
     } else { 
@@ -152,46 +166,40 @@ bot.on('speak', function (data) {
     }
   }   
 
-  if (data.text.match(/^\@Uglee$/)) {
+  if (data.text.match(/^@Uglee$/i)) {
     bot.speak('Yes Master @'+data.name+'? Here is what I can do for you: speak | dance | beer');
   } 
 });
 
 bot.on('newsong', function (data) {
+
+  var Actions = require('./actions.js');
+
+  //console.log('newsong',  data);
+  //console.log('newsong',  data.room.metadata.current_song.metadata);
+
   //Populate new song data in currentsong
   currentsong.artist = data.room.metadata.current_song.metadata.artist;
   currentsong.song = data.room.metadata.current_song.metadata.song;
 
-  if ((currentsong.artist.indexOf('Skrillex') != -1) || (currentsong.song.indexOf('Skrillex') != -1)) {
-      bot.vote('down');
-      bot.speak('Gah! I have heard drunken dwarves sing better!');
-      dislike = true;
+  /* First check for artist */
+  var idx = findAction(currentsong.artist, Actions.artists);
+  if (idx != -1){
+    bot.vote(Actions.artists[idx].vote);
+    if (Actions.artists[idx].speak != "") {
+      bot.speak(Actions.artists[idx].speak);
+    }
+    dislike = Actions.artists[idx].dislike;
   }
 
-  if (currentsong.artist.indexOf('Coldplay') != -1) {
-    bot.vote('down');
-    bot.speak('Me like banshee song better than this shit!');
-      dislike = true;
-  }
-
-  if (currentsong.artist.indexOf('Linkin Park') != -1) {
-      bot.vote('up');
-      bot.speak('This is good shit!');
-  }
-
-  if (currentsong.artist.indexOf('Will Smith') != -1) {
-      bot.vote('up');
-      bot.speak('This me boy! Go Fresh Prince of Bel Aire!');
-  }
-
-  if (currentsong.song.indexOf('Baby Got Back') != -1) {
-      bot.vote('up');
-      bot.speak('/me sings with the song.');
-  }
-
-  if (currentsong.song.indexOf('Jump Around') != -1) {
-      bot.vote('up');
-      bot.speak('This me jam!');
+  /* Then check for song */
+  idx = findAction(currentsong.song, Actions.songs);
+  if (idx != -1){
+    bot.vote(Actions.songs[idx].vote);
+    if (Actions.songs[idx].speak != "") {
+      bot.speak(Actions.songs[idx].speak);
+    }
+    dislike = Actions.songs[idx].dislike;
   }
 });
 
