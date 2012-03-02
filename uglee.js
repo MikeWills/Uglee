@@ -167,7 +167,7 @@ bot.on('endsong', function (data) {
     bot.speak('FINALLY that hell is over!');
     dislike = false;
   }
-  
+
   voted = false;
 });
 
@@ -209,6 +209,7 @@ bot.on('pmmed', function(data){
       bot.roomInfo(true, function(data) {
         var newSong = data.room.metadata.current_song._id;
         var newSongName = songName = data.room.metadata.current_song.metadata.song;
+        //bot.playlistAll();
         bot.playlistAdd(newSong);
         bot.pm('Added '+newSongName+' to queue.',data.senderid);
       });
@@ -266,7 +267,7 @@ bot.on('update_votes', function(data){
   
   if ((percentAwesome - percentLame) > 25){
     if (!voted) {
-      bot.vote('up'); 
+      //bot.vote('up'); 
       //bot.pm("I awesome this! ",config.admins.admins[0]); 
       voted = true;
     }
@@ -274,7 +275,7 @@ bot.on('update_votes', function(data){
   
   if ((percentLame - percentAwesome) > 25){
     if (!voted) {
-      bot.vote('down'); 
+      //bot.vote('down'); 
       dislike = true;
       voted = true;
     }
