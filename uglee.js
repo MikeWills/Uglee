@@ -146,6 +146,7 @@ bot.on('newsong', function (data) {
       bot.speak(Actions.artists[idx].speak);
     }
     dislike = Actions.artists[idx].dislike;
+    voted = true;
   }
 
   /* Then check for song */
@@ -156,14 +157,17 @@ bot.on('newsong', function (data) {
       bot.speak(Actions.songs[idx].speak);
     }
     dislike = Actions.songs[idx].dislike;
+    voted = true;
   }
 });
 
 bot.on('endsong', function (data) {
+
   if (dislike){
     bot.speak('FINALLY that hell is over!');
     dislike = false;
   }
+  
   voted = false;
 });
 
