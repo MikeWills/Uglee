@@ -18,6 +18,7 @@ try {
 //Current song info
 var currentsong = { artist: null, song: null };
 var dislike = false;
+var voted = false;
 
 var bot = new Bot(config.botinfo.auth, config.botinfo.userid);
 
@@ -163,6 +164,7 @@ bot.on('endsong', function (data) {
     bot.speak('FINALLY that hell is over!');
     dislike = false;
   }
+  voted = false;
 });
 
 bot.on('pmmed', function(data){ 
@@ -251,3 +253,27 @@ bot.on('pmmed', function(data){
     }
   }   
 })
+
+bot.on('update_votes', function(data){ 
+  //console.log('Update votes: ',  data);
+
+  var percentAwesome = (data.room.metadata.upvotes / data.room.metadata.listeners) * 100;
+  var percentLame = (data.room.metadata.downvotes / data.room.metadata.listeners) * 100;
+  
+  if ((percentAwesome - percentLame) > 25){
+    if (!voted) {
+      bot.vote('up'); 
+      //bot.pm("I awesome this! ",config.admins.admins[0]); 
+      voted = true;
+    }
+  }
+  
+  if ((percentLame - percentAwesome) > 25){
+    if (!voted) {
+      bot.vote('down'); 
+      dislike = true;
+      voted = true;
+    }
+  }
+
+});
