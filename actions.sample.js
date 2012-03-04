@@ -1,4 +1,4 @@
-exports.artists = 	[{ name:"Linkin Park", vote: "up", speak:"This is good shit!", dislike: false },
+exports.artists =   [{ name:"Linkin Park", vote: "up", speak:"This is good shit!", dislike: false },
 					{name: "Skrillex", vote:"down", speak:"Gah! I have heard drunken dwarves sing better! http://www.geekfill.com/2012/02/29/skrillex/", dislike: true },
 					{name: "Coldplay", vote:"down", speak:"Me like banshee song better than this shit!", dislike: true },
 					{name: "Matthew Ebel", vote:"up", speak:"LOVE this dude! Learn about him at http://matthewebel.com", dislike: false },
@@ -12,10 +12,13 @@ exports.artists = 	[{ name:"Linkin Park", vote: "up", speak:"This is good shit!"
 					{name: "Will Smith", vote:"up", speak:"This me boy! Go Fresh Prince of Bel Aire!", dislike: false }
 					];
 
-exports.songs = 	[{ name:"Baby Got Back", vote: "up", speak: "/me sings with the song.", dislike: false},
-       				{ name:"Skrillex", vote: "down", speak: "Gah! I have heard drunken dwarves sing better! http://www.geekfill.com/2012/02/29/skrillex/", dislike: true},
+exports.songs =     [{ name:"Baby Got Back", vote: "up", speak: "/me sings with the song.", dislike: false},
+                    { name:"Skrillex", vote: "down", speak: "Gah! I have heard drunken dwarves sing better! http://www.geekfill.com/2012/02/29/skrillex/", dislike: true},
 					{ name:"Jump Around", vote: "up", speak: "This me jam!", dislike: false},
 					{ name:"Code Monkey", vote: "up", speak: "GEEK!!", dislike: false},
 					{ name:"Everybody needs a", vote: "up", speak: "You sure do!", dislike: false},
 					{ name:"When Worlds Collide", vote: "up", speak: "/me moshes", dislike: false}
 					];
+                    
+exports.genres =    [{ name:"Dubstep", vote: "down", speak: "WubWubWub sucks dwarf balls.", dislike: true}
+                    ];

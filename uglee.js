@@ -107,7 +107,8 @@ bot.on('speak', function (data) {
     } else {
       bot.roomInfo(true, function(data) {
         var newSong = data.room.metadata.current_song._id;
-        var newSongName = songName = data.room.metadata.current_song.metadata.song;
+        var songName = data.room.metadata.current_song.metadata.song;
+        var newSongName = songName;
         bot.playlistAdd(newSong);
         bot.speak('Added '+newSongName+' to queue.');
       });
@@ -118,8 +119,8 @@ bot.on('speak', function (data) {
     if (!admin(data.userid)) { 
       bot.speak("Fuck you! Me take orders from no one!"); 
     } else { 
-      bot.speak("Sorry I disappointed you master.")
-      bot.speak("**bang** :gun:")
+      bot.speak("Sorry I disappointed you master.");
+      bot.speak("**bang** :gun:");
       bot.roomDeregister();
       process.exit(0);
     }
@@ -132,17 +133,18 @@ bot.on('newsong', function (data) {
   var Actions = require('./actions.js');
 
   //console.log('newsong',  data);
-  //console.log('newsong',  data.room.metadata.current_song.metadata);
+  console.log('newsong',  data.room.metadata.current_song.metadata);
 
   //Populate new song data in currentsong
   currentsong.artist = data.room.metadata.current_song.metadata.artist;
   currentsong.song = data.room.metadata.current_song.metadata.song;
+  //currentsong.genre = data.room.metadata.current_song.metadata.genre;
 
   /* First check for artist */
   var idx = findAction(currentsong.artist, Actions.artists);
   if (idx != -1){
     bot.vote(Actions.artists[idx].vote);
-    if (Actions.artists[idx].speak != "") {
+    if (Actions.artists[idx].speak !== "") {
       bot.speak(Actions.artists[idx].speak);
     }
     dislike = Actions.artists[idx].dislike;
@@ -153,12 +155,23 @@ bot.on('newsong', function (data) {
   idx = findAction(currentsong.song, Actions.songs);
   if (idx != -1){
     bot.vote(Actions.songs[idx].vote);
-    if (Actions.songs[idx].speak != "") {
+    if (Actions.songs[idx].speak !== "") {
       bot.speak(Actions.songs[idx].speak);
     }
     dislike = Actions.songs[idx].dislike;
     voted = true;
   }
+
+  /* Then check for genre */
+  /*idx = findAction(currentsong.song, Actions.genres);
+  if (idx != -1){
+    bot.vote(Actions.genres[idx].vote);
+    if (Actions.genres[idx].speak !== "") {
+      bot.speak(Actions.genres[idx].speak);
+    }
+    dislike = Actions.genres[idx].dislike;
+    voted = true;
+  }*/
 });
 
 bot.on('endsong', function (data) {
@@ -208,7 +221,8 @@ bot.on('pmmed', function(data){
     } else {
       bot.roomInfo(true, function(data) {
         var newSong = data.room.metadata.current_song._id;
-        var newSongName = songName = data.room.metadata.current_song.metadata.song;
+        var songName = data.room.metadata.current_song.metadata.song;
+        var newSongName = songName;
         //bot.playlistAll();
         bot.playlistAdd(newSong);
         bot.pm('Added '+newSongName+' to queue.',data.senderid);
@@ -257,7 +271,7 @@ bot.on('pmmed', function(data){
       bot.roomRegister('4f46ecd8590ca24b66000bfb');
     }
   }   
-})
+});
 
 bot.on('update_votes', function(data){ 
   //console.log('Update votes: ',  data);

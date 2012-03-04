@@ -6,4 +6,6 @@
 "admins":
 	{"mainadmin":"#############",
 	"admins": ["################", "###########"] },
-"consolelog":false}
+"consolelog":false,
+"autobop": false,
+"autodj":false}
