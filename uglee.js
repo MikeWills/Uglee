@@ -16,7 +16,7 @@ try {
 }
 
 //Current song info
-var currentsong = { artist: null, song: null };
+var currentsong = { artist: null, song: null, genre: null };
 var dislike = false;
 var voted = false;
 
@@ -138,7 +138,7 @@ bot.on('newsong', function (data) {
   //Populate new song data in currentsong
   currentsong.artist = data.room.metadata.current_song.metadata.artist;
   currentsong.song = data.room.metadata.current_song.metadata.song;
-  //currentsong.genre = data.room.metadata.current_song.metadata.genre;
+  currentsong.genre = data.room.metadata.current_song.metadata.genre;
 
   /* First check for artist */
   var idx = findAction(currentsong.artist, Actions.artists);
@@ -163,7 +163,7 @@ bot.on('newsong', function (data) {
   }
 
   /* Then check for genre */
-  /*idx = findAction(currentsong.song, Actions.genres);
+  idx = findAction(currentsong.song, Actions.genres);
   if (idx != -1){
     bot.vote(Actions.genres[idx].vote);
     if (Actions.genres[idx].speak !== "") {
@@ -171,7 +171,7 @@ bot.on('newsong', function (data) {
     }
     dislike = Actions.genres[idx].dislike;
     voted = true;
-  }*/
+  }
 });
 
 bot.on('endsong', function (data) {
