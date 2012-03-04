@@ -6,7 +6,7 @@ var Bot = require('ttapi');
 
 var config;
 
-//Creates the config object
+/*  Creates the config object */
 try {
   config = JSON.parse(fs.readFileSync('config.json', 'ascii'));
 } catch(e) {
@@ -15,42 +15,37 @@ try {
   process.exit(0);
 }
 
-//Current song info
+/*  Current song info */
 var currentsong = { artist: null, song: null, genre: null };
 var dislike = false;
 var voted = false;
 
 var bot = new Bot(config.botinfo.auth, config.botinfo.userid);
 
-  //Checks if the user id is present in the admin list. Authentication
-//for admin-only privileges.
+/*  Checks if the user id is present in the admin list. Authentication
+    for admin-only privileges. */
 function admin(userid) {
-  for (var i in config.admins.admins) {
-    if (userid == config.admins.admins[i]) {
-      return true;
+    for (var i in config.admins.admins) {
+        if (userid == config.admins.admins[i]) {
+            return true;
+        }
     }
-  }
-  return false;
+    return false;
 }
 
+/* Search the array for the value */
 function findAction(query, arr){
-  query = escape(query);
-  for (var i = 0, l = arr.length; i < l; i++){
-    var item = arr[i];
-    var reg = RegExp(escape(item.name), "i");
-    if (reg.test(query)) 
-      return i;
-  }
-  return -1;
+    query = escape(query);
+    for (var i = 0, l = arr.length; i < l; i++){
+        var item = arr[i];
+        var reg = RegExp(escape(item.name), "i");
+        if (reg.test(query)) 
+            return i;
+    }
+    return -1;
 }
 
-bot.on('ready',        function (data) { bot.roomRegister(config.roomid); });
-//bot.on('roomChanged',  function (data) { console.log('The bot has changed room.', data); });
-
-//bot.on('speak',        function (data) { console.log('Someone has spoken', data); });
-//bot.on('newsong',        function (data) { console.log('Someone has spoken', data); });
-//bot.on('update_votes', function (data) { console.log('Someone has voted',  data); });
-//bot.on('registered',   function (data) { console.log('Someone registered', data); });
+bot.on('ready', function (data) { bot.roomRegister(config.roomid); });
 
 bot.on('speak', function (data) {	
 
