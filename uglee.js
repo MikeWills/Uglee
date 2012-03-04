@@ -45,8 +45,14 @@ function findAction(query, arr){
     return -1;
 }
 
+/* ============================ */
+/* ready */
+/* ============================ */
 bot.on('ready', function (data) { bot.roomRegister(config.roomid); });
 
+/* ============================ */
+/* speak */
+/* ============================ */
 bot.on('speak', function (data) {	
 
   /* ========== Public  ======== */
@@ -122,6 +128,9 @@ bot.on('speak', function (data) {
   }
 });
 
+/* ============================ */
+/* newsong */
+/* ============================ */
 bot.on('newsong', function (data) {
   
   delete require.cache['./actions.js'];
@@ -170,6 +179,9 @@ bot.on('newsong', function (data) {
   }
 });
 
+/* ============================ */
+/* endsong */
+/* ============================ */
 bot.on('endsong', function (data) {
 
   if (dislike){
@@ -180,6 +192,9 @@ bot.on('endsong', function (data) {
   voted = false;
 });
 
+/* ============================ */
+/* pmmed */
+/* ============================ */
 bot.on('pmmed', function(data){ 
     
     if (config.consolelog){
@@ -271,6 +286,9 @@ bot.on('pmmed', function(data){
   }   
 });
 
+/* ============================ */
+/* update_votes */
+/* ============================ */
 bot.on('update_votes', function(data){ 
     if (config.autobop){
         var percentAwesome = (data.room.metadata.upvotes / data.room.metadata.listeners) * 100;

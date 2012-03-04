@@ -7,4 +7,4 @@ Go there to learn how to setup Node.js then you can run this project. Make a cop
 and rename that copy to `config.json`. Also make a copy of `actions.sample.js` and rename that copy to 
 `actions.js`. Edit the document filling in the information required.
 
-You can edit the actions.js I have or completely change the listing.
+You can edit the `actions.js` I have or completely change the listing.
