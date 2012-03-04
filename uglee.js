@@ -4,9 +4,8 @@
 var fs = require('fs');
 var Bot = require('ttapi');
 
-var config;
-
 /*  Creates the config object */
+var config;
 try {
   config = JSON.parse(fs.readFileSync('config.json', 'ascii'));
 } catch(e) {
@@ -310,4 +309,26 @@ bot.on('update_votes', function(data){
             }
         }
     }
+});
+
+/* ============================ */
+/* add_dj */
+/* ============================ */
+bot.on('add_dj', function(data){ 
+    
+    if (config.consolelog){
+        console.log('Added DJ: ',  data);
+    }
+    
+});
+
+/* ============================ */
+/* rem_dj */
+/* ============================ */
+bot.on('rem_dj', function(data){ 
+    
+    if (config.consolelog){
+        console.log('Removed DJ: ',  data);
+    }
+    
 });
