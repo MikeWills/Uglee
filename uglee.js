@@ -132,8 +132,9 @@ bot.on('newsong', function (data) {
   delete require.cache['./actions.js'];
   var Actions = require('./actions.js');
 
-  //console.log('newsong',  data);
-  console.log('newsong',  data.room.metadata.current_song.metadata);
+    if (config.consolelog){
+        console.log('newsong',  data.room.metadata.current_song.metadata);
+    }
 
   //Populate new song data in currentsong
   currentsong.artist = data.room.metadata.current_song.metadata.artist;
@@ -163,7 +164,7 @@ bot.on('newsong', function (data) {
   }
 
   /* Then check for genre */
-  idx = findAction(currentsong.song, Actions.genres);
+  idx = findAction(currentsong.genre, Actions.genres);
   if (idx != -1){
     bot.vote(Actions.genres[idx].vote);
     if (Actions.genres[idx].speak !== "") {
@@ -185,8 +186,10 @@ bot.on('endsong', function (data) {
 });
 
 bot.on('pmmed', function(data){ 
-
-  //console.log('Private message: ',  data);
+    
+    if (config.consolelog){
+        console.log('Private message: ',  data);
+    }
 
   if ((data.text.match(/^awesome$/i)) || (data.text.match(/^a$/i))) {
     if (!admin(data.senderid)) { 
@@ -274,25 +277,24 @@ bot.on('pmmed', function(data){
 });
 
 bot.on('update_votes', function(data){ 
-  //console.log('Update votes: ',  data);
-
-  var percentAwesome = (data.room.metadata.upvotes / data.room.metadata.listeners) * 100;
-  var percentLame = (data.room.metadata.downvotes / data.room.metadata.listeners) * 100;
+    if (config.autobop){
+        var percentAwesome = (data.room.metadata.upvotes / data.room.metadata.listeners) * 100;
+        var percentLame = (data.room.metadata.downvotes / data.room.metadata.listeners) * 100;
   
-  if ((percentAwesome - percentLame) > 25){
-    if (!voted) {
-      //bot.vote('up'); 
-      //bot.pm("I awesome this! ",config.admins.admins[0]); 
-      voted = true;
-    }
-  }
+        if ((percentAwesome - percentLame) > 25){
+            if (!voted) {
+                bot.vote('up'); 
+                //bot.pm("I awesome this! ",config.admins.admins[0]); 
+                voted = true;
+            }
+        }
   
-  if ((percentLame - percentAwesome) > 25){
-    if (!voted) {
-      //bot.vote('down'); 
-      dislike = true;
-      voted = true;
+        if ((percentLame - percentAwesome) > 25){
+            if (!voted) {
+                bot.vote('down'); 
+                dislike = true;
+                voted = true;
+            }
+        }
     }
-  }
-
 });
