@@ -25,13 +25,13 @@ var bot = new Bot(config.botinfo.auth, config.botinfo.userid);
   //Checks if the user id is present in the admin list. Authentication
 //for admin-only privileges.
 function admin(userid) {
-  for (i in config.admins.admins) {
+  for (var i in config.admins.admins) {
     if (userid == config.admins.admins[i]) {
       return true;
-    };
-  };
+    }
+  }
   return false;
-};
+}
 
 function findAction(query, arr){
   query = escape(query);
