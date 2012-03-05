@@ -18,5 +18,6 @@ Features:
 * Can autobop songs based on how many people are up or down voting the songs.
 
 Upcoming features:
+
 * Auto dj
 * More dynamic way of adding fun chat commands.

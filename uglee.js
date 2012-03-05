@@ -54,7 +54,7 @@ bot.on('ready', function (data) { bot.roomRegister(config.roomid); });
 /* ============================ */
 bot.on('speak', function (data) {	
 
-  /* ========== Public  ======== */
+  /* ========== Public  ======== */  
   if (data.text.match(/^@Uglee$/i)) {
     bot.speak('Yes Master @'+data.name+'? Here is what I can do for you: speak | dance | beer | water | whois');
   } 
@@ -289,14 +289,15 @@ bot.on('pmmed', function(data){
 /* update_votes */
 /* ============================ */
 bot.on('update_votes', function(data){ 
+    
+    /* If autobop is enabled, determine if the bot should autobop or not based on votes */
     if (config.autobop){
         var percentAwesome = (data.room.metadata.upvotes / data.room.metadata.listeners) * 100;
         var percentLame = (data.room.metadata.downvotes / data.room.metadata.listeners) * 100;
   
         if ((percentAwesome - percentLame) > 25){
             if (!voted) {
-                bot.vote('up'); 
-                //bot.pm("I awesome this! ",config.admins.admins[0]); 
+                bot.vote('up');
                 voted = true;
             }
         }
