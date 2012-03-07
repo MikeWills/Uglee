@@ -1,3 +1,5 @@
+/* Last changed 3/7/2012 @ 1300 */
+
 /* AMM = "roomid":"4ea390ac14169c0cc3caa078", */
 /* Bootcamp = "roomid":"4f46ecd8590ca24b66000bfb", */
 
@@ -353,10 +355,10 @@ bot.on('pmmed', function(data){
     }
 
     if (data.text.match(/^help$/i)) {
-        if (!isMod(data.senderid) || !admin(data.senderid)) { 
-            bot.pm("You ain't my master. Screw you!",data.senderid); 
-        } else { 
+        if (isMod(data.senderid) || admin(data.senderid)) { 
             bot.pm("You can awesome (or a) | lame (or l)", data.senderid);
+        } else { 
+            bot.pm("You ain't my master. Screw you!",data.senderid); 
         }
     }
 
