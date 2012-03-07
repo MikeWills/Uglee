@@ -106,6 +106,7 @@ bot.on('speak', function (data) {
     if (data.text.match(/^@Uglee$/i)) {
         bot.speak('Yes Master @'+data.name+'? Here is what I can do for you: speak | dance | beer | water | coke | dew | whois');
         if (isMod(data.userid)) { 
+            pause(500);
             bot.speak('As a moderator, you can also `awesome` (or a) and `lame` (or l) songs. You can also PM me.');
         }
     } 
