@@ -68,6 +68,12 @@ function findAction(query, arr){
     return -1;
 }
 
+/* Add a brief pause to script */
+function pause(ms) {
+    ms += new Date().getTime();
+    while (new Date() < ms){}
+} 
+
 /* ============================ */
 /* ready */
 /* ============================ */
@@ -93,38 +99,52 @@ bot.on('roomChanged', function (data) {
 /* ============================ */
 bot.on('speak', function (data) {	
 
-  /* ========== Public  ======== */  
-  if (data.text.match(/^@Uglee$/i)) {
-    bot.speak('Yes Master @'+data.name+'? Here is what I can do for you: speak | dance | beer | water | whois');
-    if (isMod(data.userid)) { 
-        bot.speak('As a moderator, you can also `awesome` (or a) and `lame` (or l) songs. You can also PM me.');
-    }
-  } 
+    /* ========== Public  ======== */  
+    if (data.text.match(/^@Uglee$/i)) {
+        bot.speak('Yes Master @'+data.name+'? Here is what I can do for you: speak | dance | beer | water | coke | dew | whois');
+        if (isMod(data.userid)) { 
+            bot.speak('As a moderator, you can also `awesome` (or a) and `lame` (or l) songs. You can also PM me.');
+        }
+    } 
 
-	if (data.text.match(/^\@Uglee speak$/i)) {
-    bot.speak('GWAAAARRRRR!!!!!');
-  }	
+    if (data.text.match(/^\@Uglee speak$/i)) {
+        bot.speak('GWAAAARRRRR!!!!!');
+    }	
 
 	if (data.text.match(/^\@Uglee beer$/i)) {
-    bot.speak('/me hands @'+data.name+' a cold one.');
-    bot.speak('Here you go Master @'+data.name+'.');
-  } 
+        bot.speak('/me hands @'+data.name+' a cold one.');
+        pause(500);
+        bot.speak('Here you go Master @'+data.name+'.');
+    }     
 
-  if (data.text.match(/^\@Uglee water$/i)) {
-    bot.speak('Do we serve water here??');
-    bot.speak('HELL NO H2O!!');
-  }
+	if (data.text.match(/^\@Uglee coke$/i)) {
+        bot.speak('/me hands @'+data.name+' a cold one.');
+        pause(500);
+        bot.speak('Here you go Master @'+data.name+'.');
+    }     
 
-  if (data.text.match(/^\@Uglee dance$/i)) {
-    bot.speak("Dwarves don't dance Master @"+data.name+".");
-  }
+    if (data.text.match(/^\@Uglee dew$/i)) {
+        bot.speak('/me hands @'+data.name+' a Mt. Dew.');
+        pause(500);
+        bot.speak('Here you go Master @'+data.name+'. Like to do the Dew huh?');
+    } 
 
-  if (data.text.match(/^\@Uglee whois$/i)) {
-    bot.speak("Me is a bot that is created by @PodcastMike. Me guts are at https://github.com/MikeWills/Uglee.");
-  }
+    if (data.text.match(/^\@Uglee water$/i)) {
+        bot.speak('Do we serve water here??');
+        pause(500);
+        bot.speak('HELL NO H2O!!');
+    }
+
+    if (data.text.match(/^\@Uglee dance$/i)) {
+        bot.speak("Dwarves don't dance Master @"+data.name+".");
+    }
+
+    if (data.text.match(/^\@Uglee whois$/i)) {
+        bot.speak("Me is a bot that is created by @PodcastMike. Me guts are at https://github.com/MikeWills/Uglee.");
+    }
 
 
-  /* ========== ADMIN ONLY ======== */
+    /* ========== ADMIN ONLY ======== */
     if ((data.text.match(/^\@Uglee awesome$/i)) || (data.text.match(/^\@Uglee a$/i))) {
         if (isMod(data.userid) || admin(data.userid)) { 
             bot.vote('up');
