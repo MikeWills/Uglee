@@ -19,6 +19,7 @@ var currentsong = { artist: null, song: null, genre: null };
 var dislike = false;
 var voted = false;
 var moderators = [ ];
+var djing = false;
 
 var bot = new Bot(config.botinfo.auth, config.botinfo.userid);
 
@@ -89,8 +90,10 @@ bot.on('roomChanged', function (data) {
     if (config.consolelog){
         //console.log('Room Changed',  data);
         console.log('Moderator IDs', data.room.metadata.moderator_id);
+        console.log('DJs', data.room.metadata.djs);
     }
     
+    djs = data.room.metadata.djs;
     moderators = data.room.metadata.moderator_id;
 });
 
@@ -201,8 +204,37 @@ bot.on('newsong', function (data) {
     if (config.consolelog){
         console.log('newsong',  data.room.metadata.current_song.metadata);
     }
+    
+    moderators = data.room.metadata.moderator_id;
+    
+    if (config.autodj){
+        if (data.room.metadata.djcount <= (data.room.metadata.max_djs - 2)){
+            if (!djing) {
+                bot.addDj();
+                bot.speak("Imma help you out for a bit.");
+                djing = true;
+            }
+        }
+        
+        if (data.room.metadata.djcount == data.room.metadata.max_djs){
+            if (djing){
+                bot.speak("Looks like me not needed anymore.");
+                pause(500);
+                bot.speak("/me pouts and slowly walks to the floor.");
+                pause(500);
+                bot.remDj();
+                djing = false;
+            }
+        }
+    }
+    
+    if (djing){
+        pause(30000);
+        bot.vote('up');
+        voted = true;
+    }
 
-    if (config.newsongcomments){
+    if (config.newsongcomments && !voted){
         //Populate new song data in currentsong
         currentsong.artist = data.room.metadata.current_song.metadata.artist;
         currentsong.song = data.room.metadata.current_song.metadata.song;
