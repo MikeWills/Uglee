@@ -169,50 +169,53 @@ bot.on('newsong', function (data) {
         console.log('newsong',  data.room.metadata.current_song.metadata);
     }
 
-  //Populate new song data in currentsong
-  currentsong.artist = data.room.metadata.current_song.metadata.artist;
-  currentsong.song = data.room.metadata.current_song.metadata.song;
-  currentsong.genre = data.room.metadata.current_song.metadata.genre;
+    if (config.newsong-comments){
+        //Populate new song data in currentsong
+        currentsong.artist = data.room.metadata.current_song.metadata.artist;
+        currentsong.song = data.room.metadata.current_song.metadata.song;
+        currentsong.genre = data.room.metadata.current_song.metadata.genre;
 
-  /* First check for artist */
-  var idx = findAction(currentsong.artist, Actions.artists);
-  if (idx != -1){
-    bot.vote(Actions.artists[idx].vote);
-    if (Actions.artists[idx].speak !== "") {
-      bot.speak(Actions.artists[idx].speak);
-    }
-    dislike = Actions.artists[idx].dislike;
-    voted = true;
-  }
+        /* First check for artist */
+        var idx = findAction(currentsong.artist, Actions.artists);
+        if (idx != -1){
+            bot.vote(Actions.artists[idx].vote);
+            if (Actions.artists[idx].speak !== "") {
+                bot.speak(Actions.artists[idx].speak);
+            }
+        dislike = Actions.artists[idx].dislike;
+        voted = true;
+        }
 
-  /* Then check for song */
-  idx = findAction(currentsong.song, Actions.songs);
-  if (idx != -1){
-    bot.vote(Actions.songs[idx].vote);
-    if (Actions.songs[idx].speak !== "") {
-      bot.speak(Actions.songs[idx].speak);
-    }
-    dislike = Actions.songs[idx].dislike;
-    voted = true;
-  }
+        /* Then check for song */
+        idx = findAction(currentsong.song, Actions.songs);
+        if (idx != -1){
+            bot.vote(Actions.songs[idx].vote);
+            if (Actions.songs[idx].speak !== "") {
+                bot.speak(Actions.songs[idx].speak);
+            }
+            dislike = Actions.songs[idx].dislike;
+            voted = true;
+        }
 
-  /* Then check for genre */
-  idx = findAction(currentsong.genre, Actions.genres);
-  if (idx != -1){
-    bot.vote(Actions.genres[idx].vote);
-    if (Actions.genres[idx].speak !== "") {
-      bot.speak(Actions.genres[idx].speak);
+        /* Then check for genre */
+        idx = findAction(currentsong.genre, Actions.genres);
+        if (idx != -1){
+            bot.vote(Actions.genres[idx].vote);
+            if (Actions.genres[idx].speak !== "") {
+                bot.speak(Actions.genres[idx].speak);
+            }
+            dislike = Actions.genres[idx].dislike;
+            voted = true;
+        }
     }
-    dislike = Actions.genres[idx].dislike;
-    voted = true;
-  }
   
-  if (config.monitorsonglength){
-      if (data.room.metadata.current_song.metadata.length >= config.maxsonglength){
-          var songlength = Math.round(data.room.metadata.current_song.metadata.length / 60);
-          bot.speak("Really?? We have to listen to a "+songlength+" minute song? Is that really nessesary?");
-      }
-  }
+    /* Check the song length and bitch if it is too long */
+    if (config.monitorsonglength){
+        if (data.room.metadata.current_song.metadata.length >= config.maxsonglength){
+            var songlength = Math.round(data.room.metadata.current_song.metadata.length / 60);
+            bot.speak("Really?? We have to listen to a "+songlength+" minute song? Is that really nessesary?");
+        }
+    }
 });
 
 /* ============================ */
