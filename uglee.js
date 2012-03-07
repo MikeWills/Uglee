@@ -208,7 +208,7 @@ bot.on('newsong', function (data) {
   }
   
   if (config.monitorsonglength){
-      if (data.room.metadata.current_song.metadata.length > config.maxsonglength){
+      if (data.room.metadata.current_song.metadata.length >= config.maxsonglength){
           var songlength = Math.round(data.room.metadata.current_song.metadata.length / 60);
           bot.speak("Really?? We have to listen to a "+songlength+" minute song? Is that really nessesary?");
       }

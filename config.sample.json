@@ -8,4 +8,5 @@
 	"admins": ["################", "###########"] },
 "consolelog":false,
 "autobop": false,
-"autodj":false}
+"autodj":false,
+"monitorsonglength":true, "maxsonglength":600}
