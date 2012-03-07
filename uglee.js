@@ -206,8 +206,10 @@ bot.on('newsong', function (data) {
         console.log('newsong',  data.room.metadata.current_song.metadata);
     }
     
+    /* Update the moderator list */ 
     moderators = data.room.metadata.moderator_id;
     
+    /* Check if the bot should step up to DJ */
     if (config.autodj){
         if (data.room.metadata.djcount <= (data.room.metadata.max_djs - 2)){
             if (!djing) {
@@ -229,12 +231,14 @@ bot.on('newsong', function (data) {
         }
     }
     
+    /* Autobop if DJing */
     if (djing){
         pause(30000);
         bot.vote('up');
         voted = true;
     }
 
+    /* Selectively awesome/lame songs */
     if (config.newsongcomments && !voted){
         //Populate new song data in currentsong
         currentsong.artist = data.room.metadata.current_song.metadata.artist;
