@@ -22,6 +22,7 @@ Upcoming features:
 
 * Auto dj
 * More dynamic way of adding fun chat commands.
+* bot does not look for new/removed moderators at this time - needs to be added
 
 ## Config options
 
