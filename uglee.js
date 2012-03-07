@@ -84,6 +84,9 @@ bot.on('speak', function (data) {
   /* ========== Public  ======== */  
   if (data.text.match(/^@Uglee$/i)) {
     bot.speak('Yes Master @'+data.name+'? Here is what I can do for you: speak | dance | beer | water | whois');
+    if (isMod(data.userid)) { 
+        bot.speak('As a moderator, you can also `awesome` (or a) and `lame` (or l) songs. You can also PM me.');
+    }
   } 
 
 	if (data.text.match(/^\@Uglee speak$/i)) {
