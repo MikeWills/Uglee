@@ -69,7 +69,7 @@ bot.on('ready', function (data) {
 bot.on('roomChanged', function (data) { 
     
     if (config.consolelog){
-        console.log('Room Changed',  data);
+        //console.log('Room Changed',  data);
         console.log('Moderator IDs', data.room.metadata.moderator_id);
     }
     
@@ -207,9 +207,11 @@ bot.on('newsong', function (data) {
     voted = true;
   }
   
-  if (data.room.metadata.current_song.metadata.length > 300){
-      var songlength = Math.round(data.room.metadata.current_song.metadata.length / 60);
-      bot.speak("Really?? We have to listen to a "+songlength+" minute song? Is that really nessesary?");
+  if (config.monitorsonglength){
+      if (data.room.metadata.current_song.metadata.length > config.maxsonglength){
+          var songlength = Math.round(data.room.metadata.current_song.metadata.length / 60);
+          bot.speak("Really?? We have to listen to a "+songlength+" minute song? Is that really nessesary?");
+      }
   }
 });
 
