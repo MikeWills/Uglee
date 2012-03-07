@@ -18,6 +18,7 @@ try {
 var currentsong = { artist: null, song: null, genre: null };
 var dislike = false;
 var voted = false;
+var moderators = [ ];
 
 var bot = new Bot(config.botinfo.auth, config.botinfo.userid);
 
@@ -26,6 +27,17 @@ var bot = new Bot(config.botinfo.auth, config.botinfo.userid);
 function admin(userid) {
     for (var i in config.admins.admins) {
         if (userid == config.admins.admins[i]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/*  Checks if the user id is present in the moderator list. Authentication
+    for moderator-only privileges. */
+function isMod(userid) {
+    for (var i in moderators) {
+        if (userid == moderators[i]) {
             return true;
         }
     }
@@ -47,7 +59,22 @@ function findAction(query, arr){
 /* ============================ */
 /* ready */
 /* ============================ */
-bot.on('ready', function (data) { bot.roomRegister(config.roomid); });
+bot.on('ready', function (data) { 
+    bot.roomRegister(config.roomid); 
+});
+
+/* ============================ */
+/* roomchanged */
+/* ============================ */
+bot.on('roomChanged', function (data) { 
+    
+    if (config.consolelog){
+        console.log('Room Changed',  data);
+        console.log('Moderator IDs', data.room.metadata.moderator_id);
+    }
+    
+    moderators = data.room.metadata.moderator_id;
+});
 
 /* ============================ */
 /* speak */
@@ -84,7 +111,7 @@ bot.on('speak', function (data) {
 
   /* ========== ADMIN ONLY ======== */
   if ((data.text.match(/^\@Uglee awesome$/i)) || (data.text.match(/^\@Uglee a$/i))) {
-    if (!admin(data.userid)) { 
+    if (!isMod(data.userid)) { 
       bot.speak("I was abused and now you can't control me."); 
     } else { 
       bot.vote('up');
@@ -93,7 +120,7 @@ bot.on('speak', function (data) {
   }
 
   if ((data.text.match(/^\@Uglee lame$/i)) || (data.text.match(/^\@Uglee l$/i))) {
-    if (!admin(data.userid)) { 
+    if (!isMod(data.userid)) { 
       bot.speak("That's not a nice thing to do to people @"+data.name); 
     } else { 
       bot.vote('down');
@@ -201,7 +228,7 @@ bot.on('pmmed', function(data){
     }
 
   if ((data.text.match(/^awesome$/i)) || (data.text.match(/^a$/i))) {
-    if (!admin(data.senderid)) { 
+    if (!isMod(data.senderid)) { 
       bot.pm("Your not me master @"+data.name+".",data.senderid); 
     } else { 
       bot.vote('up');
@@ -209,7 +236,7 @@ bot.on('pmmed', function(data){
   }
 
   if ((data.text.match(/^lame$/i)) || (data.text.match(/^l$/i))) {
-    if (!admin(data.senderid)) { 
+    if (!isMod(data.senderid)) { 
       bot.pm("That's not a nice thing to do to people @"+data.name,data.senderid); 
     } else { 
       bot.vote('down');
@@ -239,6 +266,14 @@ bot.on('pmmed', function(data){
         bot.playlistAdd(newSong);
         bot.pm('Added '+newSongName+' to queue.',data.senderid);
       });
+    }
+  }
+
+  if (data.text.match(/^help$/i)) {
+    if (!isMod(data.senderid)) { 
+      bot.pm("You ain't my master. Screw you!",data.senderid); 
+    } else { 
+      bot.pm("You can awesome (or a) | lame (or l)", data.senderid);
     }
   }
 
