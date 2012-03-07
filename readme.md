@@ -16,8 +16,25 @@ Features:
 * Owner can awesome and lame songs either publicly or via private message
 * Can be used as a fun chat-bot
 * Can autobop songs based on how many people are up or down voting the songs.
+* Bitches if a song is too long
 
 Upcoming features:
 
 * Auto dj
 * More dynamic way of adding fun chat commands.
+
+## Config options
+
+    {"botinfo":
+        {"auth":"auth+live+##############",  // Use the bookmarklet from TTAPI to find this
+	    "userid":"##############",  // Use the bookmarklet from TTAPI to find this
+	    "laptoptype":"chrome"},
+    "roomid":"##################",  // Use the bookmarklet from TTAPI to find this
+    "admins":
+	    {"mainadmin":"#############",
+	    "admins": ["################", "###########"] }, // Use the bookmarklet from TTAPI to find this, this is you
+    "consolelog":false, // if true, spits out information that can be used for troubleshooting
+    "autobop": false, // if true, will autobop if more than 25% of the room is. See http://faq.turntable.fm/customer/portal/articles/258935 for warnings.
+    "autodj":false, // not used yet
+    "newsongcomments":true, // if true, bot autobops on songs/bands/genres defined in actions.js
+    "monitorsonglength":true, "maxsonglength":600 // if true, a comment can be made about the length of a song. maxsonglegth is in seconds

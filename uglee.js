@@ -169,7 +169,7 @@ bot.on('newsong', function (data) {
         console.log('newsong',  data.room.metadata.current_song.metadata);
     }
 
-    if (config.newsong-comments){
+    if (config.newsongcomments){
         //Populate new song data in currentsong
         currentsong.artist = data.room.metadata.current_song.metadata.artist;
         currentsong.song = data.room.metadata.current_song.metadata.song;

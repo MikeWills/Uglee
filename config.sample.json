@@ -9,5 +9,5 @@
 "consolelog":false,
 "autobop": false,
 "autodj":false,
-"newsong-comments":true,
+"newsongcomments":true,
 "monitorsonglength":true, "maxsonglength":600}
