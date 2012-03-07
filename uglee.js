@@ -206,6 +206,11 @@ bot.on('newsong', function (data) {
     dislike = Actions.genres[idx].dislike;
     voted = true;
   }
+  
+  if (data.room.metadata.current_song.metadata.length > 300){
+      var songlength = Math.round(data.room.metadata.current_song.metadata.length / 60);
+      bot.speak("Really?? We have to listen to a "+songlength+" minute song? Is that really nessesary?");
+  }
 });
 
 /* ============================ */
