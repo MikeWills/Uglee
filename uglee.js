@@ -155,9 +155,7 @@ bot.on('speak', function (data) {
         if (isMod(data.userid) || admin(data.userid)) { 
             bot.vote('up');
             bot.speak('Me like this song.');
-        } else { 
-            bot.speak("I was abused and now you can't control me.");
-        }
+        } 
     }
 
     if ((data.text.match(/^\@Uglee lame$/i)) || (data.text.match(/^\@Uglee l$/i))) {
@@ -296,7 +294,6 @@ bot.on('newsong', function (data) {
 bot.on('endsong', function (data) {
 
     if (dislike){
-        bot.speak('FINALLY that hell is over!');
         dislike = false;
     }
 
