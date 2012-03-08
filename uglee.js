@@ -200,52 +200,6 @@ bot.on('speak', function (data) {
                     }
             }
         }
-
-    }
-
-    /* ========== Public  ======== */  
-	if (data.text.match(/^\@Uglee beer$/i)) {
-        bot.speak('/me hands @'+data.name+' a cold one.');
-        pause(500);
-        bot.speak('Here you go Master @'+data.name+'.');
-    }
-
-	if (data.text.match(/^\@Uglee coke$/i)) {
-        bot.speak('/me hands @'+data.name+' a cold one.');
-        pause(500);
-        bot.speak('Here you go Master @'+data.name+'.');
-    }
-
-    if (data.text.match(/^\@Uglee dew$/i)) {
-        bot.speak('/me hands @'+data.name+' a Mt. Dew.');
-        pause(500);
-        bot.speak('Here you go Master @'+data.name+'. Like to do the Dew huh?');
-    }
-
-    if (data.text.match(/^\@Uglee coffee$/i)) {
-        bot.speak('/me hands @'+data.name+' a large cup of liquid energy.');
-        pause(500);
-        bot.speak('Here you go Master @'+data.name+'.');
-    }
-
-    if (data.text.match(/^\@Uglee water$/i)) {
-        bot.speak('Do we serve water here??');
-        pause(500);
-        bot.speak('HELL NO H2O!!');
-    }
-
-    if (data.text.match(/^\@Uglee cake$/i)) {
-        bot.speak('Mmmm cake!');
-        pause(500);
-        bot.speak('/me cuts a slice and hands it to @'+data.name);
-    }
-
-    if (data.text.match(/^\@Uglee dance$/i)) {
-        bot.speak("Dwarves don't dance Master @"+data.name+".");
-    }
-
-    if (data.text.match(/^\@Uglee whois$/i)) {
-        bot.speak("Me is a bot that is created by @PodcastMike. Me guts are at https://github.com/MikeWills/Uglee.");
     }
 });
 

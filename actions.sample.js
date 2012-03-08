@@ -24,7 +24,13 @@ exports.genres =    [{ name:"Dubstep", vote: "down", speak: "", dislike: true},
 					{ name:"Country", vote: "up", speak: "", dislike: false}
                     ];
 
-exports.chat_responses =	[{ command: "speak", response1: "GWAAAARRRRR!!!!!", response2: "" },
-							{ command: "beer", response1: "/me hands @{0} a cold one.", response2: "Here you go Master @{0}.'" },
-							{ command: "coke", response1: "/me hands @{0} a cold one.", response2: "Here you go Master @{0}.'" }
+exports.chat_responses =	[{ name: "whois", response1: "Me is a bot that is created by @PodcastMike. Me guts are at https://github.com/MikeWills/Uglee.", response2: "" },
+							{ name: "speak", response1: "GWAAAARRRRR!!!!!", response2: "" },
+							{ name: "beer", response1: "/me hands @{0} a cold one.", response2: "Here you go Master @{0}." },
+							{ name: "coke", response1: "/me hands @{0} a cold one.", response2: "Here you go Master @{0}." },
+							{ name: "dew", response1: "/me hands @{0} a Mt. Dew.", response2: "Here you go Master @{0}. Like to do the Dew huh?" },
+							{ name: "coffee", response1: "/me hands @{0} a large cup of liquid energy.", response2: "Here you go Master @{0}." },
+							{ name: "water", response1: "Do we serve water here??", response2: "HELL NO H2O!!" },
+							{ name: "cake", response1: "Mmmm cake!", response2: "/me cuts a slice and hands it to @{0}." },
+							{ name: "dance", response1: "Dwarves don't dance Master @{0}", response2: "" }
 							];
