@@ -115,6 +115,16 @@ function stepDown(){
     djing = false;
 }
 
+function mustAwesome(id){
+    if (id == 1){
+        bot.speak("DJs: The gorilla doesn't like jerks. Please support your fellow DJs by clicking awesome for their songs. See Rule #3.");
+        pause(250);
+        bot.speak("Me have heard the screams... not pleasant.");
+    } else if (id == 2) {
+        bot.speak("DJs: Please support your fellow DJs by clicking the awesome button! It's easy and it's a rule! See #3. Just type !rules to see. Otherwise you WILL be booted off in two songs.");
+    }
+}
+
 /* ============================ */
 /* ready */
 /* ============================ */
@@ -332,6 +342,14 @@ bot.on('pmmed', function(data){
             addSong(data.senderid);
             break;
 
+        case "djwarn 1":
+            mustAwesome(1);
+            break;
+
+        case "djwarn 2":
+            mustAwesome(2);
+            break;
+
         case "step up":
             if (admin(data.senderid)) {
                 stepUp();
@@ -366,7 +384,7 @@ bot.on('pmmed', function(data){
 
         case "help":
             if (isMod(data.senderid)) { 
-                bot.pm("You can awesome (or a) | lame (or l)", data.senderid);
+                bot.pm("You can awesome (or a) | lame (or l) | djwarn 1 | djwarn 2", data.senderid);
             }
             if (admin(data.senderid)){
                 pause(500);
