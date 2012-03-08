@@ -18,11 +18,7 @@ Features:
 * Can autobop songs based on how many people are up or down voting the songs.
 * Bitches if a song is too long
 * Auto DJs if two or more spots are open when a new song is started. Will automatically leave all DJ spots are filled at the same time.
-
-Upcoming features:
-
-* More dynamic way of adding fun chat commands.
-* bot does not look for new/removed moderators at this time - needs to be added
+* Chat commands are dynamic
 
 ## Config options
 
