@@ -1,4 +1,4 @@
-/* Last changed 3/7/2012 @ 1300 */
+/* Last changed 3/7/2012 @ 2016 */
 
 /* AMM = "roomid":"4ea390ac14169c0cc3caa078", */
 /* Bootcamp = "roomid":"4f46ecd8590ca24b66000bfb", */
@@ -144,7 +144,7 @@ bot.on('speak', function (data) {
 
     /* ========== Public  ======== */  
     if (data.text.match(/^@Uglee$/i)) {
-        bot.speak('Yes Master @'+data.name+'? Here is what I can do for you: speak | dance | beer | water | coke | dew |cake | coffee | whois');
+        bot.speak('Yes Master @'+data.name+'? Here is what I can do for you: speak | dance | beer | water | coke | dew | cake | coffee | whois');
         if (isMod(data.userid)) { 
             pause(500);
             bot.speak('As a moderator, you can also `awesome` (or a) and `lame` (or l) songs. You can also PM me.');
