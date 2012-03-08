@@ -105,7 +105,7 @@ function addSong(userid){
             var newSong = data.room.metadata.current_song._id;
             var songName = data.room.metadata.current_song.metadata.song;
             bot.playlistAdd(newSong);
-            bot.speak("Hope you don't mind me adding "+songName+" to me queue.");
+            bot.speak("Hope you don't mind me adding \""+songName+"\" to me queue.");
         });
     } else {
         bot.speak("You ain't my master. Screw you!"); 
@@ -381,7 +381,6 @@ bot.on('pmmed', function(data){
 
         default:
             bot.pm("Unknown command. Type 'help' for commands.");
-            break;
     }
 });
 
