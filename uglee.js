@@ -154,6 +154,9 @@ bot.on('speak', function (data) {
         }
 
         if (config.botName.toLowerCase() == botName){
+  
+            delete require.cache['./actions.js'];
+            var Actions = require('./actions.js');
             
             if (config.consolelog){
                 console.log('Command is', command);
