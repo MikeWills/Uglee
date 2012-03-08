@@ -155,12 +155,25 @@ bot.on('speak', function (data) {
 
         if (config.consolelog){
             console.log('Speak',  data);
-            console.log('Bot name', botName);
-            console.log('Command', command);
+            console.log('Bot name is', botName);
+            console.log('Command is', command);
         }
 
-        if (config.botName == botName){
+        if (config.botName.toLowerCase() == botName){
             console.log("Yes?");
+
+            switch(command.toLowerCase()){
+                case "speak":
+                    bot.speak('GWAAAARRRRR!!!!!');
+                    break;
+                    
+                default:
+                    bot.speak('Yes Master @'+data.name+'? Here is what I can do for you: speak | dance | beer | water | coke | dew | cake | coffee | whois');
+                    if (isMod(data.userid)) { 
+                        pause(500);
+                        bot.speak('As a moderator, you can also `awesome` (or a) and `lame` (or l) songs. You can also PM me.');
+                    }
+            }
         }
 
     }
@@ -175,7 +188,7 @@ bot.on('speak', function (data) {
     }
 
     if (data.text.match(/^\@Uglee speak$/i)) {
-        bot.speak('GWAAAARRRRR!!!!!');
+        
     }
 
 	if (data.text.match(/^\@Uglee beer$/i)) {
