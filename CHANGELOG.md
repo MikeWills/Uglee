@@ -4,3 +4,4 @@
 
 * Removed the "meanness" of Uglee
 * Updated the actions.sample.js file to match my current rule set.
+* Cleaned up the backend to elimiate duplicated code.

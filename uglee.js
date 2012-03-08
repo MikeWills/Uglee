@@ -30,14 +30,8 @@ var bot = new Bot(config.botinfo.auth, config.botinfo.userid);
 function admin(userid) {
     for (var i in config.admins.admins) {
         if (userid == config.admins.admins[i]) {
-            if (config.consolelog){
-                console.log(userid+' is an admin');
-            }
             return true;
         }
-    }
-    if (config.consolelog){
-        console.log(userid+' is NOT an admin');
     }
     return false;
 }
@@ -47,14 +41,8 @@ function admin(userid) {
 function isMod(userid) {
     for (var i in moderators) {
         if (userid == moderators[i]) {
-            if (config.consolelog){
-                console.log(userid+' is a moderator');
-            }
             return true;
         }
-    }
-    if (config.consolelog){
-        console.log(userid+' is NOT a moderator');
     }
     return false;
 }
@@ -112,6 +100,21 @@ function addSong(userid){
     }
 }
 
+function stepUp(){
+    bot.addDj();
+    bot.speak("Imma help you out for a bit.");
+    djing = true;
+}
+
+function stepDown(){
+    bot.speak("Looks like me not needed anymore.");
+    pause(500);
+    bot.speak("/me pouts and slowly walks to the floor.");
+    pause(500);
+    bot.remDj();
+    djing = false;
+}
+
 /* ============================ */
 /* ready */
 /* ============================ */
@@ -146,34 +149,40 @@ bot.on('speak', function (data) {
             pause(500);
             bot.speak('As a moderator, you can also `awesome` (or a) and `lame` (or l) songs. You can also PM me.');
         }
-    } 
+    }
 
     if (data.text.match(/^\@Uglee speak$/i)) {
         bot.speak('GWAAAARRRRR!!!!!');
-    }	
+    }
 
 	if (data.text.match(/^\@Uglee beer$/i)) {
         bot.speak('/me hands @'+data.name+' a cold one.');
         pause(500);
         bot.speak('Here you go Master @'+data.name+'.');
-    }     
+    }
 
 	if (data.text.match(/^\@Uglee coke$/i)) {
         bot.speak('/me hands @'+data.name+' a cold one.');
         pause(500);
         bot.speak('Here you go Master @'+data.name+'.');
-    }     
+    }
 
     if (data.text.match(/^\@Uglee dew$/i)) {
         bot.speak('/me hands @'+data.name+' a Mt. Dew.');
         pause(500);
         bot.speak('Here you go Master @'+data.name+'. Like to do the Dew huh?');
-    } 
+    }
 
     if (data.text.match(/^\@Uglee water$/i)) {
         bot.speak('Do we serve water here??');
         pause(500);
         bot.speak('HELL NO H2O!!');
+    }
+
+    if (data.text.match(/^\@Uglee cake$/i)) {
+        bot.speak('Mmmm cake!');
+        pause(500);
+        bot.speak('/me cuts a slice and hands it to @'+data.name);
     }
 
     if (data.text.match(/^\@Uglee dance$/i)) {
@@ -196,7 +205,7 @@ bot.on('speak', function (data) {
 
     /* ========== ADMINS ONLY ======== */
     if (data.text.match(/^\@Uglee addsong$/i)) {
-        addSong(data.userid, data.room.metadata.currentsong);
+        addSong(data.userid);
     }
 
     if (data.text.match(/^@Uglee die$/i)) {
@@ -223,20 +232,13 @@ bot.on('newsong', function (data) {
     if (config.autodj){
         if (data.room.metadata.djcount <= (data.room.metadata.max_djs - 2)){
             if (!djing) {
-                bot.addDj();
-                bot.speak("Imma help you out for a bit.");
-                djing = true;
+                stepUp();
             }
         }
         
         if (data.room.metadata.djcount == data.room.metadata.max_djs){
             if (djing){
-                bot.speak("Looks like me not needed anymore.");
-                pause(500);
-                bot.speak("/me pouts and slowly walks to the floor.");
-                pause(500);
-                bot.remDj();
-                djing = false;
+                stepDown();
             }
         }
     }
@@ -338,15 +340,13 @@ bot.on('pmmed', function(data){
 
         case "step up":
             if (admin(data.senderid)) {
-                bot.addDj(); 
-                djing = true;
+                stepUp();
             }
             break;
 
         case "step down":
             if (admin(data.senderid)) {
-                bot.remdDj(); 
-                djing = false;
+                stepDown();
             }
             break;
 
@@ -375,6 +375,7 @@ bot.on('pmmed', function(data){
                 bot.pm("You can awesome (or a) | lame (or l)", data.senderid);
             }
             if (admin(data.senderid)){
+                pause(500);
                 bot.pm("step up | step down | skip | die | goto AMM & bootcamp", data.senderid);
             }
             break;
