@@ -196,6 +196,10 @@ bot.on('speak', function (data) {
                                 pause(500);
                                 bot.speak(Actions.chat_responses[idx].response2.replace("{0}",data.name));
                             }
+                        } else {
+                            bot.speak("/me looks at "+data.name+" with a confused look.");
+                            pause(500);
+                            bot.speak("Me not know what you said. Type @Uglee to see what me do.");
                         }
                     }
             }
