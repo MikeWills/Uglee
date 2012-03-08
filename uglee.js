@@ -380,6 +380,7 @@ bot.on('pmmed', function(data){
             bot.pm("You ain't my master. Screw you!",data.senderid); 
         } else { 
             bot.remDj(); 
+            djing = false;
         }
     }
 
