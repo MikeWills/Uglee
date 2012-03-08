@@ -99,11 +99,11 @@ function killBot(userid){
     }
 }
 
-function addSong(userid, songData){
+function addSong(userid){
     if (admin(userid)) { 
         bot.roomInfo(true, function(data) {
-            var newSong = songData._id;
-            var songName = songData.metadata.song;
+            var newSong = data.room.metadata.current_song._id;
+            var songName = data.room.metadata.current_song.metadata.song;
             bot.playlistAdd(newSong);
             bot.speak("Hope you don't mind me adding "+songName+" to me queue.");
         });
@@ -333,7 +333,7 @@ bot.on('pmmed', function(data){
             break;
 
         case "addsong":
-            addSong(data.senderid, data.room.metadata.currentsong);
+            addSong(data.senderid);
             break;
 
         case "step up":
