@@ -375,12 +375,12 @@ bot.on('pmmed', function(data){
                 bot.pm("You can awesome (or a) | lame (or l)", data.senderid);
             }
             if (admin(data.senderid)){
-                bot.pm("step up | step down | skip | die | goto AMM & bootcamp");
+                bot.pm("step up | step down | skip | die | goto AMM & bootcamp", data.senderid);
             }
             break;
 
         default:
-            bot.pm("Unknown command. Type 'help' for commands.");
+            bot.pm("Unknown command. Type 'help' for commands.", data.senderid);
     }
 });
 
