@@ -321,13 +321,11 @@ bot.on('pmmed', function(data){
     }
 
     switch(data.text.toLowerCase()){
-        case awesome:
-        case a:
+        case "awesome" : case "a":
             awesomeSong(data.senderid);
             break;
 
-        case lame:
-        case l:
+        case "lame": case "l":
             lameSong(data.senderid);
 
     }
