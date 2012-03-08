@@ -160,18 +160,39 @@ bot.on('speak', function (data) {
         }
 
         if (config.botName.toLowerCase() == botName){
-            console.log("Yes?");
-
-            switch(command.toLowerCase()){
+            
+            switch(command){
                 case "speak":
                     bot.speak('GWAAAARRRRR!!!!!');
                     break;
-                    
+
+                case "a":
+                case "awesome":
+                    awesomeSong(data.userid);
+                    break;
+
+                case "l":
+                case "lame":
+                    lameSong(data.userid);
+                    break;
+
+                case "addsong":
+                    addSong(data.userid);
+                    break;
+
+                case "die":
+                    killBot(data.userid);
+                    break;
+
                 default:
-                    bot.speak('Yes Master @'+data.name+'? Here is what I can do for you: speak | dance | beer | water | coke | dew | cake | coffee | whois');
-                    if (isMod(data.userid)) { 
-                        pause(500);
-                        bot.speak('As a moderator, you can also `awesome` (or a) and `lame` (or l) songs. You can also PM me.');
+                    if (command === ""){
+                        bot.speak('Yes Master @'+data.name+'? Here is what I can do for you: speak | dance | beer | water | coke | dew | cake | coffee | whois');
+                        if (isMod(data.userid)) { 
+                            pause(500);
+                            bot.speak('As a moderator, you can also `awesome` (or a) and `lame` (or l) songs. You can also PM me.');
+                        }
+                    } else {
+
                     }
             }
         }
@@ -179,18 +200,6 @@ bot.on('speak', function (data) {
     }
 
     /* ========== Public  ======== */  
-    if (data.text.match(/^@Uglee$/i)) {
-        bot.speak('Yes Master @'+data.name+'? Here is what I can do for you: speak | dance | beer | water | coke | dew | cake | coffee | whois');
-        if (isMod(data.userid)) { 
-            pause(500);
-            bot.speak('As a moderator, you can also `awesome` (or a) and `lame` (or l) songs. You can also PM me.');
-        }
-    }
-
-    if (data.text.match(/^\@Uglee speak$/i)) {
-        
-    }
-
 	if (data.text.match(/^\@Uglee beer$/i)) {
         bot.speak('/me hands @'+data.name+' a cold one.');
         pause(500);
@@ -233,25 +242,6 @@ bot.on('speak', function (data) {
 
     if (data.text.match(/^\@Uglee whois$/i)) {
         bot.speak("Me is a bot that is created by @PodcastMike. Me guts are at https://github.com/MikeWills/Uglee.");
-    }
-
-
-    /* ========== ADMINS & MODS ONLY ======== */
-    if ((data.text.match(/^\@Uglee awesome$/i)) || (data.text.match(/^\@Uglee a$/i))) {
-        awesomeSong(data.userid); 
-    }
-
-    if ((data.text.match(/^\@Uglee lame$/i)) || (data.text.match(/^\@Uglee l$/i))) {
-        lameSong(data.userid);
-    }
-
-    /* ========== ADMINS ONLY ======== */
-    if (data.text.match(/^\@Uglee addsong$/i)) {
-        addSong(data.userid);
-    }
-
-    if (data.text.match(/^@Uglee die$/i)) {
-        killBot(data.userid);
     }
 });
 
