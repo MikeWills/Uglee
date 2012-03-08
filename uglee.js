@@ -142,7 +142,7 @@ bot.on('roomChanged', function (data) {
 /* ============================ */
 bot.on('speak', function (data) {	
 
-    var result = data.text.match(/^\/(.*?)( .*)?$/);
+    var result = data.text.match(/^\@(.*?)( .*)?$/);
     if (result) {
 
         // break out the command and parameter if one exists
