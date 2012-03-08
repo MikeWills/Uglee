@@ -317,7 +317,6 @@ bot.on('pmmed', function(data){
     
     if (config.consolelog){
         console.log('Private message: ',  data);
-        console.log(data.text.toLowerCase());
     }
 
     switch(data.text.toLowerCase()){
@@ -327,67 +326,63 @@ bot.on('pmmed', function(data){
 
         case "lame": case "l":
             lameSong(data.senderid);
+            break;
 
+        case "die":
+            killBot(data.senderid);
+            break;
+
+        case "addsong":
+            addSong(data.senderid, data.room.metadata.currentsong);
+            break;
+
+        case "step up":
+            if (admin(data.senderid)) {
+                bot.addDj(); 
+                djing = true;
+            }
+            break;
+
+        case "step down":
+            if (admin(data.senderid)) {
+                bot.remdDj(); 
+                djing = false;
+            }
+            break;
+
+        case "skip":
+            if (admin(data.senderid)) {
+                bot.skip(); 
+            }
+            break;
+
+        case "goto amm":
+            if (admin(data.senderid)) {
+                bot.roomDeregister();
+                bot.roomRegister('4ea390ac14169c0cc3caa078');
+            }
+            break;
+
+        case "goto bootcamp":
+            if (admin(data.senderid)) {
+                bot.roomDeregister();
+                bot.roomRegister('4f46ecd8590ca24b66000bfb');
+            }
+            break;
+
+        case "help":
+            if (isMod(data.senderid)) { 
+                bot.pm("You can awesome (or a) | lame (or l)", data.senderid);
+            }
+            if (admin(data.senderid)){
+                bot.pm("step up | step down | skip | die | goto AMM & bootcamp");
+            }
+            break;
+
+        default:
+            bot.pm("Unknown command. Type 'help' for commands.");
+            break;
     }
-
-    /*if ((data.text.match(/^awesome$/i)) || (data.text.match(/^a$/i))) {
-        awesomeSong();
-    }
-
-    if ((data.text.match(/^lame$/i)) || (data.text.match(/^l$/i))) {
-        lameSong();
-    } */
-
-    if (data.text.match(/^die$/i)) {
-        killBot(data.senderid);
-    }
-
-    if (data.text.match(/^addsong$/i)) {
-        addSong(data.senderid, data.room.metadata.currentsong);
-    }
-
-    if (data.text.match(/^help$/i)) {
-        if (isMod(data.senderid)) { 
-            bot.pm("You can awesome (or a) | lame (or l)", data.senderid);
-        }
-        if (admin(data.senderid)){
-            bot.pm("step up | step down | skip | die | goto AMM & bootcamp");
-        }
-    }
-
-    if (data.text.match(/^step up$/i)) {
-        if (admin(data.senderid)) {
-            bot.addDj(); 
-            djing = true;
-        }
-    }
-
-    if (data.text.match(/^step down$/i)) {
-        if (admin(data.senderid)) {
-            bot.remDj(); 
-            djing = false;
-        }
-    }
-
-    if (data.text.match(/^skip$/i)) {
-        if (admin(data.senderid)) {
-            bot.skip(); 
-        }
-    }
-
-    if (data.text.match(/^goto AMM$/i)) {
-        if (admin(data.senderid)) {
-            bot.roomDeregister();
-            bot.roomRegister('4ea390ac14169c0cc3caa078');
-        }
-    }
-
-    if (data.text.match(/^goto bootcamp$/i)) {
-        if (admin(data.senderid)) { 
-            bot.roomDeregister();
-            bot.roomRegister('4f46ecd8590ca24b66000bfb');
-        }
-    }   
 });
 
 /* ============================ */
