@@ -153,19 +153,13 @@ bot.on('speak', function (data) {
             command = result[2].trim().toLowerCase();
         }
 
-        if (config.consolelog){
-            console.log('Speak',  data);
-            console.log('Bot name is', botName);
-            console.log('Command is', command);
-        }
-
         if (config.botName.toLowerCase() == botName){
             
-            switch(command){
-                case "speak":
-                    bot.speak('GWAAAARRRRR!!!!!');
-                    break;
+            if (config.consolelog){
+                console.log('Command is', command);
+            }
 
+            switch(command){
                 case "a":
                 case "awesome":
                     awesomeSong(data.userid);
@@ -192,7 +186,14 @@ bot.on('speak', function (data) {
                             bot.speak('As a moderator, you can also `awesome` (or a) and `lame` (or l) songs. You can also PM me.');
                         }
                     } else {
-
+                        var idx = findAction(command, Actions.chat_responses);
+                        if (idx != -1){
+                            bot.speak(Actions.chat_responses[idx].response1.replace("{0}",data.name));
+                            if (Actions.chat_responses[idx].response2 !== ""){
+                                pause(500);
+                                bot.speak(Actions.chat_responses[idx].response2.replace("{0}",data.name));
+                            }
+                        }
                     }
             }
         }
