@@ -142,6 +142,29 @@ bot.on('roomChanged', function (data) {
 /* ============================ */
 bot.on('speak', function (data) {	
 
+    var result = data.text.match(/^\/(.*?)( .*)?$/);
+    if (result) {
+
+        // break out the command and parameter if one exists
+        var botName = result[1].trim().toLowerCase();
+        var command = '';
+
+        if (result.length == 3 && result[2]) {
+            command = result[2].trim().toLowerCase();
+        }
+
+        if (config.consolelog){
+            console.log('Speak',  data);
+            console.log('Bot name', botName);
+            console.log('Command', command);
+        }
+
+        if (config.botName == botName){
+            console.log("Yes?");
+        }
+
+    }
+
     /* ========== Public  ======== */  
     if (data.text.match(/^@Uglee$/i)) {
         bot.speak('Yes Master @'+data.name+'? Here is what I can do for you: speak | dance | beer | water | coke | dew | cake | coffee | whois');
