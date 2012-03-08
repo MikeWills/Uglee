@@ -173,6 +173,12 @@ bot.on('speak', function (data) {
         bot.speak('Here you go Master @'+data.name+'. Like to do the Dew huh?');
     }
 
+    if (data.text.match(/^\@Uglee coffee$/i)) {
+        bot.speak('/me hands @'+data.name+' a large cup of liquid energy.');
+        pause(500);
+        bot.speak('Here you go Master @'+data.name+'.');
+    }
+
     if (data.text.match(/^\@Uglee water$/i)) {
         bot.speak('Do we serve water here??');
         pause(500);
