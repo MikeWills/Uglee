@@ -23,3 +23,8 @@ exports.genres =    [{ name:"Dubstep", vote: "down", speak: "", dislike: true},
 					{ name:"Rock", vote: "up", speak: "", dislike: false},
 					{ name:"Country", vote: "up", speak: "", dislike: false}
                     ];
+
+exports.chat_responses =	[{ command: "speak", response1: "GWAAAARRRRR!!!!!", response2: "" },
+							{ command: "beer", response1: "/me hands @{0} a cold one.", response2: "Here you go Master @{0}.'" },
+							{ command: "coke", response1: "/me hands @{0} a cold one.", response2: "Here you go Master @{0}.'" }
+							];
