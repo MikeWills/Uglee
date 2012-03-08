@@ -77,6 +77,41 @@ function pause(ms) {
     while (new Date() < ms){}
 } 
 
+function awesomeSong(userid){
+    if (isMod(userid) || admin(userid)) { 
+        bot.vote('up');
+    }
+}
+
+function lameSong(userid){ 
+    if (isMod(userid) || admin(userid)) { 
+        bot.vote('down');
+    }
+}
+
+function killBot(userid){
+    if (admin(userid)) {  
+        bot.pm("Sorry I disappointed you master.",userid);
+        bot.roomDeregister();
+        process.exit(0); 
+    } else {
+        bot.pm("Fuck you! Me take orders from no one!",userid);
+    }
+}
+
+function addSong(userid, songData){
+    if (admin(userid)) { 
+        bot.roomInfo(true, function(data) {
+            var newSong = songData._id;
+            var songName = songData.metadata.song;
+            bot.playlistAdd(newSong);
+            bot.speak("Hope you don't mind me adding "+songName+" to me queue.");
+        });
+    } else {
+        bot.speak("You ain't my master. Screw you!"); 
+    }
+}
+
 /* ============================ */
 /* ready */
 /* ============================ */
@@ -150,47 +185,22 @@ bot.on('speak', function (data) {
     }
 
 
-    /* ========== ADMIN ONLY ======== */
+    /* ========== ADMINS & MODS ONLY ======== */
     if ((data.text.match(/^\@Uglee awesome$/i)) || (data.text.match(/^\@Uglee a$/i))) {
-        if (isMod(data.userid) || admin(data.userid)) { 
-            bot.vote('up');
-            bot.speak('Me like this song.');
-        } 
+        awesomeSong(data.userid); 
     }
 
     if ((data.text.match(/^\@Uglee lame$/i)) || (data.text.match(/^\@Uglee l$/i))) {
-        if (isMod(data.userid) || admin(data.userid)) { 
-            bot.vote('down');
-            bot.speak('Wow! Me NOT like this song'); 
-        } else { 
-            bot.speak("That's not a nice thing to do to people @"+data.name);
-        }
+        lameSong(data.userid);
     }
 
+    /* ========== ADMINS ONLY ======== */
     if (data.text.match(/^\@Uglee addsong$/i)) {
-        if (!admin(data.userid)) { 
-            bot.speak("You ain't my master. Screw you!"); 
-        } else {
-            bot.roomInfo(true, function(data) {
-                var newSong = data.room.metadata.current_song._id;
-                var songName = data.room.metadata.current_song.metadata.song;
-                var newSongName = songName;
-                bot.playlistAdd(newSong);
-                bot.speak('Added '+newSongName+' to queue.');
-            });
-        }
+        addSong(data.userid, data.room.metadata.currentsong);
     }
 
     if (data.text.match(/^@Uglee die$/i)) {
-        if (!admin(data.userid)) { 
-            bot.speak("Fuck you! Me take orders from no one!"); 
-        } else { 
-            bot.speak("Sorry I disappointed you master.");
-            pause(500);
-            bot.speak("**bang** :gun:");
-            bot.roomDeregister();
-            process.exit(0);
-        }
+        killBot(data.userid);
     }
 });
 
@@ -309,94 +319,72 @@ bot.on('pmmed', function(data){
         console.log('Private message: ',  data);
     }
 
-    if ((data.text.match(/^awesome$/i)) || (data.text.match(/^a$/i))) {
-        if (isMod(data.senderid) || admin(data.senderid)) { 
-            bot.vote('up');
-        } else { 
-            bot.pm("Me sorry, you can't do that.",data.senderid); 
-        }
+    switch(data.text.toLowerCase()){
+        case awesome:
+        case a:
+            awesomeSong(data.senderid);
+            break;
+
+        case lame:
+        case l:
+            lameSong(data.senderid);
+
+    }
+
+    /*if ((data.text.match(/^awesome$/i)) || (data.text.match(/^a$/i))) {
+        awesomeSong();
     }
 
     if ((data.text.match(/^lame$/i)) || (data.text.match(/^l$/i))) {
-        if (isMod(data.senderid) || admin(data.senderid)) {  
-            bot.vote('down');
-            bot.speak('Gah! I have heard drunken dwarves sing better!');
-        } else {
-            bot.pm("That's not a nice thing to do to people.",data.senderid); 
-        }
-    } 
+        lameSong();
+    } */
 
     if (data.text.match(/^die$/i)) {
-        if (!admin(data.senderid)) { 
-            bot.pm("Fuck you! Me take orders from no one!",data.senderid); 
-        } else { 
-            bot.pm("Sorry I disappointed you master.",data.senderid);
-            bot.roomDeregister();
-            process.exit(0);
-        }
+        killBot(data.senderid);
     }
 
     if (data.text.match(/^addsong$/i)) {
-        if (!admin(data.senderid)) { 
-            bot.pm("You ain't my master. Screw you!",data.senderid); 
-        } else {
-            bot.roomInfo(true, function(data) {
-                var newSong = data.room.metadata.current_song._id;
-                var songName = data.room.metadata.current_song.metadata.song;
-                var newSongName = songName;
-                //bot.playlistAll();
-                bot.playlistAdd(newSong);
-                bot.pm('Added '+newSongName+' to queue.',data.senderid);
-            });
-        }
+        addSong(data.senderid, data.room.metadata.currentsong);
     }
 
     if (data.text.match(/^help$/i)) {
-        if (isMod(data.senderid) || admin(data.senderid)) { 
+        if (isMod(data.senderid)) { 
             bot.pm("You can awesome (or a) | lame (or l)", data.senderid);
-        } else { 
-            bot.pm("You ain't my master. Screw you!",data.senderid); 
+        }
+        if (admin(data.senderid)){
+            bot.pm("step up | step down | skip | die | goto AMM & bootcamp");
         }
     }
 
     if (data.text.match(/^step up$/i)) {
-        if (!admin(data.senderid)) { 
-            bot.pm("You ain't my master. Screw you!",data.senderid); 
-        } else { 
+        if (admin(data.senderid)) {
             bot.addDj(); 
-        }
-    }
-
-    if (data.text.match(/^skip$/i)) {
-        if (!admin(data.senderid)) { 
-            bot.pm("You ain't my master. Screw you!",data.senderid); 
-        } else { 
-            bot.skip(); 
+            djing = true;
         }
     }
 
     if (data.text.match(/^step down$/i)) {
-        if (!admin(data.senderid)) { 
-            bot.pm("You ain't my master. Screw you!",data.senderid); 
-        } else { 
+        if (admin(data.senderid)) {
             bot.remDj(); 
             djing = false;
         }
     }
 
+    if (data.text.match(/^skip$/i)) {
+        if (admin(data.senderid)) {
+            bot.skip(); 
+        }
+    }
+
     if (data.text.match(/^goto AMM$/i)) {
-        if (!admin(data.senderid)) { 
-            bot.pm("You ain't my master. Screw you!",data.senderid); 
-        } else { 
+        if (admin(data.senderid)) {
             bot.roomDeregister();
             bot.roomRegister('4ea390ac14169c0cc3caa078');
         }
     }
 
     if (data.text.match(/^goto bootcamp$/i)) {
-        if (!admin(data.senderid)) { 
-            bot.pm("You ain't my master. Screw you!",data.senderid); 
-        } else { 
+        if (admin(data.senderid)) { 
             bot.roomDeregister();
             bot.roomRegister('4f46ecd8590ca24b66000bfb');
         }
