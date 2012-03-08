@@ -317,6 +317,7 @@ bot.on('pmmed', function(data){
     
     if (config.consolelog){
         console.log('Private message: ',  data);
+        console.log(data.text.toLowerCase());
     }
 
     switch(data.text.toLowerCase()){
