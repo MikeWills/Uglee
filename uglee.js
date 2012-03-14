@@ -375,6 +375,13 @@ bot.on('pmmed', function(data){
             }
             break;
 
+        case "goto maw":
+            if (admin(data.senderid)) {
+                bot.roomDeregister();
+                bot.roomRegister('4ef82538590ca23e33001b3b');
+            }
+            break;
+
         case "goto bootcamp":
             if (admin(data.senderid)) {
                 bot.roomDeregister();
