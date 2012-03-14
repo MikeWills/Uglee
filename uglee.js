@@ -271,6 +271,13 @@ bot.on('roomChanged', function (data) {
     
     djs = data.room.metadata.djs;
     moderators = data.room.metadata.moderator_id;
+
+    //Fill currentsong array with room data
+    if ((data.room != null) && (data.room.metadata != null)) {
+        if (data.room.metadata.current_song != null) {
+            populateSongData(data);
+        }
+    }
     
     //Repopulates usersList array.
     var users = data.users;
@@ -298,6 +305,9 @@ bot.on('roomChanged', function (data) {
 /* ============================ */
 bot.on('newsong', function (data) {
   
+    //Populate new song data in currentsong
+    populateSongData(data);
+    
     delete require.cache['./actions.js'];
     var Actions = require('./actions.js');
 
