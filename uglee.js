@@ -485,7 +485,7 @@ bot.on('registered',   function (data) {
     
     //Add user to user table
     if (config.database.usedb) {
-        if (users[i].name !== null) {
+        if (user.name !== null) {
             client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user +
                 ' (userid, username, lastseen)' +
                 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()',
