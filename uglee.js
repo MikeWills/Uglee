@@ -493,6 +493,10 @@ bot.on('registered',   function (data) {
 /* update_user */
 /* ============================ */
 bot.on('update_user', function(data) {
+    //Log event in console
+    if (config.consolelog) {
+        console.log('Edited user: ' + data);
+    }
     //Update user name in users table
     if (config.database.usedb && (data.name !== null)) {
         client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user +
