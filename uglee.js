@@ -243,7 +243,7 @@ function addSongToDb(data) {
         currentsong.down,
         currentsong.listeners,
         currentsong.snags,
-        bonuspoints.length]);
+        0]);
 }
 
 /* ============================ */
@@ -486,6 +486,14 @@ bot.on('update_user', function(data) {
             'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()',
                 [data.userid, data.name]);
         }
+});
+
+/* ============================ */
+/* snagged */
+/* ============================ */
+bot.on('snagged', function(data) {
+    //Increase song snag count
+    currentsong.snags++;
 });
 
 /* ============================ */
