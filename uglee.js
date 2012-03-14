@@ -292,10 +292,18 @@ bot.on('roomChanged', function (data) {
     
     if (config.database.usedb) {
         for (i in users) {
-            client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user +
-                ' (userid, username, lastseen)' +
-                'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()',
-                [users[i].userid, users[i].name]);
+            if (users[i].name !== null) {
+                client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user +
+                    ' (userid, username, lastseen)' +
+                    'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()',
+                    [users[i].userid, users[i].name]);
+            } else {
+                client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user +
+                    ' (userid, username, lastseen)' +
+                    'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()',
+                    [users[i].userid, " "]);
+            }
+            }
         }
     }
 });
