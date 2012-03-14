@@ -303,7 +303,6 @@ bot.on('roomChanged', function (data) {
                     'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()',
                     [users[i].userid, " "]);
             }
-            }
         }
     }
 });
