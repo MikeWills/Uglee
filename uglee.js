@@ -297,11 +297,6 @@ bot.on('roomChanged', function (data) {
                     ' (userid, username, lastseen)' +
                     'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()',
                     [users[i].userid, users[i].name]);
-            } else {
-                client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user +
-                    ' (userid, username, lastseen)' +
-                    'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()',
-                    [users[i].userid, " "]);
             }
         }
     }
