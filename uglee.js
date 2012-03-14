@@ -87,7 +87,7 @@ function findAction(query, arr){
     for (var i = 0, l = arr.length; i < l; i++){
         var item = arr[i];
         var reg = RegExp(escape(item.name), "i");
-        if (reg.test(query)) 
+        if (reg.test(query))
             return i;
     }
     return -1;
@@ -97,32 +97,32 @@ function findAction(query, arr){
 function pause(ms) {
     ms += new Date().getTime();
     while (new Date() < ms){}
-} 
+}
 
 function awesomeSong(userid){
-    if (isMod(userid) || admin(userid)) { 
+    if (isMod(userid) || admin(userid)) {
         bot.vote('up');
     }
 }
 
-function lameSong(userid){ 
-    if (isMod(userid) || admin(userid)) { 
+function lameSong(userid){
+    if (isMod(userid) || admin(userid)) {
         bot.vote('down');
     }
 }
 
 function killBot(userid){
-    if (admin(userid)) {  
+    if (admin(userid)) {
         bot.pm("Sorry I disappointed you master.",userid);
         bot.roomDeregister();
-        process.exit(0); 
+        process.exit(0);
     } else {
         bot.pm("Fuck you! Me take orders from no one!",userid);
     }
 }
 
 function addSong(userid){
-    if (admin(userid)) { 
+    if (admin(userid)) {
         bot.roomInfo(true, function(data) {
             var newSong = data.room.metadata.current_song._id;
             var songName = data.room.metadata.current_song.metadata.song;
@@ -130,7 +130,7 @@ function addSong(userid){
             bot.speak("Hope you don't mind me adding \""+songName+"\" to me queue.");
         });
     } else {
-        bot.speak("You ain't my master. Screw you!"); 
+        bot.speak("You ain't my master. Screw you!");
     }
 }
 
@@ -171,16 +171,16 @@ function setUpDatabase() {
     client.query('USE '+ config.database.dbname);
 
     //song table
-    client.query('CREATE TABLE ' + config.database.tablenames.song
-        + '(id INT(11) AUTO_INCREMENT PRIMARY KEY,'
-        + ' artist VARCHAR(255),'
-        + ' song VARCHAR(255),'
-        + ' djid VARCHAR(255),'
-        + ' up INT(3),' + ' down INT(3),'
-        + ' listeners INT(3),'
-        + ' started DATETIME,'
-        + ' snags INT(3),'
-        + ' bonus INT(3))',
+    client.query('CREATE TABLE ' + config.database.tablenames.song +
+        '(id INT(11) AUTO_INCREMENT PRIMARY KEY,' +
+        ' artist VARCHAR(255),' +
+        ' song VARCHAR(255),' +
+        ' djid VARCHAR(255),' +
+        ' up INT(3),' + ' down INT(3),' +
+        ' listeners INT(3),' +
+        ' started DATETIME,' +
+        ' snags INT(3),' +
+        ' bonus INT(3))',
             
         function (error) {
             //Handle an error if it's not a table already exists error
@@ -190,11 +190,11 @@ function setUpDatabase() {
     });
 
     //chat table
-    client.query('CREATE TABLE ' + config.database.tablenames.chat
-        + '(id INT(11) AUTO_INCREMENT PRIMARY KEY,'
-        + ' userid VARCHAR(255),'
-        + ' chat VARCHAR(255),'
-        + ' time DATETIME)',
+    client.query('CREATE TABLE ' + config.database.tablenames.chat +
+        '(id INT(11) AUTO_INCREMENT PRIMARY KEY,' +
+        ' userid VARCHAR(255),' +
+        ' chat VARCHAR(255),' +
+        ' time DATETIME)',
         function (error) {
             //Handle an error if it's not a table already exists error
             if(error && error.number != 1050) {
@@ -203,11 +203,11 @@ function setUpDatabase() {
     });
         
     //user table
-    client.query('CREATE TABLE ' + config.database.tablenames.user
-        + '(userid VARCHAR(255), '
-        + 'username VARCHAR(255), '
-        + 'lastseen DATETIME, '
-        + 'PRIMARY KEY (userid, username))',
+    client.query('CREATE TABLE ' + config.database.tablenames.user +
+        '(userid VARCHAR(255), ' +
+        'username VARCHAR(255), ' +
+        'lastseen DATETIME, ' +
+        'PRIMARY KEY (userid, username))',
         function (error) {
             //Handle an error if it's not a table already exists error
             if(error && error.number != 1050) {
@@ -276,10 +276,10 @@ bot.on('roomChanged', function (data) {
     //since the last time we've seen them
     
     if (config.database.usedb) {
-        for (i in users) {
-            client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user
-            + ' (userid, username, lastseen)'
-                + 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()',
+        for (var i in users) {
+            client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user +
+                ' (userid, username, lastseen)' +
+                'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()',
                 [users[i].userid, users[i].name]);
         }
     }
@@ -297,7 +297,7 @@ bot.on('newsong', function (data) {
         console.log('newsong',  data.room.metadata.current_song.metadata);
     }
     
-    /* Update the moderator list */ 
+    /* Update the moderator list */
     moderators = data.room.metadata.moderator_id;
     
     /* Check if the bot should step up to DJ */
@@ -376,6 +376,10 @@ bot.on('newsong', function (data) {
 /* endsong */
 /* ============================ */
 bot.on('endsong', function (data) {
+    //Log song in DB
+    if (config.database.usedb) {
+        addSongToDb();
+    }
 
     if (dislike){
         dislike = false;
@@ -418,7 +422,7 @@ bot.on('update_votes', function(data){
 /* ============================ */
 /* add_dj */
 /* ============================ */
-bot.on('add_dj', function(data){ 
+bot.on('add_dj', function(data){
     
     if (config.consolelog){
         console.log('Added DJ: ',  data);
@@ -429,7 +433,7 @@ bot.on('add_dj', function(data){
 /* ============================ */
 /* rem_dj */
 /* ============================ */
-bot.on('rem_dj', function(data){ 
+bot.on('rem_dj', function(data){
     
     if (config.consolelog){
         console.log('Removed DJ: ',  data);
@@ -437,12 +441,56 @@ bot.on('rem_dj', function(data){
     
 });
 
+/* ============================ */
+/* registered */
+/* Runs when a user joins */
+/* ============================ */
+bot.on('registered',   function (data) {
+    //Log event in console
+    if (config.consolelog) {
+        console.log('Joined room: ' + data.user[0].name);
+    }
+    
+    //Add user to usersList
+    var user = data.user[0];
+    usersList[user.userid] = user;
+    if (currentsong !== null) {
+        currentsong.listeners++;
+    }
+    
+    //Add user to user table
+    if (config.database.usedb) {
+        client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user +
+            ' (userid, username, lastseen)' +
+            'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()',
+            [user.userid, user.name]);
+    }
+});
 
+/* ============================ */
+/* update_user */
+/* ============================ */
+bot.on('update_user', function(data) {
+    //Update user name in users table
+    if (config.database.usedb && (data.name !== null)) {
+        client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user +
+            ' (userid, username, lastseen)' +
+            'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()',
+                [data.userid, data.name]);
+        }
+});
 
 /* ============================ */
 /* speak */
 /* ============================ */
 bot.on('speak', function (data) {
+
+    //Log in db (chatlog table)
+    /*if (config.database.usedb) {
+        client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.chat + ' '
+            + 'SET userid = ?, chat = ?, time = NOW()',
+            [data.userid, data.text]);
+    }*/
 
     var result = data.text.match(/^\@(.*?)( .*)?$/);
     if (result) {
