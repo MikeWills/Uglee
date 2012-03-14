@@ -118,7 +118,7 @@ function killBot(userid){
         bot.roomDeregister();
         process.exit(0);
     } else {
-        bot.pm("Fuck you! Me take orders from no one!",userid);
+        bot.pm("You ain't me master.",userid);
     }
 }
 
@@ -129,9 +129,10 @@ function addSong(userid){
             var songName = data.room.metadata.current_song.metadata.song;
             bot.playlistAdd(newSong);
             bot.speak("Hope you don't mind me adding \""+songName+"\" to me queue.");
+            bot.vote('up');
         });
     } else {
-        bot.speak("You ain't my master. Screw you!");
+        bot.speak("You ain't me master.");
     }
 }
 
