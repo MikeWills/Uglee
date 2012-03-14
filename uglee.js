@@ -497,13 +497,14 @@ bot.on('update_user', function(data) {
     if (config.consolelog) {
         console.log('Edited user: ' + data);
     }
+
     //Update user name in users table
-    if (config.database.usedb && (data.name !== null)) {
+    /*if (config.database.usedb && (data.name !== null)) {
         client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user +
             ' (userid, username, lastseen)' +
             'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()',
                 [data.userid, data.name]);
-        }
+    }*/
 });
 
 /* ============================ */
