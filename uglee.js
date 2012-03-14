@@ -51,6 +51,7 @@ var currentsong = {
     down: 0,
     listeners: 0,
     snags: 0};
+var usersList = { };                //A list of users in the room
 
 var dislike = false;
 var voted = false;
