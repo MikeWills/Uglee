@@ -273,8 +273,8 @@ bot.on('roomChanged', function (data) {
     moderators = data.room.metadata.moderator_id;
 
     //Fill currentsong array with room data
-    if ((data.room != null) && (data.room.metadata != null)) {
-        if (data.room.metadata.current_song != null) {
+    if ((data.room !== null) && (data.room.metadata !== null)) {
+        if (data.room.metadata.current_song !== null) {
             populateSongData(data);
         }
     }
