@@ -272,12 +272,19 @@ bot.on('roomChanged', function (data) {
     djs = data.room.metadata.djs;
     moderators = data.room.metadata.moderator_id;
     
+    //Repopulates usersList array.
+    var users = data.users;
+    for (var i in users) {
+        var user = users[i];
+        usersList[user.userid] = user;
+    }
+    
     //Adds all active users to the users table - updates lastseen if we've seen
     //them before, adds a new entry if they're new or have changed their username
     //since the last time we've seen them
     
     if (config.database.usedb) {
-        for (var i in users) {
+        for (i in users) {
             client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user +
                 ' (userid, username, lastseen)' +
                 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()',
