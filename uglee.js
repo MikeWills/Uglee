@@ -307,7 +307,7 @@ bot.on('newsong', function (data) {
   
     //Populate new song data in currentsong
     populateSongData(data);
-    
+
     delete require.cache['./actions.js'];
     var Actions = require('./actions.js');
 
@@ -632,6 +632,20 @@ bot.on('pmmed', function(data){
         case "skip":
             if (admin(data.senderid)) {
                 bot.skip();
+            }
+            break;
+
+        case "autodj":
+            if (admin(data.senderid)) {
+                config.autodj = !config.autodj;
+                bot.pm("Autodj set to: "+config.autodj, data.senderid);
+            }
+            break;
+
+        case "autobop":
+            if (admin(data.senderid)) {
+                config.autobop = !config.autobop;
+                bot.pm("Autodj set to: "+config.autobop, data.senderid);
             }
             break;
 
