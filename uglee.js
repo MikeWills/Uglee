@@ -655,7 +655,7 @@ bot.on('pmmed', function(data){
         case "autobop":
             if (admin(data.senderid)) {
                 config.autobop = !config.autobop;
-                bot.pm("Autodj set to: "+config.autobop, data.senderid);
+                bot.pm("Autobop set to: "+config.autobop, data.senderid);
             }
             break;
 
