@@ -602,21 +602,17 @@ bot.on('pmmed', function(data) {
             addSong(data.senderid);
             break;
 
-        case "djwarn 1":
-            mustAwesome(1);
+        case "djwarn":
+            mustAwesome(param);
             break;
 
-        case "djwarn 2":
-            mustAwesome(2);
-            break;
-
-        case "step up":
+        case "stepup":
             if (admin(data.senderid)) {
                 stepUp();
             }
             break;
 
-        case "step down":
+        case "stepdown":
             if (admin(data.senderid)) {
                 stepDown();
             }
@@ -650,24 +646,18 @@ bot.on('pmmed', function(data) {
             bot.setAvatar(param);
             break;
 
-        case "goto amm":
+        case "goto":
             if (admin(data.senderid)) {
-                bot.roomDeregister();
-                bot.roomRegister('4ea390ac14169c0cc3caa078');
-            }
-            break;
-
-        case "goto maw":
-            if (admin(data.senderid)) {
-                bot.roomDeregister();
-                bot.roomRegister('4ef82538590ca23e33001b3b');
-            }
-            break;
-
-        case "goto bootcamp":
-            if (admin(data.senderid)) {
-                bot.roomDeregister();
-                bot.roomRegister('4f46ecd8590ca24b66000bfb');
+                if (param == "amm") {
+                    bot.roomDeregister();
+                    bot.roomRegister('4ea390ac14169c0cc3caa078');
+                } else if (param == "maw") {
+                    bot.roomDeregister();
+                    bot.roomRegister('4ef82538590ca23e33001b3b');
+                } else if (param == "maw") {
+                    bot.roomDeregister();
+                    bot.roomRegister('4f46ecd8590ca24b66000bfb');
+                }
             }
             break;
 
