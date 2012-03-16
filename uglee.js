@@ -626,14 +626,14 @@ bot.on('pmmed', function(data) {
 
         case "autodj":
             if (admin(data.senderid)) {
-                config.autodj = !config.autodj;
+                config.autodj = param;
                 bot.pm("Autodj set to: " + config.autodj, data.senderid);
             }
             break;
 
         case "autobop":
             if (admin(data.senderid)) {
-                config.autobop = !config.autobop;
+                config.autobop = param;
                 bot.pm("Autobop set to: " + config.autobop, data.senderid);
             }
             break;
