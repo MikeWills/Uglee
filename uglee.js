@@ -602,6 +602,21 @@ bot.on('pmmed', function(data){
         console.log('Private message: ',  data);
     }
 
+    var result = data.text.match(/^(.*?)( .*)?$/);
+    if (result) {
+        // break out the command and parameter if one exists
+        var command = result[1].trim().toLowerCase();
+        var param = '';
+        if (result.length == 3 && result[2]) {
+            param = result[2].trim().toLowerCase();
+        }
+        // handle valid commands
+
+        if (config.consolelog){
+            console.log('Command: ',  command);
+            console.log('Param: ',  param);
+        }
+
     switch(data.text.toLowerCase()){
         case "awesome" : case "a":
             awesomeSong(data.senderid);
@@ -693,4 +708,5 @@ bot.on('pmmed', function(data){
         default:
             bot.pm("Unknown command. Type 'help' for commands.", data.senderid);
     }
+}
 });
