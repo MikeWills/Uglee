@@ -308,7 +308,6 @@ bot.on('newsong', function(data) {
 
     /* Autobop if DJing */
     if (djing) {
-        pause(30000);
         bot.vote('up');
         voted = true;
     }
@@ -654,7 +653,7 @@ bot.on('pmmed', function(data) {
                 } else if (param == "maw") {
                     bot.roomDeregister();
                     bot.roomRegister('4ef82538590ca23e33001b3b');
-                } else if (param == "maw") {
+                } else if (param == "bootcamp") {
                     bot.roomDeregister();
                     bot.roomRegister('4f46ecd8590ca24b66000bfb');
                 }
