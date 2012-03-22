@@ -2,3 +2,5 @@ config.json
 actions.js
 .settings.xml
 nohup.out
+out.log
+err.log
