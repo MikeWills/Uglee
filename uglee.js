@@ -57,6 +57,8 @@ var dislike = false;
 var voted = false;
 var moderators = [];
 var djing = false;
+var votelog = [ ];
+var lamers = [ ];
 
 var bot = new Bot(config.botinfo.auth, config.botinfo.userid);
 
@@ -129,7 +131,7 @@ function addSong(userid) {
             var newSong = data.room.metadata.current_song._id;
             var songName = data.room.metadata.current_song.metadata.song;
             bot.playlistAdd(newSong);
-            bot.speak("Hope you don't mind me adding \"" + songName + "\" to me queue.");
+            //bot.speak("Hope you don't mind me adding \"" + songName + "\" to me queue.");
             bot.vote('up');
         });
     } else {
@@ -211,6 +213,45 @@ function populateSongData(data) {
     currentsong.listeners = data.room.metadata.listeners;
     currentsong.started = data.room.metadata.current_song.starttime;
     currentsong.snags = 0;
+}
+
+function WhoLamed(data){
+	if (isMod(data.senderid)) {
+		//console.log("Vote Log: " +votelog);
+		for (var i = 0; i < votelog.length; i++){
+			if (votelog[i] !== '') {
+                		GetUserName(votelog[i], function(results){
+					//console.log(results[0].username);
+					//console.log(results);
+					lamers.push(results[0].username);
+					if (lamers.length == votelog.length){
+						//console.log(lamers);
+						bot.pm('These people have lamed this song: ' + lamers, data.senderid);
+					}
+				});
+			}
+		}
+	}
+}
+
+function GetUserName(userid, callback){
+    client.query("SELECT `username` FROM " + config.database.tablenames.user + " WHERE `userid` = '" + userid + "'",
+                function selectCb(err, results, fields) {
+                    if (err) { throw err; }
+                    //console.log(results);
+                    //console.log(fields);
+                    client.end();
+                    callback(results);
+                });
+}
+
+function StoreLames(data){
+	for (var i = 0; i < data.room.metadata.votelog.length; i++) {
+		if (data.room.metadata.votelog[i][1] == 'down' && data.room.metadata.votelog[i][0] != ''){
+			votelog.push(data.room.metadata.votelog[i][0]);
+			console.log(votelog);
+		}
+	}
 }
 
 //Adds the song data to the songdata table.
@@ -374,7 +415,7 @@ bot.on('endsong', function(data) {
     if (dislike) {
         dislike = false;
     }
-
+	votelog = [ ];
     voted = false;
 });
 
@@ -386,6 +427,8 @@ bot.on('update_votes', function(data) {
     currentsong.up = data.room.metadata.upvotes;
     currentsong.down = data.room.metadata.downvotes;
     currentsong.listeners = data.room.metadata.listeners;
+
+	StoreLames(data);
 
     /* If autobop is enabled, determine if the bot should autobop or not based on votes */
     if (config.autobop) {
@@ -493,6 +536,10 @@ bot.on('speak', function(data) {
             + 'SET userid = ?, chat = ?, time = NOW()',
             [data.userid, data.text]);
     }*/
+
+    if (data.text == "Fuck you @Uglee"){
+        bot.speak("Fuck you too!");
+    }
 
     var result = data.text.match(/^\@(.*?)( .*)?$/);
     if (result) {
@@ -617,6 +664,10 @@ bot.on('pmmed', function(data) {
             }
             break;
 
+	case "wholamed":
+		WhoLamed(data);
+		break;
+
         case "skip":
             if (admin(data.senderid)) {
                 bot.skip();
@@ -656,6 +707,12 @@ bot.on('pmmed', function(data) {
                 } else if (param == "bootcamp") {
                     bot.roomDeregister();
                     bot.roomRegister('4f46ecd8590ca24b66000bfb');
+                } else if (param == "tgshuffle") {
+                    bot.roomDeregister();
+                    bot.roomRegister('4f5e1e11590ca246db01e6fc');
+                } else if (param == "vip") {
+                    bot.roomDeregister();
+                    bot.roomRegister('4f73ef36eb35c10888004976');
                 }
             }
             break;
