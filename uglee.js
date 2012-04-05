@@ -57,8 +57,8 @@ var dislike = false;
 var voted = false;
 var moderators = [];
 var djing = false;
-var votelog = [ ];
-var lamers = [ ];
+var votelog = [];
+var lamers = [];
 
 var bot = new Bot(config.botinfo.auth, config.botinfo.userid);
 
@@ -166,7 +166,6 @@ function mustAwesome(id) {
 
 //Sets up the database
 
-
 function setUpDatabase() {
     //Creates DB and tables if needed, connects to db
     client.query('CREATE DATABASE ' + config.database.dbname, function(error) {
@@ -215,48 +214,48 @@ function populateSongData(data) {
     currentsong.snags = 0;
 }
 
-function WhoLamed(data){
-	if (isMod(data.senderid)) {
-		//console.log("Vote Log: " +votelog);
-		for (var i = 0; i < votelog.length; i++){
-			if (votelog[i] !== '') {
-                		GetUserName(votelog[i], function(results){
-					//console.log(results[0].username);
-					//console.log(results);
-					lamers.push(results[0].username);
-					if (lamers.length == votelog.length){
-						//console.log(lamers);
-						bot.pm('These people have lamed this song: ' + lamers, data.senderid);
-					}
-				});
-			}
-		}
-	}
-}
-
-function GetUserName(userid, callback){
-    client.query("SELECT `username` FROM " + config.database.tablenames.user + " WHERE `userid` = '" + userid + "'",
-                function selectCb(err, results, fields) {
-                    if (err) { throw err; }
+function WhoLamed(data) {
+    if (isMod(data.senderid)) {
+        //console.log("Vote Log: " +votelog);
+        for (var i = 0; i < votelog.length; i++) {
+            if (votelog[i] !== '') {
+                GetUserName(votelog[i], function(results) {
+                    //console.log(results[0].username);
                     //console.log(results);
-                    //console.log(fields);
-                    client.end();
-                    callback(results);
+                    lamers.push(results[0].username);
+                    if (lamers.length == votelog.length) {
+                        //console.log(lamers);
+                        bot.pm('These people have lamed this song: ' + lamers, data.senderid);
+                    }
                 });
+            }
+        }
+    }
 }
 
-function StoreLames(data){
-	for (var i = 0; i < data.room.metadata.votelog.length; i++) {
-		if (data.room.metadata.votelog[i][1] == 'down' && data.room.metadata.votelog[i][0] != ''){
-			votelog.push(data.room.metadata.votelog[i][0]);
-			console.log(votelog);
-		}
-	}
+function GetUserName(userid, callback) {
+    client.query("SELECT `username` FROM " + config.database.tablenames.user + " WHERE `userid` = '" + userid + "'", function selectCb(err, results, fields) {
+        if (err) {
+            throw err;
+        }
+        //console.log(results);
+        //console.log(fields);
+        client.end();
+        callback(results);
+    });
+}
+
+function StoreLames(data) {
+    for (var i = 0; i < data.room.metadata.votelog.length; i++) {
+        if (data.room.metadata.votelog[i][1] == 'down' && data.room.metadata.votelog[i][0] !== '') {
+            votelog.push(data.room.metadata.votelog[i][0]);
+            console.log(votelog);
+        }
+    }
 }
 
 //Adds the song data to the songdata table.
 //This runs on the endsong event.
-
 
 function addSongToDb(data) {
     client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.song + ' ' + 'SET artist = ?,song = ?, djid = ?, up = ?, down = ?,' + 'listeners = ?, started = NOW(), snags = ?, bonus = ?', [currentsong.artist, currentsong.song, currentsong.djid, currentsong.up, currentsong.down, currentsong.listeners, currentsong.snags, 0]);
@@ -369,6 +368,7 @@ bot.on('newsong', function(data) {
             }
             dislike = Actions.artists[idx].dislike;
             voted = true;
+            console.log("Autobop by artist");
         }
 
         /* Then check for song */
@@ -380,6 +380,7 @@ bot.on('newsong', function(data) {
             }
             dislike = Actions.songs[idx].dislike;
             voted = true;
+            console.log("Autobop by song");
         }
 
         /* Then check for genre */
@@ -391,6 +392,7 @@ bot.on('newsong', function(data) {
             }
             dislike = Actions.genres[idx].dislike;
             voted = true;
+            console.log("Autobop by genre");
         }
     }
 
@@ -415,7 +417,7 @@ bot.on('endsong', function(data) {
     if (dislike) {
         dislike = false;
     }
-	votelog = [ ];
+    votelog = [];
     voted = false;
 });
 
@@ -428,7 +430,7 @@ bot.on('update_votes', function(data) {
     currentsong.down = data.room.metadata.downvotes;
     currentsong.listeners = data.room.metadata.listeners;
 
-	StoreLames(data);
+    StoreLames(data);
 
     /* If autobop is enabled, determine if the bot should autobop or not based on votes */
     if (config.autobop) {
@@ -439,6 +441,7 @@ bot.on('update_votes', function(data) {
             if (!voted) {
                 bot.vote('up');
                 voted = true;
+                console.log("Autobop");
             }
         }
 
@@ -447,6 +450,7 @@ bot.on('update_votes', function(data) {
                 bot.vote('down');
                 dislike = true;
                 voted = true;
+                console.log("Autolame");
             }
         }
     }
@@ -509,7 +513,7 @@ bot.on('update_user', function(data) {
     }
 
     //Update user name in users table
-/*if (config.database.usedb && (data.name !== null)) {
+    /*if (config.database.usedb && (data.name !== null)) {
         client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user +
             ' (userid, username, lastseen)' +
             'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()',
@@ -531,13 +535,13 @@ bot.on('snagged', function(data) {
 bot.on('speak', function(data) {
 
     //Log in db (chatlog table)
-/*if (config.database.usedb) {
+    /*if (config.database.usedb) {
         client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.chat + ' '
             + 'SET userid = ?, chat = ?, time = NOW()',
             [data.userid, data.text]);
     }*/
 
-    if (data.text == "Fuck you @Uglee"){
+    if (data.text == "Fuck you @Uglee") {
         bot.speak("Fuck you too!");
     }
 
@@ -553,6 +557,8 @@ bot.on('speak', function(data) {
         }
 
         if (config.botName.toLowerCase() == botName) {
+
+            console.log(data.name, " >> ", data.text);
 
             delete require.cache['./actions.js'];
             var Actions = require('./actions.js');
@@ -615,6 +621,8 @@ bot.on('pmmed', function(data) {
         console.log('Private message: ', data);
     }
 
+    console.log("PMMED >> ", data.text);
+
     var result = data.text.match(/^(.*?)( .*)?$/);
     if (result) {
         // break out the command and parameter if one exists
@@ -664,9 +672,9 @@ bot.on('pmmed', function(data) {
             }
             break;
 
-	case "wholamed":
-		WhoLamed(data);
-		break;
+        case "wholamed":
+            WhoLamed(data);
+            break;
 
         case "skip":
             if (admin(data.senderid)) {
