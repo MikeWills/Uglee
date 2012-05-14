@@ -39,6 +39,29 @@ if (config.database.usedb) {
     }
 }
 
+// http://nodejs.org/api.html#_child_processes
+var sys = require('util');
+var exec = require('child_process').exec;
+var child;
+
+/* Sends me a message every time Uglee reboots */
+child = exec("t set active GilimYurhig", function(error, stdout, stderr) {
+    sys.print('stdout: ' + stdout);
+    sys.print('stderr: ' + stderr);
+    if (error !== null) {
+        console.log('exec error: ' + error);
+    }
+
+    child = exec("t update 'd @mikewills This is Uglee, I rebooted for you!'", function(error, stdout, stderr) {
+        sys.print('stdout: ' + stdout);
+        sys.print('stderr: ' + stderr);
+        if (error !== null) {
+            console.log('exec error: ' + error);
+        }
+    });
+});
+
+
 /*  Current song info */
 
 //Current song info
@@ -58,7 +81,17 @@ var voted = false;
 var moderators = [];
 var djing = false;
 var votelog = [];
-var lamers = [];
+
+var acceptingVotes = false;
+var incomingVotes = {
+    One: 0,
+    Two: 0,
+    Three: 0,
+    Four: 0,
+    Five: 0
+};
+var voteStart = null;
+var refreshIntervalId = null;
 
 var bot = new Bot(config.botinfo.auth, config.botinfo.userid);
 
@@ -131,6 +164,7 @@ function addSong(userid) {
             var newSong = data.room.metadata.current_song._id;
             var songName = data.room.metadata.current_song.metadata.song;
             bot.playlistAdd(newSong);
+            bot.snag();
             //bot.speak("Hope you don't mind me adding \"" + songName + "\" to me queue.");
             bot.vote('up');
         });
@@ -214,52 +248,125 @@ function populateSongData(data) {
     currentsong.snags = 0;
 }
 
-function WhoLamed(data) {
-    if (isMod(data.senderid)) {
-        //console.log("Vote Log: " +votelog);
-        for (var i = 0; i < votelog.length; i++) {
-            if (votelog[i] !== '') {
-                GetUserName(votelog[i], function(results) {
-                    //console.log(results[0].username);
-                    //console.log(results);
-                    lamers.push(results[0].username);
-                    if (lamers.length == votelog.length) {
-                        //console.log(lamers);
-                        bot.pm('These people have lamed this song: ' + lamers, data.senderid);
-                    }
-                });
-            }
-        }
-    }
-}
-
-function GetUserName(userid, callback) {
-    client.query("SELECT `username` FROM " + config.database.tablenames.user + " WHERE `userid` = '" + userid + "'", function selectCb(err, results, fields) {
-        if (err) {
-            throw err;
-        }
-        //console.log(results);
-        //console.log(fields);
-        client.end();
-        callback(results);
-    });
-}
-
-function StoreLames(data) {
-    for (var i = 0; i < data.room.metadata.votelog.length; i++) {
-        if (data.room.metadata.votelog[i][1] == 'down' && data.room.metadata.votelog[i][0] !== '') {
-            votelog.push(data.room.metadata.votelog[i][0]);
-            console.log(votelog);
-        }
-    }
-}
-
 //Adds the song data to the songdata table.
 //This runs on the endsong event.
 
 function addSongToDb(data) {
     client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.song + ' ' + 'SET artist = ?,song = ?, djid = ?, up = ?, down = ?,' + 'listeners = ?, started = NOW(), snags = ?, bonus = ?', [currentsong.artist, currentsong.song, currentsong.djid, currentsong.up, currentsong.down, currentsong.listeners, currentsong.snags, 0]);
 }
+
+function VoteNextSong() {
+    bot.speak("I want you to vote what song I should play next! Your choices are: ");
+    incomingVotes = {
+        One: 0,
+        Two: 0,
+        Three: 0,
+        Four: 0,
+        Five: 0
+    };
+    bot.playlistAll(function(data) {
+        var options = "";
+        for (var i = 0; i <= data.list.length && i <= 4; i++) {
+            options += "[" + (i + 1) + "] " + data.list[i].metadata.song + " by " + data.list[i].metadata.artist + "\n";
+        }
+        bot.speak(options);
+        //console.log(options);
+        pause(500);
+        bot.speak("Type in your choice by typing '@Uglee #'. Voting is open for 1 minute.");
+        acceptingVotes = true;
+        voteStart = new Date();
+        refreshIntervalId = setInterval(VotingEnded, 10000);
+    });
+}
+
+function ProcessVote(vote) {
+    if (acceptingVotes) {
+        if (vote == "1") {
+            incomingVotes.One++;
+        } else if (vote == "2") {
+            incomingVotes.Two++;
+        } else if (vote == "3") {
+            incomingVotes.Three++;
+        } else if (vote == "4") {
+            incomingVotes.Four++;
+        } else if (vote == "5") {
+            incomingVotes.Five++;
+        }
+        console.log(incomingVotes);
+    }
+}
+
+function VotingEnded() {
+    var currentTime = new Date();
+    if (currentTime.getTime() - voteStart.getTime() >= (60000)) {
+        acceptingVotes = false;
+        clearInterval(refreshIntervalId);
+
+        var topVote = 1;
+        var topVoteCount = incomingVotes.One;
+
+        if (incomingVotes.Two > topVoteCount) {
+            topVote = 2;
+            topVoteCount = incomingVotes.Two;
+        }
+
+        if (incomingVotes.Three > topVoteCount) {
+            topVote = 3;
+            topVoteCount = incomingVotes.Three;
+        }
+
+        if (incomingVotes.Four > topVoteCount) {
+            topVote = 4;
+            topVoteCount = incomingVotes.Four;
+        }
+
+        if (incomingVotes.Five > topVoteCount) {
+            topVote = 5;
+            topVoteCount = incomingVotes.Five;
+        }
+        console.log("Vote " + topVote + " wins!");
+
+        var winner = topVote - 1;
+        console.log(winner);
+        bot.playlistReorder(winner, 0, function() {
+            bot.playlistAll(function(data) {
+                bot.speak("Next song is: " + data.list[0].metadata.song + " by " + data.list[0].metadata.artist);
+                console.log("Next song is: " + data.list[0].metadata.song + " by " + data.list[0].metadata.artist);
+            });
+
+        });
+    }
+}
+
+/* ============== */
+/* CheckAutoDj - The bot will see if it should step up the decks */
+/* ============== */
+var CheckAutoDj = function() {
+        if (config.autodj) {
+            bot.roomInfo(function(data) {
+                if (data.room.metadata.djcount !== 0) {
+                    if (data.room.metadata.djcount === 1 && IsBot(data.room.metadata.djs[0])) {
+                        stepDown();
+                        return;
+                    }
+
+                    if (data.room.metadata.djcount <= (data.room.metadata.max_djs - 2)) {
+                        if (!botOnTable) {
+                            stepUp();
+                            return;
+                        }
+                    }
+
+                    if (data.room.metadata.djcount == data.room.metadata.max_djs) {
+                        if (botOnTable && !botIsPlayingSong) {
+                            stepDown();
+                            return;
+                        }
+                    }
+                }
+            });
+        }
+    };
 
 /* ============================ */
 /* ready */
@@ -331,25 +438,11 @@ bot.on('newsong', function(data) {
     /* Update the moderator list */
     moderators = data.room.metadata.moderator_id;
 
-    /* Check if the bot should step up to DJ */
-    if (config.autodj) {
-        if (data.room.metadata.djcount <= (data.room.metadata.max_djs - 2)) {
-            if (!djing) {
-                stepUp();
-            }
-        }
-
-        if (data.room.metadata.djcount == data.room.metadata.max_djs) {
-            if (djing) {
-                stepDown();
-            }
-        }
-    }
-
     /* Autobop if DJing */
     if (djing) {
         bot.vote('up');
         voted = true;
+        console.log("Autobop by DJing");
     }
 
     /* Selectively awesome/lame songs */
@@ -430,8 +523,6 @@ bot.on('update_votes', function(data) {
     currentsong.down = data.room.metadata.downvotes;
     currentsong.listeners = data.room.metadata.listeners;
 
-    StoreLames(data);
-
     /* If autobop is enabled, determine if the bot should autobop or not based on votes */
     if (config.autobop) {
         var percentAwesome = (data.room.metadata.upvotes / data.room.metadata.listeners) * 100;
@@ -465,6 +556,8 @@ bot.on('add_dj', function(data) {
         console.log('Added DJ: ', data);
     }
 
+    CheckAutoDj();
+
 });
 
 /* ============================ */
@@ -475,6 +568,8 @@ bot.on('rem_dj', function(data) {
     if (config.consolelog) {
         console.log('Removed DJ: ', data);
     }
+
+    CheckAutoDj();
 
 });
 
@@ -545,6 +640,15 @@ bot.on('speak', function(data) {
         bot.speak("Fuck you too!");
     }
 
+    if (data.text.match(/^\!putmeinthequeuedouchebag$/)) {
+        bot.speak("Leave me alone, @ShiningDimLight");
+    }
+
+    if (data.text.match(/^a$/) || data.text.match(/^\#a$/)) {
+        awesomeSong(data.userid);
+        console.log("Vote by mass a");
+    }
+
     var result = data.text.match(/^\@(.*?)( .*)?$/);
     if (result) {
 
@@ -582,6 +686,18 @@ bot.on('speak', function(data) {
                 addSong(data.userid);
                 break;
 
+            case "votenext":
+                VoteNextSong();
+                break;
+
+            case "1":
+            case "2":
+            case "3":
+            case "4":
+            case "5":
+                ProcessVote(command);
+                break;
+
             case "die":
                 killBot(data.userid);
                 break;
@@ -601,10 +717,6 @@ bot.on('speak', function(data) {
                             pause(500);
                             bot.speak(Actions.chat_responses[idx].response2.replace("{0}", data.name));
                         }
-                    } else {
-                        bot.speak("/me looks at " + data.name + " with a confused look.");
-                        pause(500);
-                        bot.speak("Me not know what you said. Type @Uglee to see what me do.");
                     }
                 }
             }
@@ -672,14 +784,22 @@ bot.on('pmmed', function(data) {
             }
             break;
 
-        case "wholamed":
-            WhoLamed(data);
-            break;
-
         case "skip":
             if (admin(data.senderid)) {
                 bot.skip();
             }
+            break;
+
+        case "votenext":
+            VoteNextSong();
+            break;
+
+        case "1":
+        case "2":
+        case "3":
+        case "4":
+        case "5":
+            ProcessVote(command);
             break;
 
         case "autodj":
@@ -704,6 +824,12 @@ bot.on('pmmed', function(data) {
             bot.setAvatar(param);
             break;
 
+        case "speak":
+            if (isMod(data.senderid)) {
+                bot.speak(param);
+            }
+            break;
+
         case "goto":
             if (admin(data.senderid)) {
                 if (param == "amm") {
@@ -721,6 +847,10 @@ bot.on('pmmed', function(data) {
                 } else if (param == "vip") {
                     bot.roomDeregister();
                     bot.roomRegister('4f73ef36eb35c10888004976');
+                } else if (param == "campfire") {
+                    bot.speak("The campfire is lit! See you there! http://murl.me/campfire");
+                    bot.roomDeregister();
+                    bot.roomRegister('4f6c119d68f5540c6d1dd67d');
                 }
             }
             break;
