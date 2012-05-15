@@ -46,11 +46,15 @@ var child;
 
 /* Sends me a message every time Uglee reboots */
 child = exec("t set active GilimYurhig", function(error, stdout, stderr) {
+    sys.print('stdout: ' + stdout);
+    sys.print('stderr: ' + stderr);
     if (error !== null) {
         console.log('exec error: ' + error);
     }
 
     child = exec("t update 'd @mikewills This is Uglee, I rebooted for you!'", function(error, stdout, stderr) {
+        sys.print('stdout: ' + stdout);
+        sys.print('stderr: ' + stderr);
         if (error !== null) {
             console.log('exec error: ' + error);
         }
@@ -88,7 +92,6 @@ var incomingVotes = {
 };
 var voteStart = null;
 var refreshIntervalId = null;
-var botOnTable = false;
 
 var bot = new Bot(config.botinfo.auth, config.botinfo.userid);
 
@@ -131,6 +134,18 @@ function findAction(query, arr) {
 function pause(ms) {
     ms += new Date().getTime();
     while (new Date() < ms) {}
+}
+
+function awesomeSong(userid) {
+    if (isMod(userid) || admin(userid)) {
+        bot.vote('up');
+    }
+}
+
+function lameSong(userid) {
+    if (isMod(userid) || admin(userid)) {
+        bot.vote('down');
+    }
 }
 
 function killBot(userid) {
@@ -257,7 +272,7 @@ function VoteNextSong() {
         bot.speak(options);
         //console.log(options);
         pause(500);
-        bot.speak("Type in your choice by typing the number of the song you would like to hear. Voting is open for 1 minute.");
+        bot.speak("Type in your choice by typing '@Uglee #'. Voting is open for 1 minute.");
         acceptingVotes = true;
         voteStart = new Date();
         refreshIntervalId = setInterval(VotingEnded, 10000);
@@ -314,10 +329,10 @@ function VotingEnded() {
         var winner = topVote - 1;
         console.log(winner);
         bot.playlistReorder(winner, 0, function() {
-            //bot.playlistAll(function(data) {
-                //bot.speak("Next song is: " + data.list[0].metadata.song + " by " + data.list[0].metadata.artist);
-                //console.log("Next song is: " + data.list[0].metadata.song + " by " + data.list[0].metadata.artist);
-            //});
+            bot.playlistAll(function(data) {
+                bot.speak("Next song is: " + data.list[0].metadata.song + " by " + data.list[0].metadata.artist);
+                console.log("Next song is: " + data.list[0].metadata.song + " by " + data.list[0].metadata.artist);
+            });
 
         });
     }
@@ -440,37 +455,37 @@ bot.on('newsong', function(data) {
         /* First check for artist */
         var idx = findAction(currentsong.artist, Actions.artists);
         if (idx != -1) {
-            //bot.vote(Actions.artists[idx].vote);
+            bot.vote(Actions.artists[idx].vote);
             if (Actions.artists[idx].speak !== "") {
                 bot.speak(Actions.artists[idx].speak);
             }
-            //dislike = Actions.artists[idx].dislike;
-            //voted = true;
-            //console.log("Autobop by artist");
+            dislike = Actions.artists[idx].dislike;
+            voted = true;
+            console.log("Autobop by artist");
         }
 
         /* Then check for song */
         idx = findAction(currentsong.song, Actions.songs);
         if (idx != -1) {
-            //bot.vote(Actions.songs[idx].vote);
+            bot.vote(Actions.songs[idx].vote);
             if (Actions.songs[idx].speak !== "") {
                 bot.speak(Actions.songs[idx].speak);
             }
-            //dislike = Actions.songs[idx].dislike;
-            //voted = true;
-            //console.log("Autobop by song");
+            dislike = Actions.songs[idx].dislike;
+            voted = true;
+            console.log("Autobop by song");
         }
 
         /* Then check for genre */
         idx = findAction(currentsong.genre, Actions.genres);
         if (idx != -1) {
-            //bot.vote(Actions.genres[idx].vote);
+            bot.vote(Actions.genres[idx].vote);
             if (Actions.genres[idx].speak !== "") {
                 bot.speak(Actions.genres[idx].speak);
             }
-            //dislike = Actions.genres[idx].dislike;
-            //voted = true;
-            //console.log("Autobop by genre");
+            dislike = Actions.genres[idx].dislike;
+            voted = true;
+            console.log("Autobop by genre");
         }
     }
 
@@ -507,6 +522,29 @@ bot.on('update_votes', function(data) {
     currentsong.up = data.room.metadata.upvotes;
     currentsong.down = data.room.metadata.downvotes;
     currentsong.listeners = data.room.metadata.listeners;
+
+    /* If autobop is enabled, determine if the bot should autobop or not based on votes */
+    if (config.autobop) {
+        var percentAwesome = (data.room.metadata.upvotes / data.room.metadata.listeners) * 100;
+        var percentLame = (data.room.metadata.downvotes / data.room.metadata.listeners) * 100;
+
+        if ((percentAwesome - percentLame) > 25) {
+            if (!voted) {
+                bot.vote('up');
+                voted = true;
+                console.log("Autobop");
+            }
+        }
+
+        if ((percentLame - percentAwesome) > 25) {
+            if (!voted) {
+                bot.vote('down');
+                dislike = true;
+                voted = true;
+                console.log("Autolame");
+            }
+        }
+    }
 });
 
 /* ============================ */
@@ -517,8 +555,6 @@ bot.on('add_dj', function(data) {
     if (config.consolelog) {
         console.log('Added DJ: ', data);
     }
-
-    if (data.user[0].userid === '4f7a1a75aaa5cd26ee005b5f'){ bot.speak("Me hopes that @Lord of Nerds plays GOOD music this time."); }
 
     CheckAutoDj();
 
@@ -608,6 +644,11 @@ bot.on('speak', function(data) {
         bot.speak("Leave me alone, @ShiningDimLight");
     }
 
+    if (data.text.match(/^a$/) || data.text.match(/^\#a$/)) {
+        awesomeSong(data.userid);
+        console.log("Vote by mass a");
+    }
+
     var result = data.text.match(/^\@(.*?)( .*)?$/);
     if (result) {
 
@@ -631,6 +672,16 @@ bot.on('speak', function(data) {
             }
 
             switch (command) {
+            case "a":
+            case "awesome":
+                awesomeSong(data.userid);
+                break;
+
+            case "l":
+            case "lame":
+                lameSong(data.userid);
+                break;
+
             case "addsong":
                 addSong(data.userid);
                 break;
@@ -654,6 +705,10 @@ bot.on('speak', function(data) {
             default:
                 if (command === "") {
                     bot.speak('Yes Master @' + data.name + '? Here is what I can do for you: speak | dance | beer | water | coke | dew | cake | coffee | whois');
+                    if (isMod(data.userid)) {
+                        pause(500);
+                        bot.speak('As a moderator, you can also `awesome` (or a) and `lame` (or l) songs. You can also PM me.');
+                    }
                 } else {
                     var idx = findAction(command, Actions.chat_responses);
                     if (idx != -1) {
@@ -695,6 +750,16 @@ bot.on('pmmed', function(data) {
         }
 
         switch (command) {
+        case "awesome":
+        case "a":
+            awesomeSong(data.senderid);
+            break;
+
+        case "lame":
+        case "l":
+            lameSong(data.senderid);
+            break;
+
         case "die":
             killBot(data.senderid);
             break;
