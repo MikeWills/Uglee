@@ -58,7 +58,8 @@ child = exec("t set active GilimYurhig", function(error, stdout, stderr) {
 });
 
 
-/*  Current song info */
+/*  banned users */
+var bannedUsers = ['4f7a1a75aaa5cd26ee005b5f', '4f7bd3adeb35c15efd00005a'];
 
 //Current song info
 var currentsong = {
@@ -89,8 +90,60 @@ var incomingVotes = {
 var voteStart = null;
 var refreshIntervalId = null;
 var botOnTable = false;
+var ctsSequenceCount = -1;
+var ctsSequenceMax = 26;
+var ctsActive = false;
+var ctsExcludedWords = ["in", "the", "is", "that", "and", "a", "an"];
+var ctsLastWords = null;
+var alreadyRolled = false;
+
+var isAmmDown = false;
+var ammResponded = false;
+var ammRefreshIntervalId = null;
+var lastAnnouncement = new Date();
+var announcement = "HEAR YE! HEAR YE! On 6/17 @ 10pm CST, @PodcastMike will be marking a trio of events: 1 year on TT, 20k for his avatar, and 10k in room points. Come and help us celebrate!";
 
 var bot = new Bot(config.botinfo.auth, config.botinfo.userid);
+
+function PostAnnouncement() {
+    var roll = Math.ceil(Math.random() * 8);
+    var now = new Date();
+    var timePassed = Math.round((now - lastAnnouncement) / 3600000);
+    if (roll == 1 && timePassed > 2){
+        bot.speak(announcement);
+        lastAnnouncement = new Date();
+    }
+}
+
+function CheckThatAMMisAlive() {
+    bot.pm("!count", "4e7bf475a3f7511657030c34");
+    isAmmDown = false;
+    ammResponded = false;
+    ammRefreshIntervalId = setInterval(HasAmmResponded, 30000);
+    console.log("Sent Request");
+    //PostAnnouncement();
+}
+//setInterval(CheckThatAMMisAlive, 60000); // Check every 15 minutes
+setInterval(CheckThatAMMisAlive, 900000); // Check every 15 minutes
+
+function HasAmmResponded() {
+    console.log("Checking AMM status");
+    console.log(ammResponded);
+    if (!ammResponded) { /* Sends me a message every time Uglee reboots */
+        child = exec("t set active GilimYurhig", function(error, stdout, stderr) {
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+
+            child = exec("t update '@mikewills This is Uglee, AMM is being a jerk and not answering me.'", function(error, stdout, stderr) {
+                if (error !== null) {
+                    console.log('exec error: ' + error);
+                }
+            });
+        });
+    }
+    clearInterval(ammRefreshIntervalId);
+}
 
 /*  Checks if the user id is present in the admin list. Authentication
     for admin-only privileges. */
@@ -112,6 +165,15 @@ function isMod(userid) {
         }
     }
     return false;
+}
+
+function isBanned(userid) {
+    if (bannedUsers.indexOf(userid) == -1) {
+        return false;
+    } else {
+        console.log("Banned");
+        return true;
+    }
 }
 
 /* Search the array for the value */
@@ -315,10 +377,9 @@ function VotingEnded() {
         console.log(winner);
         bot.playlistReorder(winner, 0, function() {
             //bot.playlistAll(function(data) {
-                //bot.speak("Next song is: " + data.list[0].metadata.song + " by " + data.list[0].metadata.artist);
-                //console.log("Next song is: " + data.list[0].metadata.song + " by " + data.list[0].metadata.artist);
+            //bot.speak("Next song is: " + data.list[0].metadata.song + " by " + data.list[0].metadata.artist);
+            //console.log("Next song is: " + data.list[0].metadata.song + " by " + data.list[0].metadata.artist);
             //});
-
         });
     }
 }
@@ -351,6 +412,120 @@ var CheckAutoDj = function() {
                 }
             });
         }
+    };
+
+var CheckCTS = function() {
+        var isOk = false;
+        /*var ctsSequenceCount = 0;
+        var ctsSequenceMax = 0;
+        var ctsActive = false;
+        var ctsExcludedWords = ["in", "the", "is", "that"];
+        var ctsLastWords = [];*/
+        console.log(ctsLastWords);
+        var song = currentsong.song.toLowerCase().replace("'", " ").replace("\"", " ").replace("(", " ").replace(")", " ").replace(".", " ").replace("/", " ").replace("\\", " ").replace("  ", " ");
+        console.log(song);
+        var words = song.split(" ");
+        console.log(words);
+        if (ctsLastWords !== null) {
+            for (var i = 0; i <= words.length; i++) {
+                if (ctsLastWords.indexOf(words[i]) != -1) {
+                    isOk = true;
+                }
+            }
+        } else {
+            isOk = true;
+        }
+
+        console.log(isOk);
+
+        if (isOk) {
+            ctsLastWords = words;
+            ctsSequenceCount++;
+            if (ctsSequenceCount > ctsSequenceMax) {
+                ctsSequenceMax = ctsSequenceCount;
+            }
+            bot.speak("Sweet! The score is " + ctsSequenceCount + ". The next DJ needs to play a song with at least one of the following words: " + ctsLastWords);
+        } else {
+            if (ctsSequenceCount > ctsSequenceMax) {
+                ctsSequenceMax = ctsSequenceCount;
+            }
+            bot.speak("Boo! The game is over with a score of " + ctsSequenceCount + ". The highest score is " + ctsSequenceMax);
+            console.log("Game ended");
+            ctsActive = false;
+            ctsSequenceCount = -1;
+            ctsLastWords = [];
+        }
+    };
+
+function dateDiff(a, b, format) {
+    var milliseconds = toDate(a) - toDate(b);
+    var days = milliseconds / 86400000;
+    var hours = milliseconds / 3600000;
+    var weeks = milliseconds / 604800000;
+    var months = milliseconds / 2628000000;
+    var years = milliseconds / 31557600000;
+    if (format == "h") {
+        return Math.round(hours);
+    }
+    if (format == "d") {
+        return Math.round(days);
+    }
+    if (format == "w") {
+        return Math.round(weeks);
+    }
+    if (format == "m") {
+        return Math.round(months);
+    }
+    if (format == "y") {
+        return Math.round(years);
+    }
+}
+
+var findIdle = function(senderid) {
+        var pmText = "The following users have been idle for more than 6 hours: ";
+        for (var z in usersList) {
+            //console.log(usersList[z]);
+            //if (usersList[z].laptop != "iphone" || usersList[z].laptop != "android") {
+            //console.log(usersList[z]);
+            var startDate = new Date();
+            var idleTime = Math.round((startDate - usersList[z].lastActivity) / 3600000); // in hours
+            //var idleTime = Math.round((startDate - usersList[z].lastActivity) / 60000); // for testing minutes
+            console.log(usersList[z].name + ": " + idleTime);
+            if (idleTime >= 6) {
+                pmText += usersList[z].name + ": " + idleTime + " on " + usersList[z].laptop + " | ";
+            }
+            //}
+        }
+        bot.pm(pmText, senderid);
+    };
+
+var summonModerators = function() {
+        child = exec("t set active GilimYurhig", function(error, stdout, stderr) {
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+
+            child = exec("t update 'Uglee: A moderator is requested in AMM. @mikewills @techguyjason @mikebdotorg'", function(error, stdout, stderr) {
+                if (error !== null) {
+                    console.log('exec error: ' + error);
+                }
+            });
+        });
+    };
+
+var goToWork = function() {
+        bot.speak("Can a moderator make me a moderator when I return? Thanks!");
+        child = exec("cd /home/mikewills/", function(error, stdout, stderr) {
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+
+            child = exec("./amm.sh", function(error, stdout, stderr) {
+                if (error !== null) {
+                    console.log('exec error: ' + error);
+                }
+            });
+        });
     };
 
 /* ============================ */
@@ -390,6 +565,7 @@ bot.on('roomChanged', function(data) {
     var users = data.users;
     for (var i in users) {
         var user = users[i];
+        user.lastActivity = new Date();
         usersList[user.userid] = user;
     }
 
@@ -410,6 +586,8 @@ bot.on('roomChanged', function(data) {
 /* ============================ */
 bot.on('newsong', function(data) {
 
+    alreadyRolled = false;
+
     //Populate new song data in currentsong
     populateSongData(data);
 
@@ -418,6 +596,10 @@ bot.on('newsong', function(data) {
 
     if (config.consolelog) {
         console.log('newsong', data.room.metadata.current_song.metadata);
+    }
+
+    if (ctsActive) {
+        CheckCTS();
     }
 
     /* Update the moderator list */
@@ -507,6 +689,17 @@ bot.on('update_votes', function(data) {
     currentsong.up = data.room.metadata.upvotes;
     currentsong.down = data.room.metadata.downvotes;
     currentsong.listeners = data.room.metadata.listeners;
+
+    var votelog = data.room.metadata.votelog;
+    for (var i = 0; i < votelog.length; i++) {
+        var userid = votelog[i][0];
+        //console.log("Update Vote: " + userid);
+        if (userid !== "") {
+            usersList[userid].lastActivity = new Date();
+        } else {
+            console.log("Update Vote: " + userid);
+        }
+    }
 });
 
 /* ============================ */
@@ -518,7 +711,10 @@ bot.on('add_dj', function(data) {
         console.log('Added DJ: ', data);
     }
 
-    if (data.user[0].userid === '4f7a1a75aaa5cd26ee005b5f'){ bot.speak("Me hopes that @Lord of Nerds plays GOOD music this time."); }
+    var user = data.user[0];
+    usersList[user.userid].lastActivity = new Date();
+
+    /*if (data.user[0].userid === '4f7a1a75aaa5cd26ee005b5f'){ bot.speak("Me hopes that @Lord of Nerds plays GOOD music this time."); }*/
 
     CheckAutoDj();
 
@@ -532,6 +728,9 @@ bot.on('rem_dj', function(data) {
     if (config.consolelog) {
         console.log('Removed DJ: ', data);
     }
+
+    var user = data.user[0];
+    usersList[user.userid].lastActivity = new Date();
 
     CheckAutoDj();
 
@@ -549,6 +748,7 @@ bot.on('registered', function(data) {
 
     //Add user to usersList
     var user = data.user[0];
+    user.lastActivity = new Date();
     usersList[user.userid] = user;
     if (currentsong !== null) {
         currentsong.listeners++;
@@ -560,6 +760,10 @@ bot.on('registered', function(data) {
             client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user + ' (userid, username, lastseen)' + 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [user.userid, user.name]);
         }
     }
+});
+
+bot.on('deregistered', function(data) {
+    delete usersList[data.user[0].userid];
 });
 
 /* ============================ */
@@ -586,6 +790,9 @@ bot.on('update_user', function(data) {
 bot.on('snagged', function(data) {
     //Increase song snag count
     currentsong.snags++;
+
+    var userid = data.userid;
+    usersList[userid].lastActivity = new Date();
 });
 
 /* ============================ */
@@ -599,6 +806,53 @@ bot.on('speak', function(data) {
             + 'SET userid = ?, chat = ?, time = NOW()',
             [data.userid, data.text]);
     }*/
+    usersList[data.userid].lastActivity = new Date();
+
+    if (data.text == "roll") {
+        var roll = Math.ceil(Math.random() * 6);
+        if (!alreadyRolled) {
+            if (currentsong.djid == data.userid) {
+                alreadyRolled = true;
+                if (roll > 4) {
+                    bot.speak(data.name + ', you rolled a ' + roll + ', Awesome!');
+                    bot.vote('up');
+                } else if (roll === 1) {
+                    bot.speak(data.name + ', you rolled a ' + roll + ', Lame!');
+                    bot.vote('down');
+                } else {
+                    bot.speak(data.name + ', you rolled a ' + roll + ', bummer.');
+                }
+                bonusvote = true;
+            } else {
+                bot.speak("@Uglee roll");
+            }
+        }
+    }
+
+    /*var twss = require('twss');
+    twss.threshold = 0.9;
+    //console.log("Probability: " + twss.prob(data.text));
+    if (twss.is(data.text)) {
+        var roll1 = Math.ceil(Math.random() * 20);
+        //console.log("TWSS roll: " + roll1);
+        if (roll1 >= 19) {
+            bot.speak("That's what she said!");
+        }
+    }*/
+
+    if (isBanned(data.userid)) {
+        return;
+    }
+
+    if (data.text == "roll again jerk" && admin(data.userid)) {
+        var roll2 = Math.ceil(Math.random() * 6);
+        if (roll2 > 4) {
+            bot.speak(data.name + ', you rolled a ' + roll2 + ', Awesome!');
+            bot.vote('up');
+        } else {
+            bot.speak(data.name + ', you rolled a ' + roll2 + ', bummer.');
+        }
+    }
 
     if (data.text == "Fuck you @Uglee") {
         bot.speak("Fuck you too!");
@@ -647,13 +901,61 @@ bot.on('speak', function(data) {
                 ProcessVote(command);
                 break;
 
+            case "endcts":
+            case "stopcts":
+                if (isMod(data.userid)) {
+                    if (ctsActive) {
+                        ctsActive = false;
+                        bot.speak("Sorry folks, the game is over. Play what you want now.");
+                    }
+                }
+                break;
+
+            case "startcts":
+                if (isMod(data.userid)) {
+                    if (!ctsActive) {
+                        ctsActive = true;
+                        bot.speak("We are now playing 'Connect the Songs' each DJ must play a song with at least one word in the title from the previous song title. It will begin with the next song. The best score is currently " + ctsSequenceMax);
+                    }
+                }
+                break;
+
+            case "mod":
+                summonModerators();
+                break;
+
+            case "news":
+                bot.speak(announcement);
+                break;
+
+            case "listenercount":
+                bot.speak("There is " + currentsong.listeners + " listeners right now.");
+                break;
+
+            case "ctsmax":
+                bot.speak("The highest 'Connect the Songs' count is: " + ctsSequenceMax);
+                break;
+
+            case "gotowork":
+                if (isMod(data.userid)) {
+                    goToWork();
+                }
+                break;
+
             case "die":
                 killBot(data.userid);
                 break;
 
+            case "userCount":
+                bot.roomInfo(true, function(data) {
+                    console.log(data.room.metadata.listeners);
+                    bot.speak("Total users in room is: " + data.room.metadata.listeners);
+                });
+                break;
+
             default:
                 if (command === "") {
-                    bot.speak('Yes Master @' + data.name + '? Here is what I can do for you: speak | dance | beer | water | coke | dew | cake | coffee | whois');
+                    bot.speak('Yes Master @' + data.name + '? Here is what I can do for you: speak | dance | menu | whois');
                 } else {
                     var idx = findAction(command, Actions.chat_responses);
                     if (idx != -1) {
@@ -678,7 +980,23 @@ bot.on('pmmed', function(data) {
         console.log('Private message: ', data);
     }
 
+    if (isBanned(data.senderid)) {
+        return;
+    }
+
     console.log("PMMED >> ", data.text);
+    console.log('Private message: ', data);
+
+    //if (data.text.match(/^Uglee$/) && data.senderid == '4e7bf475a3f7511657030c34') {
+    //var reg = RegExp(escape("Uglee"), "i");
+    if (data.senderid == '4e7bf475a3f7511657030c34') {
+        var query = escape(data.text);
+        var reg = RegExp(escape("Uglee"));
+        if (reg.test(query)) {
+            ammResponded = true;
+            console.log("AMM Responded");
+        }
+    }
 
     var result = data.text.match(/^(.*?)( .*)?$/);
     if (result) {
@@ -702,6 +1020,16 @@ bot.on('pmmed', function(data) {
         case "addsong":
             addSong(data.senderid);
             break;
+
+        case "gotowork":
+            if (isMod(data.userid)) {
+                goToWork();
+            }
+            break;
+
+            case "news":
+                bot.speak(announcement);
+                break;
 
         case "djwarn":
             mustAwesome(param);
@@ -728,6 +1056,16 @@ bot.on('pmmed', function(data) {
         case "votenext":
             VoteNextSong();
             break;
+
+        case "roll":
+        var roll2 = Math.ceil(Math.random() * 6);
+        if (roll2 > 4) {
+            bot.speak('A ' + roll2 + ' has been rolled on your behalf, Awesome!');
+            bot.vote('up');
+        } else {
+            bot.speak('A ' + roll2 + ' has been rolled on your behalf, bummer.');
+        }
+        break;
 
         case "1":
         case "2":
@@ -765,12 +1103,19 @@ bot.on('pmmed', function(data) {
             }
             break;
 
+        case "findidle":
+            if (isMod(data.senderid)) {
+                findIdle(data.senderid);
+            }
+            break;
+
         case "goto":
             if (admin(data.senderid)) {
                 if (param == "amm") {
                     bot.roomDeregister();
                     bot.roomRegister('4ea390ac14169c0cc3caa078');
-                } else if (param == "maw") {
+                }
+                /*else if (param == "maw") {
                     bot.roomDeregister();
                     bot.roomRegister('4ef82538590ca23e33001b3b');
                 } else if (param == "bootcamp") {
@@ -779,29 +1124,36 @@ bot.on('pmmed', function(data) {
                 } else if (param == "tgshuffle") {
                     bot.roomDeregister();
                     bot.roomRegister('4f5e1e11590ca246db01e6fc');
-                } else if (param == "vip") {
+                }*/
+                else if (param == "vip") {
                     bot.roomDeregister();
                     bot.roomRegister('4f73ef36eb35c10888004976');
-                } else if (param == "campfire") {
+                }
+                else if (param == "hothits"){
+                    bot.roomDeregister();
+                    bot.roomRegister("4f5f162268f554664cc5b2c4");
+                }
+                /*else if (param == "campfire") {
                     bot.speak("The campfire is lit! See you there! http://murl.me/campfire");
                     bot.roomDeregister();
                     bot.roomRegister('4f6c119d68f5540c6d1dd67d');
+                }*/
+                else {
+                    bot.roomDeregister();
+                    bot.roomRegister(param);
                 }
             }
             break;
 
         case "help":
             if (isMod(data.senderid)) {
-                bot.pm("You can awesome (or a) | lame (or l) | djwarn 1 | djwarn 2", data.senderid);
+                bot.pm("You can awesome (or a) | lame (or l) | djwarn 1 | djwarn 2 | findidle", data.senderid);
             }
             if (admin(data.senderid)) {
                 pause(500);
-                bot.pm("step up | step down | skip | die | goto AMM & bootcamp", data.senderid);
+                bot.pm("roll | step up | step down | skip | die", data.senderid);
             }
             break;
-
-        default:
-            bot.pm("Unknown command. Type 'help' for commands.", data.senderid);
         }
     }
 });
