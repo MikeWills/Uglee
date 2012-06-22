@@ -79,6 +79,11 @@ var moderators = [];
 var djing = false;
 var votelog = [];
 
+var djQueue = [];
+var nextDj = null;
+var nextDjTime = null;
+var queueRefreshIntervalId = null;
+
 var acceptingVotes = false;
 var incomingVotes = {
     One: 0,
@@ -109,7 +114,7 @@ function PostAnnouncement() {
     var roll = Math.ceil(Math.random() * 8);
     var now = new Date();
     var timePassed = Math.round((now - lastAnnouncement) / 3600000);
-    if (roll == 1 && timePassed > 2){
+    if (roll == 1 && timePassed > 2) {
         bot.speak(announcement);
         lastAnnouncement = new Date();
     }
@@ -513,18 +518,21 @@ var summonModerators = function() {
         });
     };
 
-var goToWork = function() {
-        bot.speak("Can a moderator make me a moderator when I return? Thanks!");
-        child = exec("cd /home/mikewills/", function(error, stdout, stderr) {
+var summonBouncer = function() {
+        bot.speak("HEY BOUNCER! Weee neeeeed yooooouuu!!!!!");
+        child = exec("cd /home/mikewills/ && ./amm.sh", function(error, stdout, stderr) {
             if (error !== null) {
                 console.log('exec error: ' + error);
             }
+        });
+    };
 
-            child = exec("./amm.sh", function(error, stdout, stderr) {
-                if (error !== null) {
-                    console.log('exec error: ' + error);
-                }
-            });
+var dismissBouncer = function() {
+        bot.speak("Thanks for helping us out Bouncer. We don't need you anymore.");
+        child = exec("cd /home/mikewills/ && ./killamm.sh", function(error, stdout, stderr) {
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
         });
     };
 
@@ -711,6 +719,8 @@ bot.on('add_dj', function(data) {
         console.log('Added DJ: ', data);
     }
 
+    NewDjFromQueue(data);
+
     var user = data.user[0];
     usersList[user.userid].lastActivity = new Date();
 
@@ -729,8 +739,8 @@ bot.on('rem_dj', function(data) {
         console.log('Removed DJ: ', data);
     }
 
-    var user = data.user[0];
-    usersList[user.userid].lastActivity = new Date();
+    /* Notify the next DJ on the list */
+    NextDjOnQueue();
 
     CheckAutoDj();
 
@@ -829,6 +839,23 @@ bot.on('speak', function(data) {
         }
     }
 
+    /* Catch all for the morons that can't read. */
+    if (data.text == "!q+" || data.text == "q+" || data.text == "addme" || data.text.match(/^\/addme$/) || data.text.match(/^\/a$/) || data.text.match(/^\!a$/) || data.text.match(/^\/q$/)) {
+        AddToQueue(data.userid);
+    }
+
+    if (data.text == "!q-" || data.text == "q-") {
+        RemoveFromQueue(data.userid);
+    }
+
+    if (data.text == "q") {
+        QueueStatus();
+    }
+
+    if (data.text == "iq") {
+        // TODO
+    }
+
     /*var twss = require('twss');
     twss.threshold = 0.9;
     //console.log("Probability: " + twss.prob(data.text));
@@ -852,6 +879,11 @@ bot.on('speak', function(data) {
         } else {
             bot.speak(data.name + ', you rolled a ' + roll2 + ', bummer.');
         }
+    }
+
+    if (data.text == "/me kicks @Uglee" && admin(data.userid)) {
+        bot.speak("Fine! *grumble*Jerk*mumble*");
+        bot.vote("up");
     }
 
     if (data.text == "Fuck you @Uglee") {
@@ -920,6 +952,27 @@ bot.on('speak', function(data) {
                 }
                 break;
 
+            case "enableq":
+            case "enablequeue":
+            case "startq":
+            case "startqueue":
+                if (isMod(data.userid)){
+                    config.enableQueue = true;
+                    bot.speak("We are now using a queue! Sign up using 'q+'.");
+                }
+                break;
+
+            case "endq":
+            case "endqueue":
+            case "stopq":
+            case "stopqueue":
+                if (isMod(data.userid)){
+                    config.enableQueue = false;
+                    djQueue = [ ];
+                    bot.speak("There is no queue...");
+                }
+                break;
+
             case "mod":
                 summonModerators();
                 break;
@@ -936,9 +989,15 @@ bot.on('speak', function(data) {
                 bot.speak("The highest 'Connect the Songs' count is: " + ctsSequenceMax);
                 break;
 
-            case "gotowork":
+            case "summonbouncer":
                 if (isMod(data.userid)) {
-                    goToWork();
+                    summonBouncer();
+                }
+                break;
+
+            case "dismissbouncer":
+                if (admin(data.userid)) {
+                    dismissBouncer();
                 }
                 break;
 
@@ -1021,15 +1080,21 @@ bot.on('pmmed', function(data) {
             addSong(data.senderid);
             break;
 
-        case "gotowork":
-            if (isMod(data.userid)) {
-                goToWork();
+        case "summonbouncer":
+            if (isMod(data.senderid)) {
+                summonBouncer();
             }
             break;
 
-            case "news":
-                bot.speak(announcement);
-                break;
+        case "dismissbouncer":
+            if (admin(data.senderid)) {
+                dismissBouncer();
+            }
+            break;
+
+        case "news":
+            bot.speak(announcement);
+            break;
 
         case "djwarn":
             mustAwesome(param);
@@ -1058,14 +1123,14 @@ bot.on('pmmed', function(data) {
             break;
 
         case "roll":
-        var roll2 = Math.ceil(Math.random() * 6);
-        if (roll2 > 4) {
-            bot.speak('A ' + roll2 + ' has been rolled on your behalf, Awesome!');
-            bot.vote('up');
-        } else {
-            bot.speak('A ' + roll2 + ' has been rolled on your behalf, bummer.');
-        }
-        break;
+            var roll2 = Math.ceil(Math.random() * 6);
+            if (roll2 > 4) {
+                bot.speak('A ' + roll2 + ' has been rolled on your behalf, Awesome!');
+                bot.vote('up');
+            } else {
+                bot.speak('A ' + roll2 + ' has been rolled on your behalf, bummer.');
+            }
+            break;
 
         case "1":
         case "2":
@@ -1128,8 +1193,7 @@ bot.on('pmmed', function(data) {
                 else if (param == "vip") {
                     bot.roomDeregister();
                     bot.roomRegister('4f73ef36eb35c10888004976');
-                }
-                else if (param == "hothits"){
+                } else if (param == "hothits") {
                     bot.roomDeregister();
                     bot.roomRegister("4f5f162268f554664cc5b2c4");
                 }
@@ -1147,13 +1211,147 @@ bot.on('pmmed', function(data) {
 
         case "help":
             if (isMod(data.senderid)) {
-                bot.pm("You can awesome (or a) | lame (or l) | djwarn 1 | djwarn 2 | findidle", data.senderid);
+                bot.pm("You can awesome (or a) | lame (or l) | djwarn 1 | djwarn 2 | findidle | summonbouncer", data.senderid);
             }
             if (admin(data.senderid)) {
                 pause(500);
-                bot.pm("roll | step up | step down | skip | die", data.senderid);
+                bot.pm("roll | step up | step down | skip | die | summonbouncer | dismissbouncer", data.senderid);
             }
             break;
         }
     }
 });
+
+/* ============== */
+/* AddToQueue */
+/* ============== */
+global.AddToQueue = function(userid) {
+    var text = "";
+
+    if (config.enableQueue) { /* Check if they are a DJ */
+        if (djs.indexOf(userid) == -1) { /* Check if they are already on the queue*/
+            if (djQueue.indexOf(userid) == -1) {
+                djQueue.push(userid);
+                text = "@" + usersList[userid].name + ", you have been added to the queue. There is a total of " + djQueue.length + " now.";
+                bot.speak(text);
+                console.log(djQueue);
+            }
+        } else {
+            text = "@" + usersList[userid].name + ", seriously?!? Can't you wait until your OFF the TABLE before adding yourself to the queue again? FAIL! ";
+            bot.speak(text);
+        }
+    }
+};
+
+/* ============== */
+/* InsertInQueue */
+/* ============== */
+global.InsertInQueue = function(userid, position) {
+    var text = "";
+
+    if (config.enableQueue) { /* Check if they are a DJ */
+        if (djs.indexOf(userid) == -1) { /* Check if they are already on the queue*/
+            if (djQueue.indexOf(userid) == -1) {
+                djQueue.splice((position - 1), 0, userid);
+                text = "@" + usersList[userid].name + ", you have been added to the queue. There is a total of " + djQueue.length + " now.";
+                bot.speak(text);
+                console.log(djQueue);
+            }
+        } else {
+            text = "@" + usersList[userid].name + ", seriously?!? Can't you wait until your OFF the TABLE before adding yourself to the queue again? FAIL! ";
+            bot.speak(text);
+        }
+    }
+};
+
+/* ============== */
+/* RemoveFromQueue */
+/* ============== */
+global.RemoveFromQueue = function(userid) {
+    if (config.enableQueue) {
+        if (djQueue.indexOf(userid) != -1) {
+            djQueue.splice(djQueue.indexOf(userid), 1);
+            bot.speak("You have been removed from the queue @" + usersList[userid].name);
+        }
+    }
+};
+
+/* ============== */
+/* NewDjFromQueue */
+/* ============== */
+global.NewDjFromQueue = function(data) {
+    if (config.enableQueue) {
+        var text = "";
+
+        if (djQueue.length > 0) {
+            if (data.user[0].userid != djQueue[0]) {
+                bot.remDj(data.user[0].userid);
+                if (nextDj === null || nextDj === "") {
+                    nextDj = djQueue[0];
+                }
+                text = "Sorry, it's @" + usersList[nextDj].name + " turn.";
+                bot.speak(text);
+            } else {
+                RemoveFromQueue(data.user[0].userid);
+                clearInterval(queueRefreshIntervalId);
+                nextDj = "";
+            }
+        }
+    }
+};
+
+/* ============== */
+/* NextDjOnQueue */
+/* ============== */
+global.NextDjOnQueue = function() {
+    if (config.enableQueue) {
+        if (djQueue.length > 0) {
+            var text = "It is now @" + usersList[djQueue[0]].name + "'s turn to DJ! You have " + config.nextDjQueueTimeout + " seconds to step up.";
+            if (djQueue.length > 1) {
+                text += " @" + usersList[djQueue[1]].name + " is on deck.";
+            }
+            bot.speak(text);
+            nextDj = djQueue[0];
+            nextDjTime = new Date();
+            queueRefreshIntervalId = setInterval(CheckForNextDjFromQueue, 5000);
+        } else {
+            bot.speak("The queue is empty. Anyone can DJ at this time!");
+        }
+    }
+};
+
+/* ============== */
+/* CheckForNextDjFromQueue */
+/* ============== */
+global.CheckForNextDjFromQueue = function() {
+    if (nextDj !== "" && djQueue[0] == nextDj) {
+        var currentTime = new Date();
+        if (currentTime.getTime() - nextDjTime.getTime() > (config.nextDjQueueTimeout * 1000)) {
+            RemoveFromQueue(nextDj);
+            bot.speak("Too late @" + usersList[nextDj].name + " you can try once more on the next opening.");
+            InsertInQueue(nextDj, 2);
+            clearInterval(queueRefreshIntervalId);
+            NextDjOnQueue();
+        }
+    }
+};
+
+/* ============== */
+/* QueueStatus */
+/* ============== */
+global.QueueStatus = function() { /**/
+    var djList = "";
+
+    for (var i = 0; i < djQueue.length; i++) {
+        djList += usersList[djQueue[i]].name + ", ";
+    }
+
+    if (config.enableQueue) {
+        if (djQueue.length !== 0) {
+            var text = djQueue.length + " DJ(s) in the queue. They are: " + djList;
+            bot.speak(text);
+        } else {
+            bot.speak("Queue is empty!");
+        }
+    }
+};
