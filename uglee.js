@@ -78,11 +78,14 @@ var voted = false;
 var moderators = [];
 var djing = false;
 var votelog = [];
+var djs = [];
 
 var djQueue = [];
 var nextDj = null;
 var nextDjTime = null;
 var queueRefreshIntervalId = null;
+var missedQueue = [];
+var qPosn = 0;
 
 var acceptingVotes = false;
 var incomingVotes = {
@@ -96,7 +99,7 @@ var voteStart = null;
 var refreshIntervalId = null;
 var botOnTable = false;
 var ctsSequenceCount = -1;
-var ctsSequenceMax = 26;
+var ctsSequenceMax = 0;
 var ctsActive = false;
 var ctsExcludedWords = ["in", "the", "is", "that", "and", "a", "an"];
 var ctsLastWords = null;
@@ -441,8 +444,6 @@ var CheckCTS = function() {
             isOk = true;
         }
 
-        console.log(isOk);
-
         if (isOk) {
             ctsLastWords = words;
             ctsSequenceCount++;
@@ -453,12 +454,13 @@ var CheckCTS = function() {
         } else {
             if (ctsSequenceCount > ctsSequenceMax) {
                 ctsSequenceMax = ctsSequenceCount;
+                SetCacheValue('ctsSequenceMax', ctsSequenceMax);
             }
             bot.speak("Boo! The game is over with a score of " + ctsSequenceCount + ". The highest score is " + ctsSequenceMax);
             console.log("Game ended");
             ctsActive = false;
             ctsSequenceCount = -1;
-            ctsLastWords = [];
+            ctsLastWords = null;
         }
     };
 
@@ -543,6 +545,26 @@ bot.on('ready', function(data) {
 
     if (config.database.usedb) {
         setUpDatabase();
+        client.query("SELECT `value` FROM " + config.database.dbname + "." + config.database.tablenames.cache + " WHERE `key` = 'enableQueue'", function select(error, results, fields) {
+            if (results.length !== 0) {
+                if (results[0]['value'] == 1) {
+                    config.enableQueue = true;
+                } else {
+                    config.enableQueue = false;
+                }
+            }
+        });
+        client.query("SELECT `value` FROM " + config.database.dbname + "." + config.database.tablenames.cache + " WHERE `key` = 'djQueue'", function select(error, results, fields) {
+            if (results.length !== 0) {
+                djQueue = results[0]['value'].split(",");
+            }
+        });
+
+        GetCacheValue('ctsSequenceMax', function(value) {
+            if (value !== null) {
+                ctsSequenceMax = value;
+            }
+        });
     }
 
     bot.roomRegister(config.roomid);
@@ -587,6 +609,8 @@ bot.on('roomChanged', function(data) {
             }
         }
     }
+
+    UpdateDjs();
 });
 
 /* ============================ */
@@ -728,6 +752,8 @@ bot.on('add_dj', function(data) {
 
     CheckAutoDj();
 
+    UpdateDjs();
+
 });
 
 /* ============================ */
@@ -743,6 +769,8 @@ bot.on('rem_dj', function(data) {
     NextDjOnQueue();
 
     CheckAutoDj();
+
+    UpdateDjs();
 
 });
 
@@ -770,10 +798,32 @@ bot.on('registered', function(data) {
             client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user + ' (userid, username, lastseen)' + 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [user.userid, user.name]);
         }
     }
+
+    if (config.enableQueue) {
+        bot.pm("Greetings @" + data.user[0].name + ". If you would like to DJ, please type 'q+' to get added to the queue.", data.user[0].userid);
+    }
 });
 
+/* ============================ */
+/* registered */
+/* Runs when a user joins */
+/* ============================ */
 bot.on('deregistered', function(data) {
     delete usersList[data.user[0].userid];
+    if (data.user[0].userid == config.botinfo.userid){
+        killBot("4dfb57154fe7d061dd013a44");
+    }
+});
+
+/* ============================ */
+/* registered */
+/* Runs when a user joins */
+/* ============================ */
+bot.on('booted_user', function(data) {
+    console.log("booted_user: " + data);
+    /*if (data.user[0].userid == config.botinfo.userid){
+        killBot("4dfb57154fe7d061dd013a44");
+    }*/
 });
 
 /* ============================ */
@@ -852,8 +902,29 @@ bot.on('speak', function(data) {
         QueueStatus();
     }
 
-    if (data.text == "iq") {
-        // TODO
+    if (data.text.substring(0, 2) == "iq") {
+        if (data.text == "iq") {
+            bot.speak("Usage: iq position username");
+        } else {
+            var position = data.text.substring(2, 3);
+            var username = data.text.substring(5).substring(1);
+            console.log("Position: " + position);
+            client.query("SELECT `userid` FROM " + config.database.dbname + "." + config.database.tablenames.user + " WHERE `username` = ?", [username], function select(error, results, fields) {
+                InsertInQueue(results[0]['userid'], position);
+            });
+        }
+    }
+
+    if (data.text.substring(0, 2) == "dq") {
+        if (data.text == "dq") {
+            bot.speak("Usage: dq username");
+        } else {
+            var username = data.text.substring(3).substring(1);
+            console.log(username);
+            client.query("SELECT `userid` FROM " + config.database.dbname + "." + config.database.tablenames.user + " WHERE `username` = ?", [username], function select(error, results, fields) {
+                RemoveFromQueue(results[0]['userid']);
+            });
+        }
     }
 
     /*var twss = require('twss');
@@ -938,6 +1009,7 @@ bot.on('speak', function(data) {
                 if (isMod(data.userid)) {
                     if (ctsActive) {
                         ctsActive = false;
+                        ctsLastWords = null;
                         bot.speak("Sorry folks, the game is over. Play what you want now.");
                     }
                 }
@@ -956,9 +1028,10 @@ bot.on('speak', function(data) {
             case "enablequeue":
             case "startq":
             case "startqueue":
-                if (isMod(data.userid)){
+                if (isMod(data.userid)) {
                     config.enableQueue = true;
                     bot.speak("We are now using a queue! Sign up using 'q+'.");
+                    enableQueueCache();
                 }
                 break;
 
@@ -966,10 +1039,11 @@ bot.on('speak', function(data) {
             case "endqueue":
             case "stopq":
             case "stopqueue":
-                if (isMod(data.userid)){
+                if (isMod(data.userid)) {
                     config.enableQueue = false;
-                    djQueue = [ ];
+                    djQueue = [];
                     bot.speak("There is no queue...");
+                    clearQueueCache();
                 }
                 break;
 
@@ -1014,7 +1088,7 @@ bot.on('speak', function(data) {
 
             default:
                 if (command === "") {
-                    bot.speak('Yes Master @' + data.name + '? Here is what I can do for you: speak | dance | menu | whois');
+                    bot.speak('Yes Master @' + data.name + '? Here is what I can do for you: speak | dance | menu | whois | startcts | stopcts');
                 } else {
                     var idx = findAction(command, Actions.chat_responses);
                     if (idx != -1) {
@@ -1235,9 +1309,12 @@ global.AddToQueue = function(userid) {
                 text = "@" + usersList[userid].name + ", you have been added to the queue. There is a total of " + djQueue.length + " now.";
                 bot.speak(text);
                 console.log(djQueue);
+                if (config.database.usedb) {
+                    client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [djQueue]);
+                }
             }
         } else {
-            text = "@" + usersList[userid].name + ", seriously?!? Can't you wait until your OFF the TABLE before adding yourself to the queue again? FAIL! ";
+            text = "@" + usersList[userid].name + ", seriously?!? Can't you wait until you're OFF the TABLE before adding yourself to the queue again? FAIL! ";
             bot.speak(text);
         }
     }
@@ -1256,10 +1333,10 @@ global.InsertInQueue = function(userid, position) {
                 text = "@" + usersList[userid].name + ", you have been added to the queue. There is a total of " + djQueue.length + " now.";
                 bot.speak(text);
                 console.log(djQueue);
+                if (config.database.usedb) {
+                    client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [djQueue]);
+                }
             }
-        } else {
-            text = "@" + usersList[userid].name + ", seriously?!? Can't you wait until your OFF the TABLE before adding yourself to the queue again? FAIL! ";
-            bot.speak(text);
         }
     }
 };
@@ -1272,6 +1349,9 @@ global.RemoveFromQueue = function(userid) {
         if (djQueue.indexOf(userid) != -1) {
             djQueue.splice(djQueue.indexOf(userid), 1);
             bot.speak("You have been removed from the queue @" + usersList[userid].name);
+            if (config.database.usedb) {
+                client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [djQueue]);
+            }
         }
     }
 };
@@ -1282,17 +1362,27 @@ global.RemoveFromQueue = function(userid) {
 global.NewDjFromQueue = function(data) {
     if (config.enableQueue) {
         var text = "";
-
+        console.log(nextDj);
         if (djQueue.length > 0) {
-            if (data.user[0].userid != djQueue[0]) {
+            if (data.user[0].userid != djQueue[qPosn]) {
                 bot.remDj(data.user[0].userid);
                 if (nextDj === null || nextDj === "") {
-                    nextDj = djQueue[0];
+                    nextDj = djQueue[qPosn];
+                    if (nextDj === null || nextDj === undefined) {
+                        djQueue.splice(djQueue.indexOf(djQueue[qPosn]), 1);
+                        if (config.database.usedb) {
+                            client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [djQueue]);
+                        }
+                        return;
+                    }
                 }
-                text = "Sorry, it's @" + usersList[nextDj].name + " turn.";
+                text = "Sorry @" + usersList[data.user[0].userid].name + ", it's @" + usersList[nextDj].name + " turn. You need to wait your turn.";
                 bot.speak(text);
             } else {
-                RemoveFromQueue(data.user[0].userid);
+                djQueue.splice(djQueue.indexOf(data.user[0].userid), 1);
+                if (config.database.usedb) {
+                    client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [djQueue]);
+                }
                 clearInterval(queueRefreshIntervalId);
                 nextDj = "";
             }
@@ -1304,14 +1394,37 @@ global.NewDjFromQueue = function(data) {
 /* NextDjOnQueue */
 /* ============== */
 global.NextDjOnQueue = function() {
+    qPosn = 0;
     if (config.enableQueue) {
         if (djQueue.length > 0) {
-            var text = "It is now @" + usersList[djQueue[0]].name + "'s turn to DJ! You have " + config.nextDjQueueTimeout + " seconds to step up.";
-            if (djQueue.length > 1) {
-                text += " @" + usersList[djQueue[1]].name + " is on deck.";
+            while (usersList[djQueue[qPosn]] === undefined) {
+                if (missedQueue.indexOf(nextDj) == -1) {
+                    missedQueue.push(djQueue[qPosn]);
+                    var moron = djQueue[qPosn];
+                    djQueue.splice(djQueue.indexOf(moron), 1);
+                    djQueue.push(moron);
+                    if (qPosn < djQueue.length) {
+                        qPosn++;
+                    } else {
+                        bot.speak("The queue is empty. All DJs in the queue are currently not here. Anyone can DJ at this time!");
+                        return;
+                    }
+                } else {
+                    djQueue.splice(djQueue.indexOf(djQueue[qPosn]), 1);
+                    missedQueue.splice(djQueue.indexOf(djQueue[qPosn]), 1);
+                }
+                if (config.database.usedb) {
+                    client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [djQueue]);
+                }
+            }
+            var text = "It is now @" + usersList[djQueue[qPosn]].name + "'s turn to DJ! You have " + config.nextDjQueueTimeout + " seconds to step up.";
+            if (djQueue.length > qPosn + 1) {
+                text += " @" + usersList[djQueue[qPosn + 1]].name + " is on deck.";
+                bot.pm("Your on deck. Get ready to DJ.", djQueue[qPosn + 1]);
             }
             bot.speak(text);
-            nextDj = djQueue[0];
+            bot.pm("It's your turn to DJ.", djQueue[qPosn]);
+            nextDj = djQueue[qPosn];
             nextDjTime = new Date();
             queueRefreshIntervalId = setInterval(CheckForNextDjFromQueue, 5000);
         } else {
@@ -1324,12 +1437,22 @@ global.NextDjOnQueue = function() {
 /* CheckForNextDjFromQueue */
 /* ============== */
 global.CheckForNextDjFromQueue = function() {
-    if (nextDj !== "" && djQueue[0] == nextDj) {
+    if (nextDj !== "" && djQueue[qPosn] == nextDj) {
         var currentTime = new Date();
         if (currentTime.getTime() - nextDjTime.getTime() > (config.nextDjQueueTimeout * 1000)) {
-            RemoveFromQueue(nextDj);
-            bot.speak("Too late @" + usersList[nextDj].name + " you can try once more on the next opening.");
-            InsertInQueue(nextDj, 2);
+            if (missedQueue.indexOf(nextDj) == -1) {
+                missedQueue.push(nextDj);
+                djQueue.splice(djQueue.indexOf(userid), 1);
+                InsertInQueue(nextDj, 2);
+                bot.speak("Too late @" + usersList[nextDj].name + " you can try once more on the next opening.");
+            } else {
+                djQueue.splice(djQueue.indexOf(userid), 1);
+                missedQueue.splice(djQueue.indexOf(userid), 1);
+                bot.speak("Sorry @" + usersList[nextDj].name + ", you missed out! Whatta looser! You can add yourself back to the queue, but pay attention this time.");
+            }
+            if (config.database.usedb) {
+                client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [djQueue]);
+            }
             clearInterval(queueRefreshIntervalId);
             NextDjOnQueue();
         }
@@ -1339,19 +1462,93 @@ global.CheckForNextDjFromQueue = function() {
 /* ============== */
 /* QueueStatus */
 /* ============== */
-global.QueueStatus = function() { /**/
-    var djList = "";
-
-    for (var i = 0; i < djQueue.length; i++) {
-        djList += usersList[djQueue[i]].name + ", ";
-    }
+global.QueueStatus = function() {
 
     if (config.enableQueue) {
-        if (djQueue.length !== 0) {
-            var text = djQueue.length + " DJ(s) in the queue. They are: " + djList;
-            bot.speak(text);
-        } else {
-            bot.speak("Queue is empty!");
+        var djList = "";
+
+        for (var i = 0; i < djQueue.length; i++) {
+            console.log(djQueue[i]);
+            console.log(usersList[djQueue[i]]);
+            if (usersList[djQueue[i]] !== undefined) {
+                djList += usersList[djQueue[i]].name + ", ";
+            } else {
+                djList += "(dj out of room), ";
+            }
         }
+
+        if (config.enableQueue) {
+            if (djQueue.length !== 0) {
+                var text = djQueue.length + " DJ(s) in the queue. They are: " + djList;
+                bot.speak(text);
+            } else {
+                bot.speak("Queue is empty!");
+            }
+        }
+    }
+};
+
+var enableQueueCache = function() {
+        if (config.database.usedb) {
+            client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.cache + ' (`key`, `value`, `DateStamp`) VALUES (?, ?, CURRENT_TIMESTAMP)', ["enableQueue", config.enableQueue]);
+            client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.cache + ' (`key`, `value`, `DateStamp`) VALUES (?, ?, CURRENT_TIMESTAMP)', ["djQueue", djQueue]);
+        }
+    };
+
+var clearQueueCache = function() {
+        if (config.database.usedb) {
+            client.query("DELETE FROM " + config.database.dbname + "." + config.database.tablenames.cache + " WHERE `key` = 'enableQueue'");
+            client.query("DELETE FROM " + config.database.dbname + "." + config.database.tablenames.cache + " WHERE `key` = 'djQueue'");
+        }
+    };
+
+
+
+/* ============== */
+/* UpdateDjs - Check to see if the user is a moderator */
+/* ============== */
+global.UpdateDjs = function() {
+    bot.roomInfo(function(data) { /* Update the list since we are here */
+        djs = data.room.metadata.djs;
+        moderators = data.room.metadata.moderator_id;
+    });
+};
+
+/* ============== */
+/* SetCacheValue - Sets the value to the DB cache */
+/* ============== */
+global.SetCacheValue = function(key, value) {
+    if (config.database.usedb) {
+        client.query("SELECT `value` FROM " + config.database.dbname + "." + config.database.tablenames.cache + " WHERE `key` = ?", [key], function select(error, results, fields) {
+            if (results.length !== 0) {
+                client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = ?", [value, key]);
+            } else {
+                client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.cache + ' (`key`, `value`, `DateStamp`) VALUES (?, ?, CURRENT_TIMESTAMP)', [key, value]);
+            }
+        });
+    }
+};
+
+/* ============== */
+/* GetCacheValue - Gets the value from the DB cache */
+/* ============== */
+global.GetCacheValue = function(key, callback) {
+    if (config.database.usedb) {
+        client.query("SELECT `value` FROM " + config.database.dbname + "." + config.database.tablenames.cache + " WHERE `key` = ?", [key], function select(error, results, fields) {
+            if (results.length !== 0) {
+                callback(results[0]['value']);
+            } else {
+                callback(null);
+            }
+        });
+    }
+};
+
+/* ============== */
+/* RemoveCacheValue - Sets the value to the DB cache */
+/* ============== */
+global.RemoveCacheValue = function(key) {
+    if (config.database.usedb) {
+        client.query("DELETE FROM " + config.database.dbname + "." + config.database.tablenames.cache + " WHERE `key` = ?", [key]);
     }
 };
