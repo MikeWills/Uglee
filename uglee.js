@@ -86,6 +86,7 @@ var nextDjTime = null;
 var queueRefreshIntervalId = null;
 var missedQueue = [];
 var qPosn = 0;
+var waitingOnNextDj = false;
 
 var acceptingVotes = false;
 var incomingVotes = {
@@ -1458,6 +1459,7 @@ global.NewDjFromQueue = function(data) {
                 if (config.database.usedb) {
                     client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [djQueue]);
                 }
+                waitingOnNextDj = false;
                 clearInterval(queueRefreshIntervalId);
                 nextDj = "";
             }
@@ -1470,7 +1472,7 @@ global.NewDjFromQueue = function(data) {
 /* ============== */
 global.NextDjOnQueue = function() {
     qPosn = 0;
-    if (config.enableQueue) {
+    if (config.enableQueue && !waitingOnNextDj) {
         if (djQueue.length > 0) {
             while (usersList[djQueue[qPosn]] === undefined) {
                 if (missedQueue.indexOf(nextDj) == -1) {
@@ -1497,6 +1499,7 @@ global.NextDjOnQueue = function() {
                 text += " @" + usersList[djQueue[qPosn + 1]].name + " is on deck.";
                 bot.pm("Your on deck. Get ready to DJ.", djQueue[qPosn + 1]);
             }
+            waitingOnNextDj = true;
             bot.speak(text);
             bot.pm("It's your turn to DJ.", djQueue[qPosn]);
             nextDj = djQueue[qPosn];
@@ -1525,6 +1528,7 @@ global.CheckForNextDjFromQueue = function() {
                 missedQueue.splice(djQueue.indexOf(userid), 1);
                 bot.speak("Sorry @" + usersList[nextDj].name + ", you missed out! Whatta looser! You can add yourself back to the queue, but pay attention this time.");
             }
+            waitingOnNextDj = false;
             if (config.database.usedb) {
                 client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [djQueue]);
             }
