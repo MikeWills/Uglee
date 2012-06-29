@@ -542,6 +542,8 @@ var dismissBouncer = function() {
 /* ready */
 /* ============================ */
 bot.on('ready', function(data) {
+	
+try {
 
     if (config.database.usedb) {
         setUpDatabase();
@@ -568,12 +570,19 @@ bot.on('ready', function(data) {
     }
 
     bot.roomRegister(config.roomid);
+
+} catch  (e) {
+	console.log("*** Error *** " + e);
+}
+
 });
 
 /* ============================ */
 /* roomchanged */
 /* ============================ */
 bot.on('roomChanged', function(data) {
+
+try {
 
     if (config.consolelog) {
         //console.log('Room Changed',  data);
@@ -611,12 +620,19 @@ bot.on('roomChanged', function(data) {
     }
 
     UpdateDjs();
+
+} catch  (e) {
+	console.log("*** Error *** " + e);
+}
+
 });
 
 /* ============================ */
 /* newsong */
 /* ============================ */
 bot.on('newsong', function(data) {
+
+try {
 
     alreadyRolled = false;
 
@@ -695,12 +711,17 @@ bot.on('newsong', function(data) {
             bot.speak("Really?? We have to listen to a " + songlength + " minute song? Is that really nessesary?");
         }
     }
+
+} catch  (e) {
+	console.log("*** Error *** " + e);
+}
 });
 
 /* ============================ */
 /* endsong */
 /* ============================ */
 bot.on('endsong', function(data) {
+try {
     //Log song in DB
     if (config.database.usedb) {
         addSongToDb();
@@ -711,12 +732,18 @@ bot.on('endsong', function(data) {
     }
     votelog = [];
     voted = false;
+
+
+} catch  (e) {
+	console.log("*** Error *** " + e);
+}
 });
 
 /* ============================ */
 /* update_votes */
 /* ============================ */
 bot.on('update_votes', function(data) {
+try {
     //Update vote and listener count
     currentsong.up = data.room.metadata.upvotes;
     currentsong.down = data.room.metadata.downvotes;
@@ -732,13 +759,17 @@ bot.on('update_votes', function(data) {
             console.log("Update Vote: " + userid);
         }
     }
+
+} catch  (e) {
+	console.log("*** Error *** " + e);
+}
 });
 
 /* ============================ */
 /* add_dj */
 /* ============================ */
 bot.on('add_dj', function(data) {
-
+try{
     if (config.consolelog) {
         console.log('Added DJ: ', data);
     }
@@ -754,6 +785,10 @@ bot.on('add_dj', function(data) {
 
     UpdateDjs();
 
+} catch  (e) {
+	console.log("*** Error *** " + e);
+}
+
 });
 
 /* ============================ */
@@ -761,6 +796,7 @@ bot.on('add_dj', function(data) {
 /* ============================ */
 bot.on('rem_dj', function(data) {
 
+try {
     if (config.consolelog) {
         console.log('Removed DJ: ', data);
     }
@@ -772,6 +808,10 @@ bot.on('rem_dj', function(data) {
 
     UpdateDjs();
 
+} catch  (e) {
+	console.log("*** Error *** " + e);
+}
+
 });
 
 /* ============================ */
@@ -779,6 +819,9 @@ bot.on('rem_dj', function(data) {
 /* Runs when a user joins */
 /* ============================ */
 bot.on('registered', function(data) {
+
+try {
+
     //Log event in console
     if (config.consolelog) {
         console.log('Joined room: ' + data.user[0].name);
@@ -802,6 +845,10 @@ bot.on('registered', function(data) {
     if (config.enableQueue) {
         bot.pm("Greetings @" + data.user[0].name + ". If you would like to DJ, please type 'q+' to get added to the queue.", data.user[0].userid);
     }
+
+} catch  (e) {
+	console.log("*** Error *** " + e);
+}
 });
 
 /* ============================ */
@@ -809,10 +856,15 @@ bot.on('registered', function(data) {
 /* Runs when a user joins */
 /* ============================ */
 bot.on('deregistered', function(data) {
+try {
     delete usersList[data.user[0].userid];
     if (data.user[0].userid == config.botinfo.userid){
         killBot("4dfb57154fe7d061dd013a44");
     }
+
+} catch  (e) {
+	console.log("*** Error *** " + e);
+}
 });
 
 /* ============================ */
@@ -820,16 +872,22 @@ bot.on('deregistered', function(data) {
 /* Runs when a user joins */
 /* ============================ */
 bot.on('booted_user', function(data) {
+try{
     console.log("booted_user: " + data);
     /*if (data.user[0].userid == config.botinfo.userid){
         killBot("4dfb57154fe7d061dd013a44");
     }*/
+
+} catch  (e) {
+	console.log("*** Error *** " + e);
+}
 });
 
 /* ============================ */
 /* update_user */
 /* ============================ */
 bot.on('update_user', function(data) {
+try{
     //Log event in console
     if (config.consolelog) {
         console.log('Edited user: ' + data);
@@ -842,24 +900,33 @@ bot.on('update_user', function(data) {
             'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()',
                 [data.userid, data.name]);
     }*/
+
+} catch  (e) {
+	console.log("*** Error *** " + e);
+}
 });
 
 /* ============================ */
 /* snagged */
 /* ============================ */
 bot.on('snagged', function(data) {
+try{
     //Increase song snag count
     currentsong.snags++;
 
     var userid = data.userid;
     usersList[userid].lastActivity = new Date();
+
+} catch  (e) {
+	console.log("*** Error *** " + e);
+}
 });
 
 /* ============================ */
 /* speak */
 /* ============================ */
 bot.on('speak', function(data) {
-
+try{
     //Log in db (chatlog table)
     /*if (config.database.usedb) {
         client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.chat + ' '
@@ -1102,13 +1169,17 @@ bot.on('speak', function(data) {
             }
         }
     }
+
+} catch  (e) {
+	console.log("*** Error *** " + e);
+}
 });
 
 /* ============================ */
 /* pmmed */
 /* ============================ */
 bot.on('pmmed', function(data) {
-
+try {
     if (config.consolelog) {
         console.log('Private message: ', data);
     }
@@ -1294,6 +1365,10 @@ bot.on('pmmed', function(data) {
             break;
         }
     }
+
+} catch  (e) {
+	console.log("*** Error *** " + e);
+}
 });
 
 /* ============== */
