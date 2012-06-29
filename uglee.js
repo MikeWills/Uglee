@@ -802,6 +802,8 @@ try {
         console.log('Removed DJ: ', data);
     }
 
+	waitingOnNextDj = false;
+
     /* Notify the next DJ on the list */
     NextDjOnQueue();
 
