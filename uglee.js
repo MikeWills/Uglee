@@ -1159,6 +1159,10 @@ try{
             default:
                 if (command === "") {
                     bot.speak('Yes Master @' + data.name + '? Here is what I can do for you: speak | dance | menu | whois | startcts | stopcts');
+                    
+            if (isMod(data.senderid)) {
+                bot.pm("As moderator, you can startq | endq | dq @name | iq pos# @name", data.senderid);
+            }
                 } else {
                     var idx = findAction(command, Actions.chat_responses);
                     if (idx != -1) {
