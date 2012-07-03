@@ -817,6 +817,10 @@ try {
 
 });
 
+bot.on('nosong', function (data) {
+console.log("nosong: " + data);
+})
+
 /* ============================ */
 /* registered */
 /* Runs when a user joins */
