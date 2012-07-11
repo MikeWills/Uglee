@@ -59,7 +59,7 @@ child = exec("t set active GilimYurhig", function(error, stdout, stderr) {
 
 
 /*  banned users */
-var bannedUsers = ['4f7a1a75aaa5cd26ee005b5f', '4f7bd3adeb35c15efd00005a'];
+var bannedUsers = ['4f7bd3adeb35c15efd00005a'];
 
 //Current song info
 var currentsong = {
@@ -620,7 +620,9 @@ try {
         }
     }
 
-    UpdateDjs();
+    UpdateDjs(function(){});
+
+ 	bot.speak("Ready to serve!");
 
 } catch  (e) {
 	console.log("*** Error *** " + e);
@@ -784,7 +786,7 @@ try{
 
     CheckAutoDj();
 
-    UpdateDjs();
+    UpdateDjs(function(){});
 
 } catch  (e) {
 	console.log("*** Error *** " + e);
@@ -809,7 +811,9 @@ try {
 
     CheckAutoDj();
 
-    UpdateDjs();
+    UpdateDjs(function(){
+AddToQueue(data.user[0].userid);
+	});
 
 } catch  (e) {
 	console.log("*** Error *** " + e);
@@ -980,7 +984,7 @@ try{
         if (data.text == "iq") {
             bot.speak("Usage: iq position username");
         } else {
-            var position = data.text.substring(2, 3);
+            var position = data.text.substring(2, 4);
             var username = data.text.substring(5).substring(1);
             console.log("Position: " + position);
             client.query("SELECT `userid` FROM " + config.database.dbname + "." + config.database.tablenames.user + " WHERE `username` = ?", [username], function select(error, results, fields) {
@@ -1596,10 +1600,11 @@ var clearQueueCache = function() {
 /* ============== */
 /* UpdateDjs - Check to see if the user is a moderator */
 /* ============== */
-global.UpdateDjs = function() {
+global.UpdateDjs = function(callback) {
     bot.roomInfo(function(data) { /* Update the list since we are here */
         djs = data.room.metadata.djs;
         moderators = data.room.metadata.moderator_id;
+callback();
     });
 };
 
