@@ -5,6 +5,7 @@
 /* MAW = "roomid":"4ef82538590ca23e33001b3b", */
 
 var fs = require('fs');
+var util = require('util');
 var Bot = require('ttapi');
 
 /*  Creates the config object */
@@ -80,7 +81,7 @@ var djing = false;
 var votelog = [];
 var djs = [];
 
-var djQueue = [];
+var djQueue = { "length": 0 };
 var nextDj = null;
 var nextDjTime = null;
 var queueRefreshIntervalId = null;
@@ -543,38 +544,45 @@ var dismissBouncer = function() {
 /* ready */
 /* ============================ */
 bot.on('ready', function(data) {
-	
-try {
 
-    if (config.database.usedb) {
-        setUpDatabase();
-        client.query("SELECT `value` FROM " + config.database.dbname + "." + config.database.tablenames.cache + " WHERE `key` = 'enableQueue'", function select(error, results, fields) {
-            if (results.length !== 0) {
-                if (results[0]['value'] == 1) {
-                    config.enableQueue = true;
-                } else {
-                    config.enableQueue = false;
+    try {
+
+        if (config.database.usedb) {
+            setUpDatabase();
+            client.query("SELECT `value` FROM " + config.database.dbname + "." + config.database.tablenames.cache + " WHERE `key` = 'enableQueue'", function select(error, results, fields) {
+                if (results.length !== 0) {
+                    if (results[0]['value'] == 1) {
+                        config.enableQueue = true;
+                    } else {
+                        config.enableQueue = false;
+                    }
                 }
-            }
-        });
-        client.query("SELECT `value` FROM " + config.database.dbname + "." + config.database.tablenames.cache + " WHERE `key` = 'djQueue'", function select(error, results, fields) {
-            if (results.length !== 0) {
-                djQueue = results[0]['value'].split(",");
-            }
-        });
+            });
+            client.query("SELECT `value` FROM " + config.database.dbname + "." + config.database.tablenames.cache + " WHERE `key` = 'djQueue'", function select(error, results, fields) {
+                if (results.length !== 0) {
+                    console.log(results[0]['value']);
+                    var jsonResult = JSON.parse(results[0]['value']);
+                    djQueue.length = jsonResult.length;
+                    for (var i in jsonResult){
+                        var dj = jsonResult[i];
+                        djQueue[i] = dj;
+                    }
+                    console.log(djQueue);
+                }
+            });
 
-        GetCacheValue('ctsSequenceMax', function(value) {
-            if (value !== null) {
-                ctsSequenceMax = value;
-            }
-        });
+            GetCacheValue('ctsSequenceMax', function(value) {
+                if (value !== null) {
+                    ctsSequenceMax = value;
+                }
+            });
+        }
+
+        bot.roomRegister(config.roomid);
+
+    } catch (e) {
+        console.log("*** Error *** " + e);
     }
-
-    bot.roomRegister(config.roomid);
-
-} catch  (e) {
-	console.log("*** Error *** " + e);
-}
 
 });
 
@@ -583,50 +591,53 @@ try {
 /* ============================ */
 bot.on('roomChanged', function(data) {
 
-try {
+    try {
 
-    if (config.consolelog) {
-        //console.log('Room Changed',  data);
-        console.log('Moderator IDs', data.room.metadata.moderator_id);
-        console.log('DJs', data.room.metadata.djs);
-    }
-
-    djs = data.room.metadata.djs;
-    moderators = data.room.metadata.moderator_id;
-
-    //Fill currentsong array with room data
-    if ((data.room !== null) && (data.room.metadata !== null)) {
-        if (data.room.metadata.current_song !== null) {
-            populateSongData(data);
+        if (config.consolelog) {
+            //console.log('Room Changed',  data);
+            console.log('Moderator IDs', data.room.metadata.moderator_id);
+            console.log('DJs', data.room.metadata.djs);
         }
-    }
 
-    //Repopulates usersList array.
-    var users = data.users;
-    for (var i in users) {
-        var user = users[i];
-        user.lastActivity = new Date();
-        usersList[user.userid] = user;
-    }
+        djs = data.room.metadata.djs;
+        moderators = data.room.metadata.moderator_id;
 
-    //Adds all active users to the users table - updates lastseen if we've seen
-    //them before, adds a new entry if they're new or have changed their username
-    //since the last time we've seen them
-    if (config.database.usedb) {
-        for (i in users) {
-            if (users[i].name !== null) {
-                client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user + ' (userid, username, lastseen)' + 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [users[i].userid, users[i].name]);
+        //Fill currentsong array with room data
+        if ((data.room !== null) && (data.room.metadata !== null)) {
+            if (data.room.metadata.current_song !== null) {
+                populateSongData(data);
             }
         }
+
+        //Repopulates usersList array.
+        var users = data.users;
+        for (var i in users) {
+            var user = users[i];
+            user.lastActivity = new Date();
+            usersList[user.userid] = user;
+        }
+
+        //Adds all active users to the users table - updates lastseen if we've seen
+        //them before, adds a new entry if they're new or have changed their username
+        //since the last time we've seen them
+        if (config.database.usedb) {
+            for (i in users) {
+                if (users[i].name !== null) {
+                    client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user + ' (userid, username, lastseen)' + 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [users[i].userid, users[i].name]);
+                }
+            }
+        }
+
+        UpdateDjs(function() {});
+
+        /* Notify the next DJ on the list */
+        NextDjOnQueue();
+
+        bot.speak("Ready to serve!");
+
+    } catch (e) {
+        console.log("*** Error *** " + e);
     }
-
-    UpdateDjs(function(){});
-
- 	bot.speak("Ready to serve!");
-
-} catch  (e) {
-	console.log("*** Error *** " + e);
-}
 
 });
 
@@ -635,162 +646,162 @@ try {
 /* ============================ */
 bot.on('newsong', function(data) {
 
-try {
+    try {
 
-    alreadyRolled = false;
+        alreadyRolled = false;
 
-    //Populate new song data in currentsong
-    populateSongData(data);
-
-    delete require.cache['./actions.js'];
-    var Actions = require('./actions.js');
-
-    if (config.consolelog) {
-        console.log('newsong', data.room.metadata.current_song.metadata);
-    }
-
-    if (ctsActive) {
-        CheckCTS();
-    }
-
-    /* Update the moderator list */
-    moderators = data.room.metadata.moderator_id;
-
-    /* Autobop if DJing */
-    if (djing) {
-        bot.vote('up');
-        voted = true;
-        console.log("Autobop by DJing");
-    }
-
-    /* Selectively awesome/lame songs */
-    if (config.newsongcomments && !voted) {
         //Populate new song data in currentsong
-        currentsong.artist = data.room.metadata.current_song.metadata.artist;
-        currentsong.song = data.room.metadata.current_song.metadata.song;
-        currentsong.genre = data.room.metadata.current_song.metadata.genre;
+        populateSongData(data);
 
-        /* First check for artist */
-        var idx = findAction(currentsong.artist, Actions.artists);
-        if (idx != -1) {
-            //bot.vote(Actions.artists[idx].vote);
-            if (Actions.artists[idx].speak !== "") {
-                bot.speak(Actions.artists[idx].speak);
-            }
-            //dislike = Actions.artists[idx].dislike;
-            //voted = true;
-            //console.log("Autobop by artist");
+        delete require.cache['./actions.js'];
+        var Actions = require('./actions.js');
+
+        if (config.consolelog) {
+            console.log('newsong', data.room.metadata.current_song.metadata);
         }
 
-        /* Then check for song */
-        idx = findAction(currentsong.song, Actions.songs);
-        if (idx != -1) {
-            //bot.vote(Actions.songs[idx].vote);
-            if (Actions.songs[idx].speak !== "") {
-                bot.speak(Actions.songs[idx].speak);
-            }
-            //dislike = Actions.songs[idx].dislike;
-            //voted = true;
-            //console.log("Autobop by song");
+        if (ctsActive) {
+            CheckCTS();
         }
 
-        /* Then check for genre */
-        idx = findAction(currentsong.genre, Actions.genres);
-        if (idx != -1) {
-            //bot.vote(Actions.genres[idx].vote);
-            if (Actions.genres[idx].speak !== "") {
-                bot.speak(Actions.genres[idx].speak);
-            }
-            //dislike = Actions.genres[idx].dislike;
-            //voted = true;
-            //console.log("Autobop by genre");
+        /* Update the moderator list */
+        moderators = data.room.metadata.moderator_id;
+
+        /* Autobop if DJing */
+        if (djing) {
+            bot.vote('up');
+            voted = true;
+            console.log("Autobop by DJing");
         }
+
+        /* Selectively awesome/lame songs */
+        if (config.newsongcomments && !voted) {
+            //Populate new song data in currentsong
+            currentsong.artist = data.room.metadata.current_song.metadata.artist;
+            currentsong.song = data.room.metadata.current_song.metadata.song;
+            currentsong.genre = data.room.metadata.current_song.metadata.genre;
+
+            /* First check for artist */
+            var idx = findAction(currentsong.artist, Actions.artists);
+            if (idx != -1) {
+                //bot.vote(Actions.artists[idx].vote);
+                if (Actions.artists[idx].speak !== "") {
+                    bot.speak(Actions.artists[idx].speak);
+                }
+                //dislike = Actions.artists[idx].dislike;
+                //voted = true;
+                //console.log("Autobop by artist");
+            }
+
+            /* Then check for song */
+            idx = findAction(currentsong.song, Actions.songs);
+            if (idx != -1) {
+                //bot.vote(Actions.songs[idx].vote);
+                if (Actions.songs[idx].speak !== "") {
+                    bot.speak(Actions.songs[idx].speak);
+                }
+                //dislike = Actions.songs[idx].dislike;
+                //voted = true;
+                //console.log("Autobop by song");
+            }
+
+            /* Then check for genre */
+            idx = findAction(currentsong.genre, Actions.genres);
+            if (idx != -1) {
+                //bot.vote(Actions.genres[idx].vote);
+                if (Actions.genres[idx].speak !== "") {
+                    bot.speak(Actions.genres[idx].speak);
+                }
+                //dislike = Actions.genres[idx].dislike;
+                //voted = true;
+                //console.log("Autobop by genre");
+            }
+        }
+
+        /* Check the song length and bitch if it is too long */
+        if (config.monitorsonglength) {
+            if (data.room.metadata.current_song.metadata.length >= config.maxsonglength) {
+                var songlength = Math.round(data.room.metadata.current_song.metadata.length / 60);
+                bot.speak("Really?? We have to listen to a " + songlength + " minute song? Is that really nessesary?");
+            }
+        }
+
+    } catch (e) {
+        console.log("*** Error *** " + e);
     }
-
-    /* Check the song length and bitch if it is too long */
-    if (config.monitorsonglength) {
-        if (data.room.metadata.current_song.metadata.length >= config.maxsonglength) {
-            var songlength = Math.round(data.room.metadata.current_song.metadata.length / 60);
-            bot.speak("Really?? We have to listen to a " + songlength + " minute song? Is that really nessesary?");
-        }
-    }
-
-} catch  (e) {
-	console.log("*** Error *** " + e);
-}
 });
 
 /* ============================ */
 /* endsong */
 /* ============================ */
 bot.on('endsong', function(data) {
-try {
-    //Log song in DB
-    if (config.database.usedb) {
-        addSongToDb();
+    try {
+        //Log song in DB
+        if (config.database.usedb) {
+            addSongToDb();
+        }
+
+        if (dislike) {
+            dislike = false;
+        }
+        votelog = [];
+        voted = false;
+
+
+    } catch (e) {
+        console.log("*** Error *** " + e);
     }
-
-    if (dislike) {
-        dislike = false;
-    }
-    votelog = [];
-    voted = false;
-
-
-} catch  (e) {
-	console.log("*** Error *** " + e);
-}
 });
 
 /* ============================ */
 /* update_votes */
 /* ============================ */
 bot.on('update_votes', function(data) {
-try {
-    //Update vote and listener count
-    currentsong.up = data.room.metadata.upvotes;
-    currentsong.down = data.room.metadata.downvotes;
-    currentsong.listeners = data.room.metadata.listeners;
+    try {
+        //Update vote and listener count
+        currentsong.up = data.room.metadata.upvotes;
+        currentsong.down = data.room.metadata.downvotes;
+        currentsong.listeners = data.room.metadata.listeners;
 
-    var votelog = data.room.metadata.votelog;
-    for (var i = 0; i < votelog.length; i++) {
-        var userid = votelog[i][0];
-        //console.log("Update Vote: " + userid);
-        if (userid !== "") {
-            usersList[userid].lastActivity = new Date();
-        } else {
-            console.log("Update Vote: " + userid);
+        var votelog = data.room.metadata.votelog;
+        for (var i = 0; i < votelog.length; i++) {
+            var userid = votelog[i][0];
+            //console.log("Update Vote: " + userid);
+            if (userid !== "") {
+                usersList[userid].lastActivity = new Date();
+            } else {
+                console.log("Update Vote: " + userid);
+            }
         }
-    }
 
-} catch  (e) {
-	console.log("*** Error *** " + e);
-}
+    } catch (e) {
+        console.log("*** Error *** " + e);
+    }
 });
 
 /* ============================ */
 /* add_dj */
 /* ============================ */
 bot.on('add_dj', function(data) {
-try{
-    if (config.consolelog) {
-        console.log('Added DJ: ', data);
+    try {
+        if (config.consolelog) {
+            console.log('Added DJ: ', data);
+        }
+
+        NewDjFromQueue(data);
+
+        var user = data.user[0];
+        usersList[user.userid].lastActivity = new Date();
+
+        /*if (data.user[0].userid === '4f7a1a75aaa5cd26ee005b5f'){ bot.speak("Me hopes that @Lord of Nerds plays GOOD music this time."); }*/
+
+        CheckAutoDj();
+
+        UpdateDjs(function() {});
+
+    } catch (e) {
+        console.log("*** Error *** " + e);
     }
-
-    NewDjFromQueue(data);
-
-    var user = data.user[0];
-    usersList[user.userid].lastActivity = new Date();
-
-    /*if (data.user[0].userid === '4f7a1a75aaa5cd26ee005b5f'){ bot.speak("Me hopes that @Lord of Nerds plays GOOD music this time."); }*/
-
-    CheckAutoDj();
-
-    UpdateDjs(function(){});
-
-} catch  (e) {
-	console.log("*** Error *** " + e);
-}
 
 });
 
@@ -799,30 +810,30 @@ try{
 /* ============================ */
 bot.on('rem_dj', function(data) {
 
-try {
-    if (config.consolelog) {
-        console.log('Removed DJ: ', data);
+    try {
+        if (config.consolelog) {
+            console.log('Removed DJ: ', data);
+        }
+
+        waitingOnNextDj = false;
+
+        /* Notify the next DJ on the list */
+        NextDjOnQueue();
+
+        CheckAutoDj();
+
+        UpdateDjs(function() {
+            AddToQueue(data.user[0].userid);
+        });
+
+    } catch (e) {
+        console.log("*** Error *** " + e);
     }
-
-	waitingOnNextDj = false;
-
-    /* Notify the next DJ on the list */
-    NextDjOnQueue();
-
-    CheckAutoDj();
-
-    UpdateDjs(function(){
-AddToQueue(data.user[0].userid);
-	});
-
-} catch  (e) {
-	console.log("*** Error *** " + e);
-}
 
 });
 
-bot.on('nosong', function (data) {
-console.log("nosong: " + data);
+bot.on('nosong', function(data) {
+    console.log("nosong: " + data);
 })
 
 /* ============================ */
@@ -831,35 +842,39 @@ console.log("nosong: " + data);
 /* ============================ */
 bot.on('registered', function(data) {
 
-try {
+    try {
 
-    //Log event in console
-    if (config.consolelog) {
-        console.log('Joined room: ' + data.user[0].name);
-    }
-
-    //Add user to usersList
-    var user = data.user[0];
-    user.lastActivity = new Date();
-    usersList[user.userid] = user;
-    if (currentsong !== null) {
-        currentsong.listeners++;
-    }
-
-    //Add user to user table
-    if (config.database.usedb) {
-        if (user.name !== null) {
-            client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user + ' (userid, username, lastseen)' + 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [user.userid, user.name]);
+        //Log event in console
+        if (config.consolelog) {
+            console.log('Joined room: ' + data.user[0].name);
         }
-    }
 
-    if (config.enableQueue) {
-        bot.pm("Greetings @" + data.user[0].name + ". If you would like to DJ, please type 'q+' to get added to the queue.", data.user[0].userid);
-    }
+        //Add user to usersList
+        var user = data.user[0];
+        user.lastActivity = new Date();
+        usersList[user.userid] = user;
+        if (currentsong !== null) {
+            currentsong.listeners++;
+        }
 
-} catch  (e) {
-	console.log("*** Error *** " + e);
-}
+        //Add user to user table
+        if (config.database.usedb) {
+            if (user.name !== null) {
+                client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user + ' (userid, username, lastseen)' + 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [user.userid, user.name]);
+            }
+        }
+
+        if (config.enableQueue) {
+            if (djQueue[data.user[0].userid].isAfk !== undefined){
+                djQueue[data.user[0].userid].isAfk = false;
+                djQueue[data.user[0].userid].akfTime = null;
+            }
+            bot.pm("Greetings @" + data.user[0].name + ". If you would like to DJ, please type 'q+' to get added to the queue.", data.user[0].userid);
+        }
+
+    } catch (e) {
+        console.log("*** Error *** " + e);
+    }
 });
 
 /* ============================ */
@@ -867,15 +882,22 @@ try {
 /* Runs when a user joins */
 /* ============================ */
 bot.on('deregistered', function(data) {
-try {
-    delete usersList[data.user[0].userid];
-    if (data.user[0].userid == config.botinfo.userid){
-        killBot("4dfb57154fe7d061dd013a44");
-    }
+    try {
+        delete usersList[data.user[0].userid];
+        if (config.enableQueue) {
+            if (djQueue[data.user[0].userid].isAfk !== undefined){
+                djQueue[data.user[0].userid].isAfk = true;
+                djQueue[data.user[0].userid].akfTime = new Date();
+                console.log(djQueue);
+            }
+        }
+        if (data.user[0].userid == config.botinfo.userid) {
+            killBot("4dfb57154fe7d061dd013a44");
+        }
 
-} catch  (e) {
-	console.log("*** Error *** " + e);
-}
+    } catch (e) {
+        console.log("*** Error *** " + e);
+    }
 });
 
 /* ============================ */
@@ -883,129 +905,129 @@ try {
 /* Runs when a user joins */
 /* ============================ */
 bot.on('booted_user', function(data) {
-try{
-    console.log("booted_user: " + data);
-    /*if (data.user[0].userid == config.botinfo.userid){
+    try {
+        console.log("booted_user: " + data);
+        /*if (data.user[0].userid == config.botinfo.userid){
         killBot("4dfb57154fe7d061dd013a44");
     }*/
 
-} catch  (e) {
-	console.log("*** Error *** " + e);
-}
+    } catch (e) {
+        console.log("*** Error *** " + e);
+    }
 });
 
 /* ============================ */
 /* update_user */
 /* ============================ */
 bot.on('update_user', function(data) {
-try{
-    //Log event in console
-    if (config.consolelog) {
-        console.log('Edited user: ' + data);
-    }
+    try {
+        //Log event in console
+        if (config.consolelog) {
+            console.log('Edited user: ' + data);
+        }
 
-    //Update user name in users table
-    /*if (config.database.usedb && (data.name !== null)) {
+        //Update user name in users table
+        /*if (config.database.usedb && (data.name !== null)) {
         client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.user +
             ' (userid, username, lastseen)' +
             'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()',
                 [data.userid, data.name]);
     }*/
 
-} catch  (e) {
-	console.log("*** Error *** " + e);
-}
+    } catch (e) {
+        console.log("*** Error *** " + e);
+    }
 });
 
 /* ============================ */
 /* snagged */
 /* ============================ */
 bot.on('snagged', function(data) {
-try{
-    //Increase song snag count
-    currentsong.snags++;
+    try {
+        //Increase song snag count
+        currentsong.snags++;
 
-    var userid = data.userid;
-    usersList[userid].lastActivity = new Date();
+        var userid = data.userid;
+        usersList[userid].lastActivity = new Date();
 
-} catch  (e) {
-	console.log("*** Error *** " + e);
-}
+    } catch (e) {
+        console.log("*** Error *** " + e);
+    }
 });
 
 /* ============================ */
 /* speak */
 /* ============================ */
 bot.on('speak', function(data) {
-try{
-    //Log in db (chatlog table)
-    /*if (config.database.usedb) {
+    try {
+        //Log in db (chatlog table)
+        /*if (config.database.usedb) {
         client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.chat + ' '
             + 'SET userid = ?, chat = ?, time = NOW()',
             [data.userid, data.text]);
     }*/
-    usersList[data.userid].lastActivity = new Date();
+        usersList[data.userid].lastActivity = new Date();
 
-    if (data.text == "roll") {
-        var roll = Math.ceil(Math.random() * 6);
-        if (!alreadyRolled) {
-            if (currentsong.djid == data.userid) {
-                alreadyRolled = true;
-                if (roll > 4) {
-                    bot.speak(data.name + ', you rolled a ' + roll + ', Awesome!');
-                    bot.vote('up');
-                } else if (roll === 1) {
-                    bot.speak(data.name + ', you rolled a ' + roll + ', Lame!');
-                    bot.vote('down');
+        if (data.text == "roll") {
+            var roll = Math.ceil(Math.random() * 6);
+            if (!alreadyRolled) {
+                if (currentsong.djid == data.userid) {
+                    alreadyRolled = true;
+                    if (roll > 4) {
+                        bot.speak(data.name + ', you rolled a ' + roll + ', Awesome!');
+                        bot.vote('up');
+                    } else if (roll === 1) {
+                        bot.speak(data.name + ', you rolled a ' + roll + ', Lame!');
+                        bot.vote('down');
+                    } else {
+                        bot.speak(data.name + ', you rolled a ' + roll + ', bummer.');
+                    }
+                    bonusvote = true;
                 } else {
-                    bot.speak(data.name + ', you rolled a ' + roll + ', bummer.');
+                    bot.speak("@Uglee roll");
                 }
-                bonusvote = true;
-            } else {
-                bot.speak("@Uglee roll");
             }
         }
-    }
 
-    /* Catch all for the morons that can't read. */
-    if (data.text == "!q+" || data.text == "q+" || data.text == "addme" || data.text.match(/^\/addme$/) || data.text.match(/^\/a$/) || data.text.match(/^\!a$/) || data.text.match(/^\/q$/)) {
-        AddToQueue(data.userid);
-    }
-
-    if (data.text == "!q-" || data.text == "q-") {
-        RemoveFromQueue(data.userid);
-    }
-
-    if (data.text == "q") {
-        QueueStatus();
-    }
-
-    if (data.text.substring(0, 2) == "iq") {
-        if (data.text == "iq") {
-            bot.speak("Usage: iq position username");
-        } else {
-            var position = data.text.substring(2, 4);
-            var username = data.text.substring(5).substring(1);
-            console.log("Position: " + position);
-            client.query("SELECT `userid` FROM " + config.database.dbname + "." + config.database.tablenames.user + " WHERE `username` = ?", [username], function select(error, results, fields) {
-                InsertInQueue(results[0]['userid'], position);
-            });
+        /* Catch all for the morons that can't read. */
+        if (data.text == "!q+" || data.text == "q+" || data.text == "addme" || data.text.match(/^\/addme$/) || data.text.match(/^\/a$/) || data.text.match(/^\!a$/) || data.text.match(/^\/q$/)) {
+            AddToQueue(data.userid);
         }
-    }
 
-    if (data.text.substring(0, 2) == "dq") {
-        if (data.text == "dq") {
-            bot.speak("Usage: dq username");
-        } else {
-            var username = data.text.substring(3).substring(1);
-            console.log(username);
-            client.query("SELECT `userid` FROM " + config.database.dbname + "." + config.database.tablenames.user + " WHERE `username` = ?", [username], function select(error, results, fields) {
-                RemoveFromQueue(results[0]['userid']);
-            });
+        if (data.text == "!q-" || data.text == "q-") {
+            RemoveFromQueue(data.userid);
         }
-    }
 
-    /*var twss = require('twss');
+        if (data.text == "q") {
+            QueueStatus();
+        }
+
+        if (data.text.substring(0, 2) == "iq") {
+            if (data.text == "iq") {
+                bot.speak("Usage: iq position username");
+            } else {
+                var position = data.text.substring(2, 4);
+                var username = data.text.substring(5).substring(1);
+                console.log("Position: " + position);
+                client.query("SELECT `userid` FROM " + config.database.dbname + "." + config.database.tablenames.user + " WHERE `username` = ?", [username], function select(error, results, fields) {
+                    AddToQueue(results[0]['userid']);
+                });
+            }
+        }
+
+        if (data.text.substring(0, 2) == "dq") {
+            if (data.text == "dq") {
+                bot.speak("Usage: dq username");
+            } else {
+                var username = data.text.substring(3).substring(1);
+                console.log(username);
+                client.query("SELECT `userid` FROM " + config.database.dbname + "." + config.database.tablenames.user + " WHERE `username` = ?", [username], function select(error, results, fields) {
+                    RemoveFromQueue(results[0]['userid']);
+                });
+            }
+        }
+
+        /*var twss = require('twss');
     twss.threshold = 0.9;
     //console.log("Probability: " + twss.prob(data.text));
     if (twss.is(data.text)) {
@@ -1016,62 +1038,284 @@ try{
         }
     }*/
 
-    if (isBanned(data.userid)) {
-        return;
-    }
-
-    if (data.text == "roll again jerk" && admin(data.userid)) {
-        var roll2 = Math.ceil(Math.random() * 6);
-        if (roll2 > 4) {
-            bot.speak(data.name + ', you rolled a ' + roll2 + ', Awesome!');
-            bot.vote('up');
-        } else {
-            bot.speak(data.name + ', you rolled a ' + roll2 + ', bummer.');
-        }
-    }
-
-    if (data.text == "/me kicks @Uglee" && admin(data.userid)) {
-        bot.speak("Fine! *grumble*Jerk*mumble*");
-        bot.vote("up");
-    }
-
-    if (data.text == "Fuck you @Uglee") {
-        bot.speak("Fuck you too!");
-    }
-
-    if (data.text.match(/^\!putmeinthequeuedouchebag$/)) {
-        bot.speak("Leave me alone, @ShiningDimLight");
-    }
-
-    var result = data.text.match(/^\@(.*?)( .*)?$/);
-    if (result) {
-
-        // break out the command and parameter if one exists
-        var botName = result[1].trim().toLowerCase();
-        var command = '';
-
-        if (result.length == 3 && result[2]) {
-            command = result[2].trim().toLowerCase();
+        if (isBanned(data.userid)) {
+            return;
         }
 
-        if (config.botName.toLowerCase() == botName) {
+        if (data.text == "roll again jerk" && admin(data.userid)) {
+            var roll2 = Math.ceil(Math.random() * 6);
+            if (roll2 > 4) {
+                bot.speak(data.name + ', you rolled a ' + roll2 + ', Awesome!');
+                bot.vote('up');
+            } else {
+                bot.speak(data.name + ', you rolled a ' + roll2 + ', bummer.');
+            }
+        }
 
-            console.log(data.name, " >> ", data.text);
+        if (data.text == "/me kicks @Uglee" && admin(data.userid)) {
+            bot.speak("Fine! *grumble*Jerk*mumble*");
+            bot.vote("up");
+        }
 
-            delete require.cache['./actions.js'];
-            var Actions = require('./actions.js');
+        if (data.text == "Fuck you @Uglee") {
+            bot.speak("Fuck you too!");
+        }
 
+        if (data.text.match(/^\!putmeinthequeuedouchebag$/)) {
+            bot.speak("Leave me alone, @ShiningDimLight");
+        }
+
+        var result = data.text.match(/^\@(.*?)( .*)?$/);
+        if (result) {
+
+            // break out the command and parameter if one exists
+            var botName = result[1].trim().toLowerCase();
+            var command = '';
+
+            if (result.length == 3 && result[2]) {
+                command = result[2].trim().toLowerCase();
+            }
+
+            if (config.botName.toLowerCase() == botName) {
+
+                console.log(data.name, " >> ", data.text);
+
+                delete require.cache['./actions.js'];
+                var Actions = require('./actions.js');
+
+                if (config.consolelog) {
+                    console.log('Command is', command);
+                }
+
+                switch (command) {
+                case "addsong":
+                    addSong(data.userid);
+                    break;
+
+                case "votenext":
+                    VoteNextSong();
+                    break;
+
+                case "1":
+                case "2":
+                case "3":
+                case "4":
+                case "5":
+                    ProcessVote(command);
+                    break;
+
+                case "endcts":
+                case "stopcts":
+                    if (isMod(data.userid)) {
+                        if (ctsActive) {
+                            ctsActive = false;
+                            ctsLastWords = null;
+                            bot.speak("Sorry folks, the game is over. Play what you want now.");
+                        }
+                    }
+                    break;
+
+                case "startcts":
+                    if (isMod(data.userid)) {
+                        if (!ctsActive) {
+                            ctsActive = true;
+                            bot.speak("We are now playing 'Connect the Songs' each DJ must play a song with at least one word in the title from the previous song title. It will begin with the next song. The best score is currently " + ctsSequenceMax);
+                        }
+                    }
+                    break;
+
+                case "enableq":
+                case "enablequeue":
+                case "startq":
+                case "startqueue":
+                    if (isMod(data.userid)) {
+                        config.enableQueue = true;
+                        bot.speak("We are now using a queue! Sign up using 'q+'.");
+                        enableQueueCache();
+                    }
+                    break;
+
+                case "endq":
+                case "endqueue":
+                case "stopq":
+                case "stopqueue":
+                    if (isMod(data.userid)) {
+                        config.enableQueue = false;
+                        djQueue = { length:0 };
+                        bot.speak("There is no queue...");
+                        clearQueueCache();
+                    }
+                    break;
+
+                case "mod":
+                    summonModerators();
+                    break;
+
+                case "news":
+                    bot.speak(announcement);
+                    break;
+
+                case "listenercount":
+                    bot.speak("There is " + currentsong.listeners + " listeners right now.");
+                    break;
+
+                case "ctsmax":
+                    bot.speak("The highest 'Connect the Songs' count is: " + ctsSequenceMax);
+                    break;
+
+                case "summonbouncer":
+                    if (isMod(data.userid)) {
+                        summonBouncer();
+                    }
+                    break;
+
+                case "dismissbouncer":
+                    if (admin(data.userid)) {
+                        dismissBouncer();
+                    }
+                    break;
+
+                case "die":
+                    killBot(data.userid);
+                    break;
+
+                case "userCount":
+                    bot.roomInfo(true, function(data) {
+                        console.log(data.room.metadata.listeners);
+                        bot.speak("Total users in room is: " + data.room.metadata.listeners);
+                    });
+                    break;
+
+                default:
+                    if (command === "") {
+                        bot.speak('Yes Master @' + data.name + '? Here is what I can do for you: speak | dance | menu | whois | startcts | stopcts');
+
+                        if (isMod(data.senderid)) {
+                            bot.pm("As moderator, you can startq | endq | dq @name | iq pos# @name", data.senderid);
+                        }
+                    } else {
+                        var idx = findAction(command, Actions.chat_responses);
+                        if (idx != -1) {
+                            bot.speak(Actions.chat_responses[idx].response1.replace("{0}", data.name));
+                            if (Actions.chat_responses[idx].response2 !== "") {
+                                pause(500);
+                                bot.speak(Actions.chat_responses[idx].response2.replace("{0}", data.name));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    } catch (e) {
+        console.log("*** Error *** " + e);
+    }
+});
+
+/* ============================ */
+/* pmmed */
+/* ============================ */
+bot.on('pmmed', function(data) {
+    try {
+        if (config.consolelog) {
+            console.log('Private message: ', data);
+        }
+
+        if (isBanned(data.senderid)) {
+            return;
+        }
+
+        console.log("PMMED >> ", data.text);
+        console.log('Private message: ', data);
+
+        //if (data.text.match(/^Uglee$/) && data.senderid == '4e7bf475a3f7511657030c34') {
+        //var reg = RegExp(escape("Uglee"), "i");
+        if (data.senderid == '4e7bf475a3f7511657030c34') {
+            var query = escape(data.text);
+            var reg = RegExp(escape("Uglee"));
+            if (reg.test(query)) {
+                ammResponded = true;
+                console.log("AMM Responded");
+            }
+        }
+
+        var result = data.text.match(/^(.*?)( .*)?$/);
+        if (result) {
+            // break out the command and parameter if one exists
+            var command = result[1].trim().toLowerCase();
+            var param = '';
+            if (result.length == 3 && result[2]) {
+                param = result[2].trim().toLowerCase();
+            }
+            // handle valid commands
             if (config.consolelog) {
-                console.log('Command is', command);
+                console.log('Command: ', command);
+                console.log('Param: ', param);
             }
 
             switch (command) {
+            case "die":
+                killBot(data.senderid);
+                break;
+
             case "addsong":
-                addSong(data.userid);
+                addSong(data.senderid);
+                break;
+
+            case "summonbouncer":
+                if (isMod(data.senderid)) {
+                    summonBouncer();
+                }
+                break;
+
+            case "dismissbouncer":
+                if (admin(data.senderid)) {
+                    dismissBouncer();
+                }
+                break;
+
+            case "news":
+                bot.speak(announcement);
+                break;
+
+            case "djwarn":
+                mustAwesome(param);
+                break;
+
+            case "stepup":
+                if (admin(data.senderid)) {
+                    stepUp();
+                }
+                break;
+
+            case "stepdown":
+                if (admin(data.senderid)) {
+                    stepDown();
+                }
+                break;
+
+            case "skip":
+                if (admin(data.senderid)) {
+                    bot.skip();
+                }
+                break;
+
+            case "test":
+
                 break;
 
             case "votenext":
                 VoteNextSong();
+                break;
+
+            case "roll":
+                var roll2 = Math.ceil(Math.random() * 6);
+                if (roll2 > 4) {
+                    bot.speak('A ' + roll2 + ' has been rolled on your behalf, Awesome!');
+                    bot.vote('up');
+                } else {
+                    bot.speak('A ' + roll2 + ' has been rolled on your behalf, bummer.');
+                }
                 break;
 
             case "1":
@@ -1082,265 +1326,47 @@ try{
                 ProcessVote(command);
                 break;
 
-            case "endcts":
-            case "stopcts":
-                if (isMod(data.userid)) {
-                    if (ctsActive) {
-                        ctsActive = false;
-                        ctsLastWords = null;
-                        bot.speak("Sorry folks, the game is over. Play what you want now.");
+            case "autodj":
+                if (admin(data.senderid)) {
+                    config.autodj = param;
+                    bot.pm("Autodj set to: " + config.autodj, data.senderid);
+                }
+                break;
+
+            case "autobop":
+                if (admin(data.senderid)) {
+                    config.autobop = param;
+                    bot.pm("Autobop set to: " + config.autobop, data.senderid);
+                }
+                break;
+
+            case "setlaptop":
+                bot.modifyLaptop(param);
+                break;
+
+            case "avatar":
+                bot.setAvatar(param);
+                break;
+
+            case "speak":
+                if (isMod(data.senderid)) {
+                    bot.speak(param);
+                }
+                break;
+
+            case "findidle":
+                if (isMod(data.senderid)) {
+                    findIdle(data.senderid);
+                }
+                break;
+
+            case "goto":
+                if (admin(data.senderid)) {
+                    if (param == "amm") {
+                        bot.roomDeregister();
+                        bot.roomRegister('4ea390ac14169c0cc3caa078');
                     }
-                }
-                break;
-
-            case "startcts":
-                if (isMod(data.userid)) {
-                    if (!ctsActive) {
-                        ctsActive = true;
-                        bot.speak("We are now playing 'Connect the Songs' each DJ must play a song with at least one word in the title from the previous song title. It will begin with the next song. The best score is currently " + ctsSequenceMax);
-                    }
-                }
-                break;
-
-            case "enableq":
-            case "enablequeue":
-            case "startq":
-            case "startqueue":
-                if (isMod(data.userid)) {
-                    config.enableQueue = true;
-                    bot.speak("We are now using a queue! Sign up using 'q+'.");
-                    enableQueueCache();
-                }
-                break;
-
-            case "endq":
-            case "endqueue":
-            case "stopq":
-            case "stopqueue":
-                if (isMod(data.userid)) {
-                    config.enableQueue = false;
-                    djQueue = [];
-                    bot.speak("There is no queue...");
-                    clearQueueCache();
-                }
-                break;
-
-            case "mod":
-                summonModerators();
-                break;
-
-            case "news":
-                bot.speak(announcement);
-                break;
-
-            case "listenercount":
-                bot.speak("There is " + currentsong.listeners + " listeners right now.");
-                break;
-
-            case "ctsmax":
-                bot.speak("The highest 'Connect the Songs' count is: " + ctsSequenceMax);
-                break;
-
-            case "summonbouncer":
-                if (isMod(data.userid)) {
-                    summonBouncer();
-                }
-                break;
-
-            case "dismissbouncer":
-                if (admin(data.userid)) {
-                    dismissBouncer();
-                }
-                break;
-
-            case "die":
-                killBot(data.userid);
-                break;
-
-            case "userCount":
-                bot.roomInfo(true, function(data) {
-                    console.log(data.room.metadata.listeners);
-                    bot.speak("Total users in room is: " + data.room.metadata.listeners);
-                });
-                break;
-
-            default:
-                if (command === "") {
-                    bot.speak('Yes Master @' + data.name + '? Here is what I can do for you: speak | dance | menu | whois | startcts | stopcts');
-                    
-            if (isMod(data.senderid)) {
-                bot.pm("As moderator, you can startq | endq | dq @name | iq pos# @name", data.senderid);
-            }
-                } else {
-                    var idx = findAction(command, Actions.chat_responses);
-                    if (idx != -1) {
-                        bot.speak(Actions.chat_responses[idx].response1.replace("{0}", data.name));
-                        if (Actions.chat_responses[idx].response2 !== "") {
-                            pause(500);
-                            bot.speak(Actions.chat_responses[idx].response2.replace("{0}", data.name));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-} catch  (e) {
-	console.log("*** Error *** " + e);
-}
-});
-
-/* ============================ */
-/* pmmed */
-/* ============================ */
-bot.on('pmmed', function(data) {
-try {
-    if (config.consolelog) {
-        console.log('Private message: ', data);
-    }
-
-    if (isBanned(data.senderid)) {
-        return;
-    }
-
-    console.log("PMMED >> ", data.text);
-    console.log('Private message: ', data);
-
-    //if (data.text.match(/^Uglee$/) && data.senderid == '4e7bf475a3f7511657030c34') {
-    //var reg = RegExp(escape("Uglee"), "i");
-    if (data.senderid == '4e7bf475a3f7511657030c34') {
-        var query = escape(data.text);
-        var reg = RegExp(escape("Uglee"));
-        if (reg.test(query)) {
-            ammResponded = true;
-            console.log("AMM Responded");
-        }
-    }
-
-    var result = data.text.match(/^(.*?)( .*)?$/);
-    if (result) {
-        // break out the command and parameter if one exists
-        var command = result[1].trim().toLowerCase();
-        var param = '';
-        if (result.length == 3 && result[2]) {
-            param = result[2].trim().toLowerCase();
-        }
-        // handle valid commands
-        if (config.consolelog) {
-            console.log('Command: ', command);
-            console.log('Param: ', param);
-        }
-
-        switch (command) {
-        case "die":
-            killBot(data.senderid);
-            break;
-
-        case "addsong":
-            addSong(data.senderid);
-            break;
-
-        case "summonbouncer":
-            if (isMod(data.senderid)) {
-                summonBouncer();
-            }
-            break;
-
-        case "dismissbouncer":
-            if (admin(data.senderid)) {
-                dismissBouncer();
-            }
-            break;
-
-        case "news":
-            bot.speak(announcement);
-            break;
-
-        case "djwarn":
-            mustAwesome(param);
-            break;
-
-        case "stepup":
-            if (admin(data.senderid)) {
-                stepUp();
-            }
-            break;
-
-        case "stepdown":
-            if (admin(data.senderid)) {
-                stepDown();
-            }
-            break;
-
-        case "skip":
-            if (admin(data.senderid)) {
-                bot.skip();
-            }
-            break;
-
-        case "votenext":
-            VoteNextSong();
-            break;
-
-        case "roll":
-            var roll2 = Math.ceil(Math.random() * 6);
-            if (roll2 > 4) {
-                bot.speak('A ' + roll2 + ' has been rolled on your behalf, Awesome!');
-                bot.vote('up');
-            } else {
-                bot.speak('A ' + roll2 + ' has been rolled on your behalf, bummer.');
-            }
-            break;
-
-        case "1":
-        case "2":
-        case "3":
-        case "4":
-        case "5":
-            ProcessVote(command);
-            break;
-
-        case "autodj":
-            if (admin(data.senderid)) {
-                config.autodj = param;
-                bot.pm("Autodj set to: " + config.autodj, data.senderid);
-            }
-            break;
-
-        case "autobop":
-            if (admin(data.senderid)) {
-                config.autobop = param;
-                bot.pm("Autobop set to: " + config.autobop, data.senderid);
-            }
-            break;
-
-        case "setlaptop":
-            bot.modifyLaptop(param);
-            break;
-
-        case "avatar":
-            bot.setAvatar(param);
-            break;
-
-        case "speak":
-            if (isMod(data.senderid)) {
-                bot.speak(param);
-            }
-            break;
-
-        case "findidle":
-            if (isMod(data.senderid)) {
-                findIdle(data.senderid);
-            }
-            break;
-
-        case "goto":
-            if (admin(data.senderid)) {
-                if (param == "amm") {
-                    bot.roomDeregister();
-                    bot.roomRegister('4ea390ac14169c0cc3caa078');
-                }
-                /*else if (param == "maw") {
+                    /*else if (param == "maw") {
                     bot.roomDeregister();
                     bot.roomRegister('4ef82538590ca23e33001b3b');
                 } else if (param == "bootcamp") {
@@ -1350,40 +1376,40 @@ try {
                     bot.roomDeregister();
                     bot.roomRegister('4f5e1e11590ca246db01e6fc');
                 }*/
-                else if (param == "vip") {
-                    bot.roomDeregister();
-                    bot.roomRegister('4f73ef36eb35c10888004976');
-                } else if (param == "hothits") {
-                    bot.roomDeregister();
-                    bot.roomRegister("4f5f162268f554664cc5b2c4");
-                }
-                /*else if (param == "campfire") {
+                    else if (param == "vip") {
+                        bot.roomDeregister();
+                        bot.roomRegister('4f73ef36eb35c10888004976');
+                    } else if (param == "hothits") {
+                        bot.roomDeregister();
+                        bot.roomRegister("4f5f162268f554664cc5b2c4");
+                    }
+                    /*else if (param == "campfire") {
                     bot.speak("The campfire is lit! See you there! http://murl.me/campfire");
                     bot.roomDeregister();
                     bot.roomRegister('4f6c119d68f5540c6d1dd67d');
                 }*/
-                else {
-                    bot.roomDeregister();
-                    bot.roomRegister(param);
+                    else {
+                        bot.roomDeregister();
+                        bot.roomRegister(param);
+                    }
                 }
-            }
-            break;
+                break;
 
-        case "help":
-            if (isMod(data.senderid)) {
-                bot.pm("You can awesome (or a) | lame (or l) | djwarn 1 | djwarn 2 | findidle | summonbouncer", data.senderid);
+            case "help":
+                if (isMod(data.senderid)) {
+                    bot.pm("You can awesome (or a) | lame (or l) | djwarn 1 | djwarn 2 | findidle | summonbouncer", data.senderid);
+                }
+                if (admin(data.senderid)) {
+                    pause(500);
+                    bot.pm("roll | step up | step down | skip | die | summonbouncer | dismissbouncer", data.senderid);
+                }
+                break;
             }
-            if (admin(data.senderid)) {
-                pause(500);
-                bot.pm("roll | step up | step down | skip | die | summonbouncer | dismissbouncer", data.senderid);
-            }
-            break;
         }
-    }
 
-} catch  (e) {
-	console.log("*** Error *** " + e);
-}
+    } catch (e) {
+        console.log("*** Error *** " + e);
+    }
 });
 
 /* ============== */
@@ -1394,13 +1420,20 @@ global.AddToQueue = function(userid) {
 
     if (config.enableQueue) { /* Check if they are a DJ */
         if (djs.indexOf(userid) == -1) { /* Check if they are already on the queue*/
-            if (djQueue.indexOf(userid) == -1) {
-                djQueue.push(userid);
-                text = "@" + usersList[userid].name + ", you have been added to the queue. There is a total of " + djQueue.length + " now.";
+            if (djQueue[userid] === undefined) {
+                djQueue[userid] = {
+                    "id": userid,
+                    "name": usersList[userid].name,
+                    "isAfk": false,
+                    "akfCount": 0,
+                    "akfTime": null
+                };
+                djQueue.length ++;
+
+                text = "@" + djQueue[userid].name + ", you have been added to the queue. There is a total of " + djQueue.length + " now.";
                 bot.speak(text);
-                console.log(djQueue);
                 if (config.database.usedb) {
-                    client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [djQueue]);
+                    client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [JSON.stringify(djQueue)]);
                 }
             }
         } else {
@@ -1424,7 +1457,7 @@ global.InsertInQueue = function(userid, position) {
                 bot.speak(text);
                 console.log(djQueue);
                 if (config.database.usedb) {
-                    client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [djQueue]);
+                    client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [JSON.stringify(djQueue)]);
                 }
             }
         }
@@ -1436,87 +1469,68 @@ global.InsertInQueue = function(userid, position) {
 /* ============== */
 global.RemoveFromQueue = function(userid) {
     if (config.enableQueue) {
-        if (djQueue.indexOf(userid) != -1) {
-            djQueue.splice(djQueue.indexOf(userid), 1);
+        if (djQueue[userid] !== undefined) {
+            delete djQueue[userid];
+            djQueue.length --;
             bot.speak("You have been removed from the queue @" + usersList[userid].name);
             if (config.database.usedb) {
-                client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [djQueue]);
+                client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [JSON.stringify(djQueue)]);
             }
         }
     }
 };
 
 /* ============== */
-/* NewDjFromQueue */
+/* NewDjFromQueue - This checks to see if the DJ that just stepped up is the next DJ in the queue */
 /* ============== */
 global.NewDjFromQueue = function(data) {
     if (config.enableQueue) {
         var text = "";
-        console.log(nextDj);
-        if (djQueue.length > 0) {
-            if (data.user[0].userid != djQueue[qPosn]) {
+        if (djQueue.length > 0 && (nextDj !== null || nextDj === undefined)) {
+            if (data.user[0].userid != nextDj) {
                 bot.remDj(data.user[0].userid);
-                if (nextDj === null || nextDj === "") {
-                    nextDj = djQueue[qPosn];
-                    if (nextDj === null || nextDj === undefined) {
-                        djQueue.splice(djQueue.indexOf(djQueue[qPosn]), 1);
-                        if (config.database.usedb) {
-                            client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [djQueue]);
-                        }
-                        return;
-                    }
-                }
                 text = "Sorry @" + usersList[data.user[0].userid].name + ", it's @" + usersList[nextDj].name + " turn. You need to wait your turn.";
                 bot.speak(text);
             } else {
-                djQueue.splice(djQueue.indexOf(data.user[0].userid), 1);
+                delete djQueue[data.user[0].userid];
                 if (config.database.usedb) {
-                    client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [djQueue]);
+                    client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [JSON.stringify(djQueue)]);
                 }
                 waitingOnNextDj = false;
                 clearInterval(queueRefreshIntervalId);
-                nextDj = "";
+                nextDj = null;
             }
         }
     }
 };
 
 /* ============== */
-/* NextDjOnQueue */
+/* NextDjOnQueue - This lets the room know who is next to DJ */
 /* ============== */
 global.NextDjOnQueue = function() {
     qPosn = 0;
+    nextDj = null;
     if (config.enableQueue && !waitingOnNextDj) {
         if (djQueue.length > 0) {
-            while (usersList[djQueue[qPosn]] === undefined) {
-                if (missedQueue.indexOf(nextDj) == -1) {
-                    missedQueue.push(djQueue[qPosn]);
-                    var moron = djQueue[qPosn];
-                    djQueue.splice(djQueue.indexOf(moron), 1);
-                    djQueue.push(moron);
-                    if (qPosn < djQueue.length) {
-                        qPosn++;
-                    } else {
-                        bot.speak("The queue is empty. All DJs in the queue are currently not here. Anyone can DJ at this time!");
-                        return;
-                    }
-                } else {
-                    djQueue.splice(djQueue.indexOf(djQueue[qPosn]), 1);
-                    missedQueue.splice(djQueue.indexOf(djQueue[qPosn]), 1);
-                }
-                if (config.database.usedb) {
-                    client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [djQueue]);
+            for (var i in djQueue){
+                if (djQueue[i].isAfk)
+                    djQueue[i].afkCount ++;
+                else {
+                    nextDj = i;
+                    console.log("Next DJ is: " + usersList[nextDj]);
+                    break;
                 }
             }
-            var text = "It is now @" + usersList[djQueue[qPosn]].name + "'s turn to DJ! You have " + config.nextDjQueueTimeout + " seconds to step up.";
-            if (djQueue.length > qPosn + 1) {
-                text += " @" + usersList[djQueue[qPosn + 1]].name + " is on deck.";
-                bot.pm("Your on deck. Get ready to DJ.", djQueue[qPosn + 1]);
+
+            if (nextDj === null) {
+                bot.speak("The queue is empty. All DJs in the queue are currently not here. Anyone can DJ at this time!");
+                return;
             }
+
+            var text = "It is now @" + djQueue[nextDj].name + "'s turn to DJ! You have " + config.nextDjQueueTimeout + " seconds to step up.";
             waitingOnNextDj = true;
             bot.speak(text);
-            bot.pm("It's your turn to DJ.", djQueue[qPosn]);
-            nextDj = djQueue[qPosn];
+            bot.pm("It's your turn to DJ.", nextDj);
             nextDjTime = new Date();
             queueRefreshIntervalId = setInterval(CheckForNextDjFromQueue, 5000);
         } else {
@@ -1529,22 +1543,25 @@ global.NextDjOnQueue = function() {
 /* CheckForNextDjFromQueue */
 /* ============== */
 global.CheckForNextDjFromQueue = function() {
-    if (nextDj !== "" && djQueue[qPosn] == nextDj) {
+    if (nextDj !== null) {
         var currentTime = new Date();
         if (currentTime.getTime() - nextDjTime.getTime() > (config.nextDjQueueTimeout * 1000)) {
-            if (missedQueue.indexOf(nextDj) == -1) {
-                missedQueue.push(nextDj);
-                djQueue.splice(djQueue.indexOf(userid), 1);
-                InsertInQueue(nextDj, 2);
-                bot.speak("Too late @" + usersList[nextDj].name + " you can try once more on the next opening.");
+            var pastDj = djQueue[nextDj];
+            pastDj.afkCount ++;
+
+            delete djQueue[nextDj];
+
+            if (pastDj.afkCount >= 2){
+                bot.speak("Sorry @" + pastDj.name + ", you missed out! Whatta looser! You can add yourself back to the queue, but pay attention this time.");
             } else {
-                djQueue.splice(djQueue.indexOf(userid), 1);
-                missedQueue.splice(djQueue.indexOf(userid), 1);
-                bot.speak("Sorry @" + usersList[nextDj].name + ", you missed out! Whatta looser! You can add yourself back to the queue, but pay attention this time.");
+                djQueue[nextDj] = pastDj;
+                bot.speak("Too late @" + usersList[nextDj].name + " you can try once more on the next opening.");
             }
+
             waitingOnNextDj = false;
+
             if (config.database.usedb) {
-                client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [djQueue]);
+                client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [JSON.stringify(djQueue)]);
             }
             clearInterval(queueRefreshIntervalId);
             NextDjOnQueue();
@@ -1560,23 +1577,19 @@ global.QueueStatus = function() {
     if (config.enableQueue) {
         var djList = "";
 
-        for (var i = 0; i < djQueue.length; i++) {
-            console.log(djQueue[i]);
-            console.log(usersList[djQueue[i]]);
-            if (usersList[djQueue[i]] !== undefined) {
-                djList += usersList[djQueue[i]].name + ", ";
-            } else {
-                djList += "(dj out of room), ";
+        for (var i in djQueue) {
+            var queuedDj = djQueue[i];
+            console.log(queuedDj);
+            if (!queuedDj.isAfk && queuedDj.name !== undefined) {
+                djList += queuedDj.name + ", ";
             }
         }
 
-        if (config.enableQueue) {
-            if (djQueue.length !== 0) {
-                var text = djQueue.length + " DJ(s) in the queue. They are: " + djList;
-                bot.speak(text);
-            } else {
-                bot.speak("Queue is empty!");
-            }
+        if (djList !== "") {
+            var text = djQueue.length + " DJ(s) in the queue. They are: " + djList;
+            bot.speak(text);
+        } else {
+            bot.speak("Queue is empty!");
         }
     }
 };
@@ -1584,7 +1597,7 @@ global.QueueStatus = function() {
 var enableQueueCache = function() {
         if (config.database.usedb) {
             client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.cache + ' (`key`, `value`, `DateStamp`) VALUES (?, ?, CURRENT_TIMESTAMP)', ["enableQueue", config.enableQueue]);
-            client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.cache + ' (`key`, `value`, `DateStamp`) VALUES (?, ?, CURRENT_TIMESTAMP)', ["djQueue", djQueue]);
+            client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.cache + ' (`key`, `value`, `DateStamp`) VALUES (?, ?, CURRENT_TIMESTAMP)', ["djQueue", JSON.stringify(djQueue)]);
         }
     };
 
@@ -1604,7 +1617,7 @@ global.UpdateDjs = function(callback) {
     bot.roomInfo(function(data) { /* Update the list since we are here */
         djs = data.room.metadata.djs;
         moderators = data.room.metadata.moderator_id;
-callback();
+        callback();
     });
 };
 
