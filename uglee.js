@@ -1,9 +1,3 @@
-/* Last changed 3/7/2012 @ 2016 */
-
-/* AMM = "roomid":"4ea390ac14169c0cc3caa078", */
-/* Bootcamp = "roomid":"4f46ecd8590ca24b66000bfb", */
-/* MAW = "roomid":"4ef82538590ca23e33001b3b", */
-
 var fs = require('fs');
 var util = require('util');
 var Bot = require('ttapi');
@@ -1042,7 +1036,7 @@ bot.on('speak', function(data) {
             return;
         }
 
-        if (data.text == "roll again jerk" && admin(data.userid)) {
+        if (data.text.toLowerCase() == "roll again jerk" && admin(data.userid)) {
             var roll2 = Math.ceil(Math.random() * 6);
             if (roll2 > 4) {
                 bot.speak(data.name + ', you rolled a ' + roll2 + ', Awesome!');
@@ -1052,12 +1046,16 @@ bot.on('speak', function(data) {
             }
         }
 
-        if (data.text == "/me kicks @Uglee" && admin(data.userid)) {
+        if ((data.text.toLowerCase() == "/me kicks @uglee") && admin(data.userid)) {
             bot.speak("Fine! *grumble*Jerk*mumble*");
             bot.vote("up");
         }
 
-        if (data.text == "Fuck you @Uglee") {
+        if ((data.text.toLowerCase() == "@uglee dance bitch") && admin(data.userid)) {
+            bot.vote("up");
+        }
+
+        if (data.text.toLowerCase() == "fuck you @uglee") {
             bot.speak("Fuck you too!");
         }
 
