@@ -54,7 +54,7 @@ child = exec("t set active GilimYurhig", function(error, stdout, stderr) {
 
 
 /*  banned users */
-var bannedUsers = ['4f7bd3adeb35c15efd00005a'];
+var bannedUsers = ['4fedd7baaaa5cd41130001d1'];
 
 //Current song info
 var currentsong = {
@@ -75,7 +75,9 @@ var djing = false;
 var votelog = [];
 var djs = [];
 
-var djQueue = { "length": 0 };
+var djQueue = {
+    "length": 0
+};
 var nextDj = null;
 var nextDjTime = null;
 var queueRefreshIntervalId = null;
@@ -461,12 +463,16 @@ var CheckCTS = function() {
     };
 
 function dateDiff(a, b, format) {
-    var milliseconds = toDate(a) - toDate(b);
+    var milliseconds = a - b;
+    var minutes = milliseconds / 60000;
     var days = milliseconds / 86400000;
     var hours = milliseconds / 3600000;
     var weeks = milliseconds / 604800000;
     var months = milliseconds / 2628000000;
     var years = milliseconds / 31557600000;
+    if (format == "min") {
+        return Math.round(minutes);
+    }
     if (format == "h") {
         return Math.round(hours);
     }
@@ -557,7 +563,7 @@ bot.on('ready', function(data) {
                     console.log(results[0]['value']);
                     var jsonResult = JSON.parse(results[0]['value']);
                     djQueue.length = jsonResult.length;
-                    for (var i in jsonResult){
+                    for (var i in jsonResult) {
                         var dj = jsonResult[i];
                         djQueue[i] = dj;
                     }
@@ -565,7 +571,7 @@ bot.on('ready', function(data) {
                 }
             });
 
-            GetCacheValue('ctsSequenceMax', function(value) {
+            GetCacheValue('ctsSequenceMax', 0, function(value) {
                 if (value !== null) {
                     ctsSequenceMax = value;
                 }
@@ -625,7 +631,7 @@ bot.on('roomChanged', function(data) {
         UpdateDjs(function() {});
 
         /* Notify the next DJ on the list */
-        NextDjOnQueue();
+        //NextDjOnQueue();
 
         bot.speak("Ready to serve!");
 
@@ -838,6 +844,12 @@ bot.on('registered', function(data) {
 
     try {
 
+        if (isBanned(data.user[0].userid)) {
+            bot.bootUser(data.user[0].userid, "Banned");
+            console.log("Banned: " + data.user[0].name);
+            return;
+        }
+
         //Log event in console
         if (config.consolelog) {
             console.log('Joined room: ' + data.user[0].name);
@@ -859,9 +871,11 @@ bot.on('registered', function(data) {
         }
 
         if (config.enableQueue) {
-            if (djQueue[data.user[0].userid].isAfk !== undefined){
+            if (djQueue[data.user[0].userid] !== undefined) {
                 djQueue[data.user[0].userid].isAfk = false;
                 djQueue[data.user[0].userid].akfTime = null;
+                djQueue.length++;
+                SetCacheValue('djQueue', JSON.stringify(djQueue));
             }
             bot.pm("Greetings @" + data.user[0].name + ". If you would like to DJ, please type 'q+' to get added to the queue.", data.user[0].userid);
         }
@@ -877,14 +891,23 @@ bot.on('registered', function(data) {
 /* ============================ */
 bot.on('deregistered', function(data) {
     try {
-        delete usersList[data.user[0].userid];
+
+        //Log event in console
+        if (config.consolelog) {
+            console.log('Left room: ' + data.user[0].name);
+        }
+
         if (config.enableQueue) {
-            if (djQueue[data.user[0].userid].isAfk !== undefined){
+            if (djQueue[data.user[0].userid] !== undefined) {
                 djQueue[data.user[0].userid].isAfk = true;
                 djQueue[data.user[0].userid].akfTime = new Date();
-                console.log(djQueue);
+                djQueue.length--;
+                SetCacheValue('djQueue', JSON.stringify(djQueue));
             }
         }
+
+        delete usersList[data.user[0].userid];
+
         if (data.user[0].userid == config.botinfo.userid) {
             killBot("4dfb57154fe7d061dd013a44");
         }
@@ -984,7 +1007,7 @@ bot.on('speak', function(data) {
         }
 
         /* Catch all for the morons that can't read. */
-        if (data.text == "!q+" || data.text == "q+" || data.text == "addme" || data.text.match(/^\/addme$/) || data.text.match(/^\/a$/) || data.text.match(/^\!a$/) || data.text.match(/^\/q$/)) {
+        if (data.text == "!q+" || data.text == "q+" || data.text == "+q" || data.text == "addme" || data.text.match(/^\/addme$/) || data.text.match(/^\/a$/) || data.text.match(/^\!a$/) || data.text.match(/^\/q$/)) {
             AddToQueue(data.userid);
         }
 
@@ -1031,10 +1054,6 @@ bot.on('speak', function(data) {
             bot.speak("That's what she said!");
         }
     }*/
-
-        if (isBanned(data.userid)) {
-            return;
-        }
 
         if (data.text.toLowerCase() == "roll again jerk" && admin(data.userid)) {
             var roll2 = Math.ceil(Math.random() * 6);
@@ -1139,7 +1158,10 @@ bot.on('speak', function(data) {
                 case "stopqueue":
                     if (isMod(data.userid)) {
                         config.enableQueue = false;
-                        djQueue = { length:0 };
+                        djQueue = {
+                            length: 0
+                        };
+                        clearInterval(queueRefreshIntervalId);
                         bot.speak("There is no queue...");
                         clearQueueCache();
                     }
@@ -1224,7 +1246,11 @@ bot.on('pmmed', function(data) {
         }
 
         console.log("PMMED >> ", data.text);
-        console.log('Private message: ', data);
+
+        /* Catch all for the morons that can't read. */
+        if (data.text == "!q+" || data.text == "q+" || data.text == "+q" || data.text == "addme" || data.text.match(/^\/addme$/) || data.text.match(/^\/a$/) || data.text.match(/^\!a$/) || data.text.match(/^\/q$/)) {
+            AddToQueue(data.senderid);
+        }
 
         //if (data.text.match(/^Uglee$/) && data.senderid == '4e7bf475a3f7511657030c34') {
         //var reg = RegExp(escape("Uglee"), "i");
@@ -1418,7 +1444,7 @@ global.AddToQueue = function(userid) {
 
     if (config.enableQueue) { /* Check if they are a DJ */
         if (djs.indexOf(userid) == -1) { /* Check if they are already on the queue*/
-            if (djQueue[userid] === undefined) {
+            if (djQueue[userid] === undefined && usersList[userid] !== undefined) {
                 djQueue[userid] = {
                     "id": userid,
                     "name": usersList[userid].name,
@@ -1426,13 +1452,11 @@ global.AddToQueue = function(userid) {
                     "akfCount": 0,
                     "akfTime": null
                 };
-                djQueue.length ++;
+                djQueue.length++;
 
                 text = "@" + djQueue[userid].name + ", you have been added to the queue. There is a total of " + djQueue.length + " now.";
                 bot.speak(text);
-                if (config.database.usedb) {
-                    client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [JSON.stringify(djQueue)]);
-                }
+                SetCacheValue('djQueue', JSON.stringify(djQueue));
             }
         } else {
             text = "@" + usersList[userid].name + ", seriously?!? Can't you wait until you're OFF the TABLE before adding yourself to the queue again? FAIL! ";
@@ -1454,9 +1478,8 @@ global.InsertInQueue = function(userid, position) {
                 text = "@" + usersList[userid].name + ", you have been added to the queue. There is a total of " + djQueue.length + " now.";
                 bot.speak(text);
                 console.log(djQueue);
-                if (config.database.usedb) {
-                    client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [JSON.stringify(djQueue)]);
-                }
+                djQueue.length++;
+                SetCacheValue('djQueue', JSON.stringify(djQueue));
             }
         }
     }
@@ -1469,11 +1492,9 @@ global.RemoveFromQueue = function(userid) {
     if (config.enableQueue) {
         if (djQueue[userid] !== undefined) {
             delete djQueue[userid];
-            djQueue.length --;
+            djQueue.length--;
             bot.speak("You have been removed from the queue @" + usersList[userid].name);
-            if (config.database.usedb) {
-                client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [JSON.stringify(djQueue)]);
-            }
+            SetCacheValue('djQueue', JSON.stringify(djQueue));
         }
     }
 };
@@ -1491,9 +1512,8 @@ global.NewDjFromQueue = function(data) {
                 bot.speak(text);
             } else {
                 delete djQueue[data.user[0].userid];
-                if (config.database.usedb) {
-                    client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [JSON.stringify(djQueue)]);
-                }
+                djQueue.length--;
+                SetCacheValue('djQueue', JSON.stringify(djQueue));
                 waitingOnNextDj = false;
                 clearInterval(queueRefreshIntervalId);
                 nextDj = null;
@@ -1508,15 +1528,18 @@ global.NewDjFromQueue = function(data) {
 global.NextDjOnQueue = function() {
     qPosn = 0;
     nextDj = null;
+    console.log("Waiting on next DJ" + waitingOnNextDj);
     if (config.enableQueue && !waitingOnNextDj) {
         if (djQueue.length > 0) {
-            for (var i in djQueue){
-                if (djQueue[i].isAfk)
-                    djQueue[i].afkCount ++;
-                else {
-                    nextDj = i;
-                    console.log("Next DJ is: " + usersList[nextDj]);
-                    break;
+            console.log(djQueue);
+            for (var i in djQueue) {
+                if (djQueue[i].id !== undefined) {
+                    if (djQueue[i].isAfk) djQueue[i].afkCount++;
+                    else {
+                        nextDj = djQueue[i].id;
+                        console.log("Next DJ is: " + usersList[nextDj]);
+                        break;
+                    }
                 }
             }
 
@@ -1545,22 +1568,23 @@ global.CheckForNextDjFromQueue = function() {
         var currentTime = new Date();
         if (currentTime.getTime() - nextDjTime.getTime() > (config.nextDjQueueTimeout * 1000)) {
             var pastDj = djQueue[nextDj];
-            pastDj.afkCount ++;
+            console.log(pastDj);
+            pastDj.afkCount++;
 
             delete djQueue[nextDj];
+            djQueue.length--;
 
-            if (pastDj.afkCount >= 2){
+            if (pastDj.afkCount >= 2) {
                 bot.speak("Sorry @" + pastDj.name + ", you missed out! Whatta looser! You can add yourself back to the queue, but pay attention this time.");
             } else {
                 djQueue[nextDj] = pastDj;
-                bot.speak("Too late @" + usersList[nextDj].name + " you can try once more on the next opening.");
+                djQueue.length++;
+                bot.speak("Too late @" + pastDj.name + " you can try once more on the next opening.");
             }
 
             waitingOnNextDj = false;
 
-            if (config.database.usedb) {
-                client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = 'djQueue'", [JSON.stringify(djQueue)]);
-            }
+            SetCacheValue('djQueue', JSON.stringify(djQueue));
             clearInterval(queueRefreshIntervalId);
             NextDjOnQueue();
         }
@@ -1578,17 +1602,29 @@ global.QueueStatus = function() {
         for (var i in djQueue) {
             var queuedDj = djQueue[i];
             console.log(queuedDj);
-            if (!queuedDj.isAfk && queuedDj.name !== undefined) {
-                djList += queuedDj.name + ", ";
+            if (!queuedDj.isAfk) {
+                if (queuedDj.name !== undefined){
+                    djList += queuedDj.name + ", ";
+                }
+            } else {
+                var now = new Date();
+                var afkTime = new Date(queuedDj.akfTime);
+                var afkFor = dateDiff(now, afkTime, 'min');
+                console.log(afkFor);
+                if (queuedDj.isAfk && afkFor >= 5) {
+                    console.log("Remove DJ: " + djQueue[i].name);
+                    delete djQueue[i];
+                }
             }
         }
 
         if (djList !== "") {
             var text = djQueue.length + " DJ(s) in the queue. They are: " + djList;
-            bot.speak(text);
+            bot.speak(text.substring(0, text.length - 2));
         } else {
             bot.speak("Queue is empty!");
         }
+        SetCacheValue('djQueue', JSON.stringify(djQueue));
     }
 };
 
@@ -1625,10 +1661,14 @@ global.UpdateDjs = function(callback) {
 global.SetCacheValue = function(key, value) {
     if (config.database.usedb) {
         client.query("SELECT `value` FROM " + config.database.dbname + "." + config.database.tablenames.cache + " WHERE `key` = ?", [key], function select(error, results, fields) {
-            if (results.length !== 0) {
-                client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = ?", [value, key]);
+            if (results !== undefined) {
+                if (results.length !== 0) {
+                    client.query("UPDATE " + config.database.dbname + "." + config.database.tablenames.cache + " SET `value` = ? WHERE `key` = ?", [value, key]);
+                } else {
+                    client.query("INSERT INTO " + config.database.dbname + "." + config.database.tablenames.cache + " (`key`, `value`, `DateStamp`) VALUES (?, ?, CURRENT_TIMESTAMP)", [key, value]);
+                }
             } else {
-                client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.cache + ' (`key`, `value`, `DateStamp`) VALUES (?, ?, CURRENT_TIMESTAMP)', [key, value]);
+                client.query("INSERT INTO " + config.database.dbname + "." + config.database.tablenames.cache + " (`key`, `value`, `DateStamp`) VALUES (?, ?, CURRENT_TIMESTAMP)", [key, value]);
             }
         });
     }
@@ -1637,11 +1677,21 @@ global.SetCacheValue = function(key, value) {
 /* ============== */
 /* GetCacheValue - Gets the value from the DB cache */
 /* ============== */
-global.GetCacheValue = function(key, callback) {
+global.GetCacheValue = function(key, timeout, callback) {
     if (config.database.usedb) {
-        client.query("SELECT `value` FROM " + config.database.dbname + "." + config.database.tablenames.cache + " WHERE `key` = ?", [key], function select(error, results, fields) {
-            if (results.length !== 0) {
-                callback(results[0]['value']);
+        client.query("SELECT `value`, `DateStamp` FROM " + config.database.dbname + "." + config.database.tablenames.cache + " WHERE `key` = ?", [key], function select(error, results, fields) {
+            console.log("Results: " + results);
+            if (results !== undefined) {
+                if (results.length !== 0) {
+                    var now = new Date();
+                    if (timeout === 0 || dateDiff(now, results[0]['DateStamp'], 'min') <= timeout) {
+                        callback(results[0]['value']);
+                    } else {
+                        callback(null);
+                    }
+                } else {
+                    callback(null);
+                }
             } else {
                 callback(null);
             }
