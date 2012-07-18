@@ -7,8 +7,8 @@ var config;
 try {
     config = JSON.parse(fs.readFileSync('config.json', 'ascii'));
 } catch (e) {
-    console.log(e);
-    console.log('Ensure that config.json is present in this directory.');
+    Log(e);
+    Log('Ensure that config.json is present in this directory.');
     process.exit(0);
 }
 
@@ -17,9 +17,9 @@ if (config.database.usedb) {
     try {
         mysql = require('mysql');
     } catch (e) {
-        console.log(e);
-        console.log('It is likely that you do not have the mysql node module installed.' + '\nUse the command \'npm install mysql\' to install.');
-        console.log('Starting bot without database functionality.');
+        Log(e);
+        Log('It is likely that you do not have the mysql node module installed.' + '\nUse the command \'npm install mysql\' to install.');
+        Log('Starting bot without database functionality.');
         config.database.usedb = false;
     }
 
@@ -27,9 +27,9 @@ if (config.database.usedb) {
     try {
         client = mysql.createClient(config.database.login);
     } catch (e) {
-        console.log(e);
-        console.log('Make sure that a mysql server instance is running and that the ' + 'username and password information in config.js are correct.');
-        console.log('Starting bot without database functionality.');
+        Log(e);
+        Log('Make sure that a mysql server instance is running and that the ' + 'username and password information in config.js are correct.');
+        Log('Starting bot without database functionality.');
         config.database.usedb = false;
     }
 }
@@ -42,12 +42,12 @@ var child;
 /* Sends me a message every time Uglee reboots */
 child = exec("t set active GilimYurhig", function(error, stdout, stderr) {
     if (error !== null) {
-        console.log('exec error: ' + error);
+        Log('exec error: ' + error);
     }
 
     child = exec("t update 'd @mikewills This is Uglee, I rebooted for you!'", function(error, stdout, stderr) {
         if (error !== null) {
-            console.log('exec error: ' + error);
+            Log('exec error: ' + error);
         }
     });
 });
@@ -111,6 +111,15 @@ var announcement = "HEAR YE! HEAR YE! On 6/17 @ 10pm CST, @PodcastMike will be m
 
 var bot = new Bot(config.botinfo.auth, config.botinfo.userid);
 
+/* ============== */
+/* Log - Log the information to the console */
+/* ============== */
+global.Log = function(data) {
+    if (config.consolelog) {
+        console.log(data);
+    }
+};
+
 function PostAnnouncement() {
     var roll = Math.ceil(Math.random() * 8);
     var now = new Date();
@@ -126,24 +135,24 @@ function CheckThatAMMisAlive() {
     isAmmDown = false;
     ammResponded = false;
     ammRefreshIntervalId = setInterval(HasAmmResponded, 30000);
-    console.log("Sent Request");
+    Log("Sent Request");
     //PostAnnouncement();
 }
 //setInterval(CheckThatAMMisAlive, 60000); // Check every 15 minutes
 setInterval(CheckThatAMMisAlive, 900000); // Check every 15 minutes
 
 function HasAmmResponded() {
-    console.log("Checking AMM status");
-    console.log(ammResponded);
+    Log("Checking AMM status");
+    Log(ammResponded);
     if (!ammResponded) { /* Sends me a message every time Uglee reboots */
         child = exec("t set active GilimYurhig", function(error, stdout, stderr) {
             if (error !== null) {
-                console.log('exec error: ' + error);
+                Log('exec error: ' + error);
             }
 
             child = exec("t update '@mikewills This is Uglee, AMM is being a jerk and not answering me.'", function(error, stdout, stderr) {
                 if (error !== null) {
-                    console.log('exec error: ' + error);
+                    Log('exec error: ' + error);
                 }
             });
         });
@@ -177,7 +186,7 @@ function isBanned(userid) {
     if (bannedUsers.indexOf(userid) == -1) {
         return false;
     } else {
-        console.log("Banned");
+        Log("Banned");
         return true;
     }
 }
@@ -323,7 +332,7 @@ function VoteNextSong() {
             options += "[" + (i + 1) + "] " + data.list[i].metadata.song + " by " + data.list[i].metadata.artist + "\n";
         }
         bot.speak(options);
-        //console.log(options);
+        //Log(options);
         pause(500);
         bot.speak("Type in your choice by typing the number of the song you would like to hear. Voting is open for 1 minute.");
         acceptingVotes = true;
@@ -345,7 +354,7 @@ function ProcessVote(vote) {
         } else if (vote == "5") {
             incomingVotes.Five++;
         }
-        console.log(incomingVotes);
+        Log(incomingVotes);
     }
 }
 
@@ -377,14 +386,14 @@ function VotingEnded() {
             topVote = 5;
             topVoteCount = incomingVotes.Five;
         }
-        console.log("Vote " + topVote + " wins!");
+        Log("Vote " + topVote + " wins!");
 
         var winner = topVote - 1;
-        console.log(winner);
+        Log(winner);
         bot.playlistReorder(winner, 0, function() {
             //bot.playlistAll(function(data) {
             //bot.speak("Next song is: " + data.list[0].metadata.song + " by " + data.list[0].metadata.artist);
-            //console.log("Next song is: " + data.list[0].metadata.song + " by " + data.list[0].metadata.artist);
+            //Log("Next song is: " + data.list[0].metadata.song + " by " + data.list[0].metadata.artist);
             //});
         });
     }
@@ -427,11 +436,11 @@ var CheckCTS = function() {
         var ctsActive = false;
         var ctsExcludedWords = ["in", "the", "is", "that"];
         var ctsLastWords = [];*/
-        console.log(ctsLastWords);
+        Log(ctsLastWords);
         var song = currentsong.song.toLowerCase().replace("'", " ").replace("\"", " ").replace("(", " ").replace(")", " ").replace(".", " ").replace("/", " ").replace("\\", " ").replace("  ", " ");
-        console.log(song);
+        Log(song);
         var words = song.split(" ");
-        console.log(words);
+        Log(words);
         if (ctsLastWords !== null) {
             for (var i = 0; i <= words.length; i++) {
                 if (ctsLastWords.indexOf(words[i]) != -1) {
@@ -455,7 +464,7 @@ var CheckCTS = function() {
                 SetCacheValue('ctsSequenceMax', ctsSequenceMax);
             }
             bot.speak("Boo! The game is over with a score of " + ctsSequenceCount + ". The highest score is " + ctsSequenceMax);
-            console.log("Game ended");
+            Log("Game ended");
             ctsActive = false;
             ctsSequenceCount = -1;
             ctsLastWords = null;
@@ -493,13 +502,13 @@ function dateDiff(a, b, format) {
 var findIdle = function(senderid) {
         var pmText = "The following users have been idle for more than 6 hours: ";
         for (var z in usersList) {
-            //console.log(usersList[z]);
+            //Log(usersList[z]);
             //if (usersList[z].laptop != "iphone" || usersList[z].laptop != "android") {
-            //console.log(usersList[z]);
+            //Log(usersList[z]);
             var startDate = new Date();
             var idleTime = Math.round((startDate - usersList[z].lastActivity) / 3600000); // in hours
             //var idleTime = Math.round((startDate - usersList[z].lastActivity) / 60000); // for testing minutes
-            console.log(usersList[z].name + ": " + idleTime);
+            Log(usersList[z].name + ": " + idleTime);
             if (idleTime >= 6) {
                 pmText += usersList[z].name + ": " + idleTime + " on " + usersList[z].laptop + " | ";
             }
@@ -511,12 +520,12 @@ var findIdle = function(senderid) {
 var summonModerators = function() {
         child = exec("t set active GilimYurhig", function(error, stdout, stderr) {
             if (error !== null) {
-                console.log('exec error: ' + error);
+                Log('exec error: ' + error);
             }
 
             child = exec("t update 'Uglee: A moderator is requested in AMM. @mikewills @techguyjason @mikebdotorg'", function(error, stdout, stderr) {
                 if (error !== null) {
-                    console.log('exec error: ' + error);
+                    Log('exec error: ' + error);
                 }
             });
         });
@@ -526,7 +535,7 @@ var summonBouncer = function() {
         bot.speak("HEY BOUNCER! Weee neeeeed yooooouuu!!!!!");
         child = exec("cd /home/mikewills/ && ./amm.sh", function(error, stdout, stderr) {
             if (error !== null) {
-                console.log('exec error: ' + error);
+                Log('exec error: ' + error);
             }
         });
     };
@@ -535,7 +544,7 @@ var dismissBouncer = function() {
         bot.speak("Thanks for helping us out Bouncer. We don't need you anymore.");
         child = exec("cd /home/mikewills/ && ./killamm.sh", function(error, stdout, stderr) {
             if (error !== null) {
-                console.log('exec error: ' + error);
+                Log('exec error: ' + error);
             }
         });
     };
@@ -560,14 +569,14 @@ bot.on('ready', function(data) {
             });
             client.query("SELECT `value` FROM " + config.database.dbname + "." + config.database.tablenames.cache + " WHERE `key` = 'djQueue'", function select(error, results, fields) {
                 if (results.length !== 0) {
-                    console.log(results[0]['value']);
+                    Log(results[0]['value']);
                     var jsonResult = JSON.parse(results[0]['value']);
                     djQueue.length = jsonResult.length;
                     for (var i in jsonResult) {
                         var dj = jsonResult[i];
                         djQueue[i] = dj;
                     }
-                    console.log(djQueue);
+                    Log(djQueue);
                 }
             });
 
@@ -581,7 +590,7 @@ bot.on('ready', function(data) {
         bot.roomRegister(config.roomid);
 
     } catch (e) {
-        console.log("*** Error *** " + e);
+        Log("*** Error *** " + e);
     }
 
 });
@@ -593,11 +602,8 @@ bot.on('roomChanged', function(data) {
 
     try {
 
-        if (config.consolelog) {
-            //console.log('Room Changed',  data);
-            console.log('Moderator IDs', data.room.metadata.moderator_id);
-            console.log('DJs', data.room.metadata.djs);
-        }
+            Log('Moderator IDs ' + data.room.metadata.moderator_id);
+            Log('DJs' + data.room.metadata.djs);
 
         djs = data.room.metadata.djs;
         moderators = data.room.metadata.moderator_id;
@@ -636,7 +642,7 @@ bot.on('roomChanged', function(data) {
         bot.speak("Ready to serve!");
 
     } catch (e) {
-        console.log("*** Error *** " + e);
+        Log("*** Error *** " + e);
     }
 
 });
@@ -656,9 +662,7 @@ bot.on('newsong', function(data) {
         delete require.cache['./actions.js'];
         var Actions = require('./actions.js');
 
-        if (config.consolelog) {
-            console.log('newsong', data.room.metadata.current_song.metadata);
-        }
+            Log('New Song: ' + data.room.metadata.current_song.metadata);
 
         if (ctsActive) {
             CheckCTS();
@@ -671,7 +675,7 @@ bot.on('newsong', function(data) {
         if (djing) {
             bot.vote('up');
             voted = true;
-            console.log("Autobop by DJing");
+            Log("Autobop by DJing");
         }
 
         /* Selectively awesome/lame songs */
@@ -690,7 +694,7 @@ bot.on('newsong', function(data) {
                 }
                 //dislike = Actions.artists[idx].dislike;
                 //voted = true;
-                //console.log("Autobop by artist");
+                //Log("Autobop by artist");
             }
 
             /* Then check for song */
@@ -702,7 +706,7 @@ bot.on('newsong', function(data) {
                 }
                 //dislike = Actions.songs[idx].dislike;
                 //voted = true;
-                //console.log("Autobop by song");
+                //Log("Autobop by song");
             }
 
             /* Then check for genre */
@@ -714,7 +718,7 @@ bot.on('newsong', function(data) {
                 }
                 //dislike = Actions.genres[idx].dislike;
                 //voted = true;
-                //console.log("Autobop by genre");
+                //Log("Autobop by genre");
             }
         }
 
@@ -727,7 +731,7 @@ bot.on('newsong', function(data) {
         }
 
     } catch (e) {
-        console.log("*** Error *** " + e);
+        Log("*** Error *** " + e);
     }
 });
 
@@ -749,7 +753,7 @@ bot.on('endsong', function(data) {
 
 
     } catch (e) {
-        console.log("*** Error *** " + e);
+        Log("*** Error *** " + e);
     }
 });
 
@@ -766,16 +770,16 @@ bot.on('update_votes', function(data) {
         var votelog = data.room.metadata.votelog;
         for (var i = 0; i < votelog.length; i++) {
             var userid = votelog[i][0];
-            //console.log("Update Vote: " + userid);
+            //Log("Update Vote: " + userid);
             if (userid !== "") {
                 usersList[userid].lastActivity = new Date();
             } else {
-                console.log("Update Vote: " + userid);
+                Log("Update Vote: " + userid);
             }
         }
 
     } catch (e) {
-        console.log("*** Error *** " + e);
+        Log("*** Error *** " + e);
     }
 });
 
@@ -784,9 +788,7 @@ bot.on('update_votes', function(data) {
 /* ============================ */
 bot.on('add_dj', function(data) {
     try {
-        if (config.consolelog) {
-            console.log('Added DJ: ', data);
-        }
+        Log('Added DJ: ' + data);
 
         NewDjFromQueue(data);
 
@@ -800,7 +802,7 @@ bot.on('add_dj', function(data) {
         UpdateDjs(function() {});
 
     } catch (e) {
-        console.log("*** Error *** " + e);
+        Log("*** Error *** " + e);
     }
 
 });
@@ -811,9 +813,7 @@ bot.on('add_dj', function(data) {
 bot.on('rem_dj', function(data) {
 
     try {
-        if (config.consolelog) {
-            console.log('Removed DJ: ', data);
-        }
+        Log('Removed DJ: ' + data);
 
         waitingOnNextDj = false;
 
@@ -827,13 +827,13 @@ bot.on('rem_dj', function(data) {
         });
 
     } catch (e) {
-        console.log("*** Error *** " + e);
+        Log("*** Error *** " + e);
     }
 
 });
 
 bot.on('nosong', function(data) {
-    console.log("nosong: " + data);
+    Log("nosong: " + data);
 })
 
 /* ============================ */
@@ -846,14 +846,12 @@ bot.on('registered', function(data) {
 
         if (isBanned(data.user[0].userid)) {
             bot.bootUser(data.user[0].userid, "Banned");
-            console.log("Banned: " + data.user[0].name);
+            Log("Banned: " + data.user[0].name);
             return;
         }
 
         //Log event in console
-        if (config.consolelog) {
-            console.log('Joined room: ' + data.user[0].name);
-        }
+            Log('Joined room: ' + data.user[0].name);
 
         //Add user to usersList
         var user = data.user[0];
@@ -881,7 +879,7 @@ bot.on('registered', function(data) {
         }
 
     } catch (e) {
-        console.log("*** Error *** " + e);
+        Log("*** Error *** " + e);
     }
 });
 
@@ -893,9 +891,7 @@ bot.on('deregistered', function(data) {
     try {
 
         //Log event in console
-        if (config.consolelog) {
-            console.log('Left room: ' + data.user[0].name);
-        }
+            Log('Left room: ' + data.user[0].name);
 
         if (config.enableQueue) {
             if (djQueue[data.user[0].userid] !== undefined) {
@@ -913,7 +909,7 @@ bot.on('deregistered', function(data) {
         }
 
     } catch (e) {
-        console.log("*** Error *** " + e);
+        Log("*** Error *** " + e);
     }
 });
 
@@ -923,13 +919,13 @@ bot.on('deregistered', function(data) {
 /* ============================ */
 bot.on('booted_user', function(data) {
     try {
-        console.log("booted_user: " + data);
+        Log("booted_user: " + data);
         /*if (data.user[0].userid == config.botinfo.userid){
         killBot("4dfb57154fe7d061dd013a44");
     }*/
 
     } catch (e) {
-        console.log("*** Error *** " + e);
+        Log("*** Error *** " + e);
     }
 });
 
@@ -939,9 +935,7 @@ bot.on('booted_user', function(data) {
 bot.on('update_user', function(data) {
     try {
         //Log event in console
-        if (config.consolelog) {
-            console.log('Edited user: ' + data);
-        }
+            Log('Edited user: ' + data);
 
         //Update user name in users table
         /*if (config.database.usedb && (data.name !== null)) {
@@ -952,7 +946,7 @@ bot.on('update_user', function(data) {
     }*/
 
     } catch (e) {
-        console.log("*** Error *** " + e);
+        Log("*** Error *** " + e);
     }
 });
 
@@ -968,7 +962,7 @@ bot.on('snagged', function(data) {
         usersList[userid].lastActivity = new Date();
 
     } catch (e) {
-        console.log("*** Error *** " + e);
+        Log("*** Error *** " + e);
     }
 });
 
@@ -1025,7 +1019,7 @@ bot.on('speak', function(data) {
             } else {
                 var position = data.text.substring(2, 4);
                 var username = data.text.substring(5).substring(1);
-                console.log("Position: " + position);
+                Log("Position: " + position);
                 client.query("SELECT `userid` FROM " + config.database.dbname + "." + config.database.tablenames.user + " WHERE `username` = ?", [username], function select(error, results, fields) {
                     AddToQueue(results[0]['userid']);
                 });
@@ -1037,7 +1031,7 @@ bot.on('speak', function(data) {
                 bot.speak("Usage: dq username");
             } else {
                 var username = data.text.substring(3).substring(1);
-                console.log(username);
+                Log(username);
                 client.query("SELECT `userid` FROM " + config.database.dbname + "." + config.database.tablenames.user + " WHERE `username` = ?", [username], function select(error, results, fields) {
                     RemoveFromQueue(results[0]['userid']);
                 });
@@ -1046,10 +1040,10 @@ bot.on('speak', function(data) {
 
         /*var twss = require('twss');
     twss.threshold = 0.9;
-    //console.log("Probability: " + twss.prob(data.text));
+    //Log("Probability: " + twss.prob(data.text));
     if (twss.is(data.text)) {
         var roll1 = Math.ceil(Math.random() * 20);
-        //console.log("TWSS roll: " + roll1);
+        //Log("TWSS roll: " + roll1);
         if (roll1 >= 19) {
             bot.speak("That's what she said!");
         }
@@ -1095,14 +1089,12 @@ bot.on('speak', function(data) {
 
             if (config.botName.toLowerCase() == botName) {
 
-                console.log(data.name, " >> ", data.text);
+                Log(data.name + " >> " + data.text);
 
                 delete require.cache['./actions.js'];
                 var Actions = require('./actions.js');
 
-                if (config.consolelog) {
-                    console.log('Command is', command);
-                }
+                    Log('Command is ' + command);
 
                 switch (command) {
                 case "addsong":
@@ -1201,7 +1193,7 @@ bot.on('speak', function(data) {
 
                 case "userCount":
                     bot.roomInfo(true, function(data) {
-                        console.log(data.room.metadata.listeners);
+                        Log(data.room.metadata.listeners);
                         bot.speak("Total users in room is: " + data.room.metadata.listeners);
                     });
                     break;
@@ -1228,7 +1220,7 @@ bot.on('speak', function(data) {
         }
 
     } catch (e) {
-        console.log("*** Error *** " + e);
+        Log("*** Error *** " + e);
     }
 });
 
@@ -1237,15 +1229,13 @@ bot.on('speak', function(data) {
 /* ============================ */
 bot.on('pmmed', function(data) {
     try {
-        if (config.consolelog) {
-            console.log('Private message: ', data);
-        }
+            Log('Private message: ' + data);
 
         if (isBanned(data.senderid)) {
             return;
         }
 
-        console.log("PMMED >> ", data.text);
+        Log("PMMED >> " + data.text);
 
         /* Catch all for the morons that can't read. */
         if (data.text == "!q+" || data.text == "q+" || data.text == "+q" || data.text == "addme" || data.text.match(/^\/addme$/) || data.text.match(/^\/a$/) || data.text.match(/^\!a$/) || data.text.match(/^\/q$/)) {
@@ -1259,7 +1249,7 @@ bot.on('pmmed', function(data) {
             var reg = RegExp(escape("Uglee"));
             if (reg.test(query)) {
                 ammResponded = true;
-                console.log("AMM Responded");
+                Log("AMM Responded");
             }
         }
 
@@ -1272,10 +1262,8 @@ bot.on('pmmed', function(data) {
                 param = result[2].trim().toLowerCase();
             }
             // handle valid commands
-            if (config.consolelog) {
-                console.log('Command: ', command);
-                console.log('Param: ', param);
-            }
+                Log('Command: ' + command);
+                Log('Param: ' + param);
 
             switch (command) {
             case "die":
@@ -1432,7 +1420,7 @@ bot.on('pmmed', function(data) {
         }
 
     } catch (e) {
-        console.log("*** Error *** " + e);
+        Log("*** Error *** " + e);
     }
 });
 
@@ -1477,7 +1465,7 @@ global.InsertInQueue = function(userid, position) {
                 djQueue.splice((position - 1), 0, userid);
                 text = "@" + usersList[userid].name + ", you have been added to the queue. There is a total of " + djQueue.length + " now.";
                 bot.speak(text);
-                console.log(djQueue);
+                Log(djQueue);
                 djQueue.length++;
                 SetCacheValue('djQueue', JSON.stringify(djQueue));
             }
@@ -1528,16 +1516,16 @@ global.NewDjFromQueue = function(data) {
 global.NextDjOnQueue = function() {
     qPosn = 0;
     nextDj = null;
-    console.log("Waiting on next DJ" + waitingOnNextDj);
+    Log("Waiting on next DJ" + waitingOnNextDj);
     if (config.enableQueue && !waitingOnNextDj) {
         if (djQueue.length > 0) {
-            console.log(djQueue);
+            Log(djQueue);
             for (var i in djQueue) {
                 if (djQueue[i].id !== undefined) {
                     if (djQueue[i].isAfk) djQueue[i].afkCount++;
                     else {
                         nextDj = djQueue[i].id;
-                        console.log("Next DJ is: " + usersList[nextDj]);
+                        Log("Next DJ is: " + usersList[nextDj]);
                         break;
                     }
                 }
@@ -1568,7 +1556,7 @@ global.CheckForNextDjFromQueue = function() {
         var currentTime = new Date();
         if (currentTime.getTime() - nextDjTime.getTime() > (config.nextDjQueueTimeout * 1000)) {
             var pastDj = djQueue[nextDj];
-            console.log(pastDj);
+            Log(pastDj);
             pastDj.afkCount++;
 
             delete djQueue[nextDj];
@@ -1601,7 +1589,7 @@ global.QueueStatus = function() {
 
         for (var i in djQueue) {
             var queuedDj = djQueue[i];
-            console.log(queuedDj);
+            Log(queuedDj);
             if (!queuedDj.isAfk) {
                 if (queuedDj.name !== undefined){
                     djList += queuedDj.name + ", ";
@@ -1610,9 +1598,9 @@ global.QueueStatus = function() {
                 var now = new Date();
                 var afkTime = new Date(queuedDj.akfTime);
                 var afkFor = dateDiff(now, afkTime, 'min');
-                console.log(afkFor);
+                Log(afkFor);
                 if (queuedDj.isAfk && afkFor >= 5) {
-                    console.log("Remove DJ: " + djQueue[i].name);
+                    Log("Remove DJ: " + djQueue[i].name);
                     delete djQueue[i];
                 }
             }
@@ -1680,7 +1668,7 @@ global.SetCacheValue = function(key, value) {
 global.GetCacheValue = function(key, timeout, callback) {
     if (config.database.usedb) {
         client.query("SELECT `value`, `DateStamp` FROM " + config.database.dbname + "." + config.database.tablenames.cache + " WHERE `key` = ?", [key], function select(error, results, fields) {
-            console.log("Results: " + results);
+            Log("Results: " + results);
             if (results !== undefined) {
                 if (results.length !== 0) {
                     var now = new Date();
