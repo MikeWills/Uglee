@@ -1,10 +1,22 @@
+var botWasBooted = false;
+
 global.OnReady = function(data){
 	Log(blue + "EVENT Ready" + reset);
 };
 
 global.OnRoomChanged = function(data){
-	Log(blue + "EVENT Room Changed to " + data.room.name + reset);
-	//Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
+	try{
+		Log(blue + "EVENT Room Changed to " + data.room.name + reset);
+		if (botWasBooted){
+			Speak("You're despicable!");
+			botWasBooted = false;
+		} else {
+			//Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
+		}
+	} catch (e) {
+		Log(red + "** ERROR Room Changed ** " + reset + e);
+		process.exit(0);
+	}
 };
 
 global.OnRegistered = function(data){
@@ -38,6 +50,10 @@ global.OnUpdateVotes = function(data){
 
 global.OnBootedUser = function(data){
 	Log(blue + "EVENT Booted User: " + reset + JSON.stringify(data));
+	if (data.userid === botUserId){
+		bot.roomRegister(botRoomId);
+		botWasBooted = true;
+	}
 };
 
 global.OnUpdateUser = function(data){
