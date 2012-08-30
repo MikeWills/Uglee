@@ -43,10 +43,11 @@ Log("Ready");
 // Check that TT is up every 15 minutes
 setInterval(function(){
 	try{
-	bot.roomNow(function(data){
-		Log("TT is up.");
-	});
+		bot.roomNow(function(data){
+			Log("TT is up.");
+		});
 	} catch (e){
-		Log(red+"TT is down."+reset);
+		Log(red + "TT is down." + reset);
+		Log(red + "** ERROR TT_UP_CHECK ** " + reset + e);
 	}
 },900000);

@@ -3,7 +3,7 @@
 /* ============== */
 global.Log = function(data) {
 	if (logtoconsole) {
-		console.log(botName, ">>>\033[0m", data);
+		console.log(botName, ">>>", data);
 	}
 };
 

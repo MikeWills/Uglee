@@ -33,7 +33,7 @@ global.OnNoSong = function(data){
 };
 
 global.OnUpdateVotes = function(data){
-	Log(blue + "EVENT Update Votes: " + reset + JSON.stringify(data));
+	//Log(blue + "EVENT Update Votes: " + reset + JSON.stringify(data));
 };
 
 global.OnBootedUser = function(data){
@@ -41,7 +41,7 @@ global.OnBootedUser = function(data){
 };
 
 global.OnUpdateUser = function(data){
-	//Log(blue + "EVENT Update User: " + reset + JSON.stringify(data));
+	Log(blue + "EVENT Update User: " + reset + JSON.stringify(data));
 };
 
 global.OnAddDJ = function(data){
