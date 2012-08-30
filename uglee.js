@@ -252,11 +252,11 @@ function stepDown() {
 
 function mustAwesome(id) {
     if (id == 1) {
-        bot.speak("DJs: The gorilla doesn't like jerks. Please support your fellow DJs by clicking awesome for their songs. See Rule #3.");
+        bot.speak("DJs: The gorilla doesn't like jerks. Please support your fellow DJs by clicking awesome for their songs. See Rule #4.");
         pause(250);
         bot.speak("Me have heard the screams... not pleasant.");
     } else if (id == 2) {
-        bot.speak("DJs: Please support your fellow DJs by clicking the awesome button! It's easy and it's a rule! See #3. Just type !rules to see. Otherwise you WILL be booted off in two songs.");
+        bot.speak("DJs: Please support your fellow DJs by clicking the awesome button! It's easy and it's a rule! See #4. Just type !rules to see. Otherwise you WILL be booted off in two songs.");
     }
 }
 
@@ -517,18 +517,30 @@ var findIdle = function(senderid) {
         bot.pm(pmText, senderid);
     };
 
-var summonModerators = function() {
-        child = exec("t set active GilimYurhig", function(error, stdout, stderr) {
+var summonModerators = function(name) {
+        //child = exec("t set active GilimYurhig; t update 'Uglee: A moderator is requested in AMM. @mikewills'", function(error, stdout, stderr) {
+        child = exec("t set active GilimYurhig; t update 'Uglee: " + name + " requested that a moderator comes to murl.me/amm. @mikewills @techguyjason @mikebdotorg @Drew_Cash'", function(error, stdout, stderr) {
             if (error !== null) {
                 Log('exec error: ' + error);
             }
-
-            child = exec("t update 'Uglee: A moderator is requested in AMM. @mikewills @techguyjason @mikebdotorg'", function(error, stdout, stderr) {
-                if (error !== null) {
-                    Log('exec error: ' + error);
-                }
-            });
         });
+
+        for (var i = 0; i <= moderators.length; i++) {
+            bot.pm("Excuse me, " + name + " requested that moderator comes to http://tt.fm/all_music_mix for some help. Please stop by if you can.", moderators[i]);
+        }
+    };
+
+var answeredModerators = function() {
+        //child = exec("t set active GilimYurhig; t update 'Uglee: A moderator is requested in AMM. @mikewills'", function(error, stdout, stderr) {
+        child = exec("t set active GilimYurhig; t update 'Uglee: @mikewills @techguyjason @mikebdotorg @Drew_Cash the request has been answered.'", function(error, stdout, stderr) {
+            if (error !== null) {
+                Log('exec error: ' + error);
+            }
+        });
+
+        for (var i = 0; i <= moderators.length; i++) {
+            bot.pm("The request has been answered. Sorry for inturrupting.", moderators[i]);
+        }
     };
 
 var summonBouncer = function() {
@@ -602,8 +614,8 @@ bot.on('roomChanged', function(data) {
 
     try {
 
-            Log('Moderator IDs ' + data.room.metadata.moderator_id);
-            Log('DJs' + data.room.metadata.djs);
+        Log('Moderator IDs ' + data.room.metadata.moderator_id);
+        Log('DJs' + data.room.metadata.djs);
 
         djs = data.room.metadata.djs;
         moderators = data.room.metadata.moderator_id;
@@ -638,7 +650,6 @@ bot.on('roomChanged', function(data) {
 
         /* Notify the next DJ on the list */
         //NextDjOnQueue();
-
         bot.speak("Ready to serve!");
 
     } catch (e) {
@@ -662,7 +673,7 @@ bot.on('newsong', function(data) {
         delete require.cache['./actions.js'];
         var Actions = require('./actions.js');
 
-            Log('New Song: ' + data.room.metadata.current_song.metadata);
+        Log('New Song: ' + data.room.metadata.current_song.metadata);
 
         if (ctsActive) {
             CheckCTS();
@@ -851,7 +862,7 @@ bot.on('registered', function(data) {
         }
 
         //Log event in console
-            Log('Joined room: ' + data.user[0].name);
+        Log('Joined room: ' + data.user[0].name);
 
         //Add user to usersList
         var user = data.user[0];
@@ -891,8 +902,9 @@ bot.on('deregistered', function(data) {
     try {
 
         //Log event in console
-            Log('Left room: ' + data.user[0].name);
+        Log('Left room: ' + data.user[0].name);
 
+        //bot.speak("Don't let the door hit you in the ass on the way out " + data.user[0].name + "!");
         if (config.enableQueue) {
             if (djQueue[data.user[0].userid] !== undefined) {
                 djQueue[data.user[0].userid].isAfk = true;
@@ -935,7 +947,7 @@ bot.on('booted_user', function(data) {
 bot.on('update_user', function(data) {
     try {
         //Log event in console
-            Log('Edited user: ' + data);
+        Log('Edited user: ' + data);
 
         //Update user name in users table
         /*if (config.database.usedb && (data.name !== null)) {
@@ -998,6 +1010,18 @@ bot.on('speak', function(data) {
                     bot.speak("@Uglee roll");
                 }
             }
+            return;
+        }
+
+        if (data.text == '!mod') {
+            bot.speak("Me summoned a moderator for you. Once should arrive soon.");
+            summonModerators(data.name);
+        }
+
+        if (data.text == '!answered') {
+            if (isMod(data.userid)) {
+                answeredModerators();
+            }
         }
 
         /* Catch all for the morons that can't read. */
@@ -1049,7 +1073,8 @@ bot.on('speak', function(data) {
         }
     }*/
 
-        if (data.text.toLowerCase() == "roll again jerk" && admin(data.userid)) {
+        var reg1 = RegExp(escape("roll again jerk"), "i");
+        if (reg1.test(escape(data.text)) && admin(data.userid)) {
             var roll2 = Math.ceil(Math.random() * 6);
             if (roll2 > 4) {
                 bot.speak(data.name + ', you rolled a ' + roll2 + ', Awesome!');
@@ -1064,16 +1089,23 @@ bot.on('speak', function(data) {
             bot.vote("up");
         }
 
-        if ((data.text.toLowerCase() == "@uglee dance bitch") && admin(data.userid)) {
+        if ((data.text === "CRANK IT!!!!!") && admin(data.userid)){
+            bot.speak("Already did!");
+            bot.vote("up");
+        }
+
+        if ((data.text === ":metal:") && admin(data.userid)){
+            bot.speak(":metal:");
+            bot.vote("up");
+        }
+
+        var reg2 = RegExp(escape("dance bitch"), "i");
+        if (reg2.test(escape(data.text)) && admin(data.userid)) {
             bot.vote("up");
         }
 
         if (data.text.toLowerCase() == "fuck you @uglee") {
             bot.speak("Fuck you too!");
-        }
-
-        if (data.text.match(/^\!putmeinthequeuedouchebag$/)) {
-            bot.speak("Leave me alone, @ShiningDimLight");
         }
 
         var result = data.text.match(/^\@(.*?)( .*)?$/);
@@ -1094,7 +1126,7 @@ bot.on('speak', function(data) {
                 delete require.cache['./actions.js'];
                 var Actions = require('./actions.js');
 
-                    Log('Command is ' + command);
+                Log('Command is ' + command);
 
                 switch (command) {
                 case "addsong":
@@ -1160,7 +1192,14 @@ bot.on('speak', function(data) {
                     break;
 
                 case "mod":
-                    summonModerators();
+                case "needhelp":
+                    bot.speak("Me summoned a moderator for you. Once should arrive soon.");
+                    summonModerators(data.name);
+                    break;
+
+                case "i got it":
+                case "igotit":
+                    answeredModerators();
                     break;
 
                 case "news":
@@ -1200,7 +1239,7 @@ bot.on('speak', function(data) {
 
                 default:
                     if (command === "") {
-                        bot.speak('Yes Master @' + data.name + '? Here is what I can do for you: speak | dance | menu | whois | startcts | stopcts');
+                        bot.speak('Yes Master @' + data.name + '? Here is what I can do for you: speak | dance | menu | whois | startcts | stopcts | needhelp');
 
                         if (isMod(data.senderid)) {
                             bot.pm("As moderator, you can startq | endq | dq @name | iq pos# @name", data.senderid);
@@ -1229,7 +1268,7 @@ bot.on('speak', function(data) {
 /* ============================ */
 bot.on('pmmed', function(data) {
     try {
-            Log('Private message: ' + data);
+        Log('Private message: ' + data);
 
         if (isBanned(data.senderid)) {
             return;
@@ -1262,8 +1301,8 @@ bot.on('pmmed', function(data) {
                 param = result[2].trim().toLowerCase();
             }
             // handle valid commands
-                Log('Command: ' + command);
-                Log('Param: ' + param);
+            Log('Command: ' + command);
+            Log('Param: ' + param);
 
             switch (command) {
             case "die":
@@ -1321,12 +1360,14 @@ bot.on('pmmed', function(data) {
                 break;
 
             case "roll":
-                var roll2 = Math.ceil(Math.random() * 6);
-                if (roll2 > 4) {
-                    bot.speak('A ' + roll2 + ' has been rolled on your behalf, Awesome!');
-                    bot.vote('up');
-                } else {
-                    bot.speak('A ' + roll2 + ' has been rolled on your behalf, bummer.');
+                if (admin(data.senderid)) {
+                    var roll2 = Math.ceil(Math.random() * 6);
+                    if (roll2 > 4) {
+                        bot.speak('A ' + roll2 + ' has been rolled on your behalf, Awesome!');
+                        bot.vote('up');
+                    } else {
+                        bot.speak('A ' + roll2 + ' has been rolled on your behalf, bummer.');
+                    }
                 }
                 break;
 
@@ -1391,9 +1432,9 @@ bot.on('pmmed', function(data) {
                     else if (param == "vip") {
                         bot.roomDeregister();
                         bot.roomRegister('4f73ef36eb35c10888004976');
-                    } else if (param == "hothits") {
+                    } else if (param == "rock") {
                         bot.roomDeregister();
-                        bot.roomRegister("4f5f162268f554664cc5b2c4");
+                        bot.roomRegister("503cc5b72e3817632f1e6d93");
                     }
                     /*else if (param == "campfire") {
                     bot.speak("The campfire is lit! See you there! http://murl.me/campfire");
@@ -1591,7 +1632,7 @@ global.QueueStatus = function() {
             var queuedDj = djQueue[i];
             Log(queuedDj);
             if (!queuedDj.isAfk) {
-                if (queuedDj.name !== undefined){
+                if (queuedDj.name !== undefined) {
                     djList += queuedDj.name + ", ";
                 }
             } else {
