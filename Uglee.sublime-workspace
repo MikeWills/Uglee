@@ -1,0 +1,154 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/mikewills/Projects/ttModeratorBot/main.js",
+		"/Users/mikewills/Projects/ttModeratorBot/sampleconfig.js",
+		"/Users/mikewills/Projects/ttModeratorBot/stats.js",
+		"/Users/mikewills/Projects/ttModeratorBot/enableQueue.Template.js",
+		"/Users/mikewills/Projects/ttModeratorBot/enableQueueDefault.js",
+		"/Users/mikewills/Projects/ttModeratorBot/functions.js",
+		"/Users/mikewills/Projects/ttModeratorBot/readme.md",
+		"/Users/mikewills/Projects/ttModeratorBot/start.template.sh",
+		"/Users/mikewills/Projects/ttModeratorBot/ttModeratorBot.sublime-project",
+		"/Users/mikewills/Library/Caches/Cleanup At Startup/Transmit/3F9787BA-8C9D-4EA7-BAA4-3E9600594AB9/uglee.js",
+		"/Users/mikewills/Library/Caches/Cleanup At Startup/Transmit/BFCBAFBB-513E-492C-8061-4BA443F09B7F/uglee.js",
+		"/Users/mikewills/Library/Caches/Cleanup At Startup/Transmit/32AEE67D-70BB-4133-8C8C-68C505C63FF8/config.json",
+		"/Users/mikewills/Library/Caches/Cleanup At Startup/Transmit/EF3C489E-6E5C-4845-948C-7BC98A7481D7/uglee.js",
+		"/Users/mikewills/Library/Caches/Cleanup At Startup/Transmit/12D52946-6A49-4DE1-88C1-9880BFE08BDE/uglee.js",
+		"/Users/mikewills/Library/Caches/Cleanup At Startup/Transmit/8308CB84-D81E-4F45-BAAE-7BC3C8B82DEA/uglee.js",
+		"/Users/mikewills/Library/Caches/Cleanup At Startup/Transmit/385EF440-A24B-44C0-AC1C-E9CDB2BB57E7/config.json",
+		"/Users/mikewills/Library/Caches/Cleanup At Startup/Transmit/628F74C3-B83A-4739-9382-4E17CCB3C03C/uglee.js",
+		"/Users/mikewills/Downloads/userguide.mobi",
+		"/Users/mikewills/Library/Caches/Cleanup At Startup/Transmit/3BA0A247-1C76-45A5-8ACC-4F3E7DBB83DC/iirpi.config.json",
+		"/Users/mikewills/Library/Caches/Cleanup At Startup/Transmit/5D12494E-076B-4AC8-B9C1-24100F053BD9/iirpi.config.json",
+		"/Users/mikewills/Library/Caches/Cleanup At Startup/Transmit/301DA4C0-94F1-46C6-B0F5-ECDBB4CC642F/iirpi.config.json",
+		"/Users/mikewills/Library/Application Support/Sublime Text 2/Packages/Default/Preferences.sublime-settings"
+	],
+	"find":
+	{
+		"height": 0.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 257.0,
+	"status_bar_visible": true
+}
