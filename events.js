@@ -13,18 +13,52 @@ global.OnRoomChanged = function(data){
 		} else {
 			//Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
 		}
+
+		// Keep track of all users
+		var users = data.users;
+        for (var i in users) {
+            var user = users[i];
+            user.lastActivity = new Date();
+            AllUsers[user.userid] = user;
+        }
+
 	} catch (e) {
 		Log(color("**ERROR** Room Changed ", "red") + e);
-		process.exit(0);
 	}
 };
 
 global.OnRegistered = function(data){
+	try{
 	Log(color("EVENT Registered: ", "blue") + JSON.stringify(data));
+
+	//Add new user(s) to cache
+    var users = data.users;
+    for (var i in users) {
+    	var user = users[i];
+        user.lastActivity = new Date();
+        AllUsers[user.userid] = user;
+    }
+
+	} catch (e) {
+		Log(color("**ERROR** Room Changed ", "red") + e);
+	}
 };
 
 global.OnDeregistered = function(data){
+	try{
 	Log(color("EVENT Deregistered: ", "blue") + JSON.stringify(data));
+
+	// Remove the user(s) from cache
+	var users = data.users;
+    for (var i in users) {
+    	var user = users[i];
+        delete AllUsers[user.userid];
+    }
+
+	} catch (e) {
+		Log(color("**ERROR** Room Changed ", "red") + e);
+		process.exit(0);
+	}
 };
 
 global.OnSpeak = function(data){
