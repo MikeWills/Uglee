@@ -1,18 +1,21 @@
-global.Events = require("./events.js");
-global.Functions = require("./functions.js");
-global.Quotes = require("./quotes.js");
+// Load Node.js modules
 var Bot = require('ttapi');
 var util = require('util');
 var mysql = require('mysql');
 global.color = require("ansi-color").set;
 
+// Load bot modules
+global.Events = require("./events.js");
+global.Functions = require("./functions.js");
+global.Quotes = require("./quotes.js");
+
 Log("Initializing");
-global.red   = '\033[31m';
-global.blue  = '\033[34m';
-global.reset = '\033[0m';
 
+// Initialize global variables
+global.AllUsers = {};
+
+// Start up bot
 global.bot = new Bot(botAuthId, botUserId, botRoomId);
-
 Log("Done");
 
 Log("Hooking events");

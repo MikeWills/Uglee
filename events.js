@@ -48,6 +48,9 @@ global.OnNoSong = function(data){
 
 global.OnUpdateVotes = function(data){
 	//Log(blue + "EVENT Update Votes: " + reset + JSON.stringify(data));
+	if (data.room.metadata.votelog[0][1] == "down"){
+		SpeakRandom(downVoteText);
+	}
 };
 
 global.OnBootedUser = function(data){
