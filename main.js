@@ -49,7 +49,6 @@ Log("Ready");
 setInterval(function(){
 	try{
 		bot.roomInfo(function(data){
-			Log("TT is up.");
 			if (data.room.roomid !== botRoomId){
 				Log("Not in the right room.");
 				setTimeout( function() { bot.roomRegister(botRoomId); }, 300000);
@@ -57,7 +56,7 @@ setInterval(function(){
 		});
 	} catch (e){
 		Log(color("TT is down.", "red"));
-		bot.roomRegister(botRoomId);
 		Log(color("** ERROR TT_UP_CHECK ** ", "red") + e);
+		setTimeout( function() { bot.roomRegister(botRoomId); }, 300000);
 	}
 },300000);

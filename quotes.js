@@ -3,6 +3,6 @@ global.awesomeText =   ["I love it!",
 						"This fucking rocks!"];
 global.lameText = 	   ["Wow! I have heard banshee songs better than this.", 
 						"I want my money back! This song sucks."];
-global.downVoteText =  ["If can't be nice, don't vote at all.", 
+global.downVoteText =  ["If you can't be nice, don't vote at all.", 
 						"A lame? I lame you sir!", 
-						"You kiss your mamma with that mouth?"];
+						"You wouldn't lame your momma would you?"];

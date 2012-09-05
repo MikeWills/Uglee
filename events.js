@@ -43,7 +43,7 @@ global.OnNewSong = function(data){
 };
 
 global.OnNoSong = function(data){
-	Log(color("EVENT No Song: ", "blue") + JSON.stringify(data));
+	Log(color("EVENT No Song: ", "red") + JSON.stringify(data));
 };
 
 global.OnUpdateVotes = function(data){
