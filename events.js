@@ -33,11 +33,13 @@ global.OnSpeak = function(data){
 };
 
 global.OnEndSong = function(data){
-	//Log(blue + "EVENT End Song: " + reset + JSON.stringify(data));
+	Log(blue + "EVENT End Song: " + reset + data.room.metadata.current_song.metadata.artist + " - " + 
+		data.room.metadata.current_song.metadata.song);
 };
 
 global.OnNewSong = function(data){
-	//Log(blue + "EVENT New Song: " + reset + JSON.stringify(data));
+	Log(blue + "EVENT New Song: " + reset + data.room.metadata.current_song.metadata.artist + " - " + 
+		data.room.metadata.current_song.metadata.song);
 };
 
 global.OnNoSong = function(data){

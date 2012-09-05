@@ -43,7 +43,7 @@ Log("Ready");
 // Check that TT is up every 15 minutes
 setInterval(function(){
 	try{
-		bot.roomNow(function(data){
+		bot.roomInfo(function(data){
 			Log(blue + "EVENT roomNow: " + reset + JSON.stringify(data));
 			Log("TT is up.");
 			if (data.room.roomid !== botRoomId){
