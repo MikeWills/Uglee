@@ -44,10 +44,16 @@ Log("Ready");
 setInterval(function(){
 	try{
 		bot.roomNow(function(data){
+			Log(blue + "EVENT roomNow: " + reset + JSON.stringify(data));
 			Log("TT is up.");
+			if (data.room.roomid !== botRoomId){
+				Log("Not in the right room.");
+				bot.roomRegister(botRoomId);
+			}
 		});
 	} catch (e){
 		Log(red + "TT is down." + reset);
+		bot.roomRegister(botRoomId);
 		Log(red + "** ERROR TT_UP_CHECK ** " + reset + e);
 	}
 },900000);
