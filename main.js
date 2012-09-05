@@ -48,7 +48,7 @@ setInterval(function(){
 			Log("TT is up.");
 			if (data.room.roomid !== botRoomId){
 				Log("Not in the right room.");
-				bot.roomRegister(botRoomId);
+				setTimeout( function() { bot.roomRegister(botRoomId); }, 300000);
 			}
 		});
 	} catch (e){
@@ -56,4 +56,4 @@ setInterval(function(){
 		bot.roomRegister(botRoomId);
 		Log(red + "** ERROR TT_UP_CHECK ** " + reset + e);
 	}
-},900000);
+},300000);
