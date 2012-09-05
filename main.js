@@ -45,7 +45,7 @@ Log("Done");
 
 Log("Ready");
 
-// Check that TT is up every 15 minutes
+// Check that TT is up every 5 minutes. This is so the bot can gracefully restart when the site comes back up.
 setInterval(function(){
 	try{
 		bot.roomInfo(function(data){
