@@ -1,0 +1,1 @@
+global.awesomeText = ["I love it!", "This song is awesome!"]

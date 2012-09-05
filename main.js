@@ -1,5 +1,6 @@
 global.Events = require("./events.js");
 global.Functions = require("./functions.js");
+global.Quotes = require("./quotes.js");
 var Bot = require('ttapi');
 var util = require('util');
 var mysql = require('mysql');
@@ -44,7 +45,6 @@ Log("Ready");
 setInterval(function(){
 	try{
 		bot.roomInfo(function(data){
-			Log(blue + "EVENT roomNow: " + reset + JSON.stringify(data));
 			Log("TT is up.");
 			if (data.room.roomid !== botRoomId){
 				Log("Not in the right room.");
