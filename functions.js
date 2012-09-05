@@ -3,7 +3,8 @@
 /* ============== */
 global.Log = function(data) {
 	if (logtoconsole) {
-		console.log(botName, ">>>", data);
+		var now = new Date();
+		console.log(botName, ">>>", now.toLocaleString(), " | ", data);
 	}
 };
 
