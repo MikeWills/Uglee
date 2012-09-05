@@ -4,6 +4,7 @@ global.Quotes = require("./quotes.js");
 var Bot = require('ttapi');
 var util = require('util');
 var mysql = require('mysql');
+global.color = require("ansi-color").set;
 
 Log("Initializing");
 global.red   = '\033[31m';
@@ -52,8 +53,8 @@ setInterval(function(){
 			}
 		});
 	} catch (e){
-		Log(red + "TT is down." + reset);
+		Log(color("TT is down.", "red"));
 		bot.roomRegister(botRoomId);
-		Log(red + "** ERROR TT_UP_CHECK ** " + reset + e);
+		Log(color("** ERROR TT_UP_CHECK ** ", "red") + e);
 	}
 },300000);

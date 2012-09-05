@@ -1,12 +1,12 @@
 var botWasBooted = false;
 
 global.OnReady = function(data){
-	Log(blue + "EVENT Ready" + reset);
+	Log(color("EVENT Ready", "blue"));
 };
 
 global.OnRoomChanged = function(data){
 	try{
-		Log(blue + "EVENT Room Changed to " + data.room.name + reset);
+		Log(color("EVENT Room Changed to " + data.room.name, "blue"));
 		if (botWasBooted){
 			Speak("You're despicable!");
 			botWasBooted = false;
@@ -14,17 +14,17 @@ global.OnRoomChanged = function(data){
 			//Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
 		}
 	} catch (e) {
-		Log(red + "** ERROR Room Changed ** " + reset + e);
+		Log(color("**ERROR** Room Changed ", "red") + e);
 		process.exit(0);
 	}
 };
 
 global.OnRegistered = function(data){
-	Log(blue + "EVENT Registered: " + reset + JSON.stringify(data));
+	Log(color("EVENT Registered: ", "blue") + JSON.stringify(data));
 };
 
 global.OnDeregistered = function(data){
-	Log(blue + "EVENT Deregistered: " + reset + JSON.stringify(data));
+	Log(color("EVENT Deregistered: ", "blue") + JSON.stringify(data));
 };
 
 global.OnSpeak = function(data){
@@ -33,17 +33,17 @@ global.OnSpeak = function(data){
 };
 
 global.OnEndSong = function(data){
-	Log(blue + "EVENT End Song: " + reset + data.room.metadata.current_song.metadata.artist + " - " + 
+	Log(color("EVENT End Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + 
 		data.room.metadata.current_song.metadata.song);
 };
 
 global.OnNewSong = function(data){
-	Log(blue + "EVENT New Song: " + reset + data.room.metadata.current_song.metadata.artist + " - " + 
+	Log(color("EVENT New Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + 
 		data.room.metadata.current_song.metadata.song);
 };
 
 global.OnNoSong = function(data){
-	Log(blue + "EVENT No Song: " + reset + JSON.stringify(data));
+	Log(color("EVENT No Song: ", "blue") + JSON.stringify(data));
 };
 
 global.OnUpdateVotes = function(data){
@@ -51,7 +51,7 @@ global.OnUpdateVotes = function(data){
 };
 
 global.OnBootedUser = function(data){
-	Log(blue + "EVENT Booted User: " + reset + JSON.stringify(data));
+	Log(color("EVENT Booted User: ", "blue") + JSON.stringify(data));
 	if (data.userid === botUserId){
 		bot.roomRegister(botRoomId);
 		botWasBooted = true;
@@ -59,50 +59,50 @@ global.OnBootedUser = function(data){
 };
 
 global.OnUpdateUser = function(data){
-	Log(blue + "EVENT Update User: " + reset + JSON.stringify(data));
+	Log(color("EVENT Update User: ", "blue") + JSON.stringify(data));
 };
 
 global.OnAddDJ = function(data){
-	Log(blue + "EVENT Add DJ: " + reset + JSON.stringify(data));
+	Log(color("EVENT Add DJ: ", "blue") + JSON.stringify(data));
 };
 
 global.OnRemDJ = function(data){
-	Log(blue + "EVENT Remove DJ: " + reset + JSON.stringify(data));
+	Log(color("EVENT Remove DJ: ", "blue") + JSON.stringify(data));
 };
 
 global.OnNewModerator = function(data){
-	Log(blue + "EVENT New Moderator: " + reset + JSON.stringify(data));
+	Log(color("EVENT New Moderator: ", "blue") + JSON.stringify(data));
 };
 
 global.OnRemModerator = function(data){
-	Log(blue + "EVENT Remove Moderator: " + reset + JSON.stringify(data));
+	Log(color("EVENT Remove Moderator: ", "blue") + JSON.stringify(data));
 };
 
 global.OnSnagged = function(data){
-	Log(blue + "EVENT Snagged: " + reset + JSON.stringify(data));
+	Log(color("EVENT Snagged: ", "blue") + JSON.stringify(data));
 };
 
 global.OnPmmed = function(data){
-	Log(blue + "EVENT PMmed: " + reset + JSON.stringify(data));
+	Log(color("EVENT PMmed: ", "blue") + JSON.stringify(data));
 	Command("pm", data);
 };
 
 global.OnError = function(data){
-	Log(blue + "EVENT **ERROR**: " + reset + JSON.stringify(data));
+	Log(color("EVENT **ERROR**: ", "red") + JSON.stringify(data));
 };
 
 global.OnTcpConnect = function(socket){
-	Log(blue + "EVENT TCP Connect: " + socket);
+	Log(color("EVENT TCP Connect: ", "blue") + socket);
 };
 
 global.OnTcpMessage = function(socket, msg){
-	Log(blue + "EVENT TCP Message: " + socket + msg);
+	Log(color("EVENT TCP Message: ", "blue") + socket + msg);
 };
 
 global.OnTcpEnd = function(socket){
-	Log(blue + "EVENT TCP End: " + socket);
+	Log(color("EVENT TCP End: ", "blue") + socket);
 };
 
 global.OnHttpRequest = function(request, response){
-	Log(blue + "EVENT HTTP Request: " + request + response);
+	Log(color("EVENT HTTP Request: ", "blue") + request + response);
 };
