@@ -19,6 +19,7 @@ global.OnRoomChanged = function(data){
         for (var i in users) {
             var user = users[i];
             user.lastActivity = new Date();
+        	user.loggedIn = new Date();
             AllUsers[user.userid] = user;
         }
 
@@ -29,15 +30,16 @@ global.OnRoomChanged = function(data){
 
 global.OnRegistered = function(data){
 	try{
-	Log(color("EVENT Registered: ", "blue") + JSON.stringify(data));
+		Log(color("EVENT Registered: ", "blue") + JSON.stringify(data));
 
-	//Add new user(s) to cache
-    var users = data.users;
-    for (var i in users) {
-    	var user = users[i];
-        user.lastActivity = new Date();
-        AllUsers[user.userid] = user;
-    }
+		//Add new user(s) to cache
+    	var users = data.user;
+    	for (var i in users) {
+    		var user = users[i];
+        	user.lastActivity = new Date();
+        	user.loggedIn = new Date();
+        	AllUsers[user.userid] = user;
+    	}
 
 	} catch (e) {
 		Log(color("**ERROR** Room Changed ", "red") + e);
@@ -46,14 +48,20 @@ global.OnRegistered = function(data){
 
 global.OnDeregistered = function(data){
 	try{
-	Log(color("EVENT Deregistered: ", "blue") + JSON.stringify(data));
+		Log(color("EVENT Deregistered: ", "blue") + JSON.stringify(data));
 
-	// Remove the user(s) from cache
-	var users = data.users;
-    for (var i in users) {
-    	var user = users[i];
-        delete AllUsers[user.userid];
-    }
+		// Remove the user(s) from cache
+		var users = data.user;
+    	for (var i in users) {
+    		var user = users[i];
+    	
+    		var now = new Date();
+			if ((now - AllUsers[user.userid].loggedIn) < 30000){
+				SpeakRandom(userLeaveQuickText, AllUsers[user.userid].name);
+			}
+
+        	delete AllUsers[user.userid];
+    	}
 
 	} catch (e) {
 		Log(color("**ERROR** Room Changed ", "red") + e);
@@ -74,6 +82,7 @@ global.OnEndSong = function(data){
 global.OnNewSong = function(data){
 	Log(color("EVENT New Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + 
 		data.room.metadata.current_song.metadata.song);
+	danceCount = 0;
 };
 
 global.OnNoSong = function(data){

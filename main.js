@@ -14,6 +14,10 @@ Log("Initializing");
 // Initialize global variables
 global.AllUsers = {};
 
+// Working data
+global.danceCount = 0;
+global.lameCount = 0;
+
 // Start up bot
 global.bot = new Bot(botAuthId, botUserId, botRoomId);
 Log("Done");
@@ -47,6 +51,7 @@ Log("Ready");
 
 // Check that TT is up every 5 minutes. This is so the bot can gracefully restart when the site comes back up.
 setInterval(function(){
+	Log("Uptime Check");
 	try{
 		bot.roomInfo(function(data){
 			if (data.room.roomid !== botRoomId){
