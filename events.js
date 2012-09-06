@@ -18,8 +18,7 @@ global.OnRoomChanged = function(data){
 		var users = data.users;
         for (var i in users) {
             var user = users[i];
-            user.lastActivity = new Date();
-        	user.loggedIn = new Date();
+            user.lastActivity = user.loggedIn = new Date();
             AllUsers[user.userid] = user;
         }
 
@@ -36,8 +35,7 @@ global.OnRegistered = function(data){
     	var users = data.user;
     	for (var i in users) {
     		var user = users[i];
-        	user.lastActivity = new Date();
-        	user.loggedIn = new Date();
+            user.lastActivity = user.loggedIn = new Date();
         	AllUsers[user.userid] = user;
     	}
 
