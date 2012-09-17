@@ -4,6 +4,30 @@
 		"selected_items":
 		[
 			[
+				"user",
+				"userName"
+			],
+			[
+				"time",
+				"timeOn"
+			],
+			[
+				"Sp",
+				"SpeakRandom"
+			],
+			[
+				"ti",
+				"timeStamp"
+			],
+			[
+				"fun",
+				"function"
+			],
+			[
+				"son",
+				"songStartTime"
+			],
+			[
 				"bot",
 				"botName"
 			],
@@ -16,18 +40,10 @@
 	"buffers":
 	[
 		{
-			"file": "uglee.js",
-			"settings":
-			{
-				"buffer_size": 58185,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "uglee2.js",
 			"settings":
 			{
-				"buffer_size": 456,
+				"buffer_size": 524,
 				"line_ending": "Unix"
 			}
 		},
@@ -35,7 +51,7 @@
 			"file": "main.js",
 			"settings":
 			{
-				"buffer_size": 1363,
+				"buffer_size": 1869,
 				"line_ending": "Unix"
 			}
 		},
@@ -43,7 +59,7 @@
 			"file": "events.js",
 			"settings":
 			{
-				"buffer_size": 2380,
+				"buffer_size": 3928,
 				"line_ending": "Unix"
 			}
 		},
@@ -51,7 +67,15 @@
 			"file": "functions.js",
 			"settings":
 			{
-				"buffer_size": 396,
+				"buffer_size": 1907,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "quotes.js",
+			"settings":
+			{
+				"buffer_size": 713,
 				"line_ending": "Unix"
 			}
 		}
@@ -59,11 +83,15 @@
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 0.0,
+		"height": 187.0,
 		"selected_items":
 		[
+			[
+				"js",
+				"Set Syntax: JSON"
+			]
 		],
-		"width": 0.0
+		"width": 467.0
 	},
 	"console":
 	{
@@ -80,6 +108,13 @@
 	},
 	"file_history":
 	[
+		"/Users/mikewills/Projects/Uglee/uglee.js",
+		"/Users/mikewills/Projects/Uglee/readmeNew.md",
+		"/Users/mikewills/Projects/Uglee/quotes.js",
+		"/Users/mikewills/Projects/Uglee/uglee2.js",
+		"/Users/mikewills/Projects/Uglee/main.js",
+		"/Users/mikewills/Projects/Uglee/events.js",
+		"/Users/mikewills/Projects/Uglee/functions.js",
 		"/Users/mikewills/Projects/Uglee/.gitignore",
 		"/Users/mikewills/Projects/Uglee/startUglee.sh",
 		"/Users/mikewills/Projects/ttModeratorBot/main.js",
@@ -121,6 +156,9 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"usersList",
+			"roll",
+			"ERROR",
 			"');"
 		],
 		"highlight": true,
@@ -139,43 +177,15 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 2,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "uglee.js",
-					"settings":
-					{
-						"buffer_size": 58185,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								28377,
-								28391
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 12871.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
 					"file": "uglee2.js",
 					"settings":
 					{
-						"buffer_size": 456,
+						"buffer_size": 524,
 						"regions":
 						{
 						},
@@ -197,24 +207,79 @@
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 1,
 					"file": "main.js",
 					"settings":
 					{
-						"buffer_size": 1363,
+						"buffer_size": 1869,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1090,
-								1090
+								497,
+								506
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 74.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "events.js",
+					"settings":
+					{
+						"buffer_size": 3928,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2595,
+								2595
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 820.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "functions.js",
+					"settings":
+					{
+						"buffer_size": 1907,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								498,
+								498
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -223,45 +288,19 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "events.js",
-					"settings":
-					{
-						"buffer_size": 2380,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1174,
-								1174
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 130.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
 					"buffer": 4,
-					"file": "functions.js",
+					"file": "quotes.js",
 					"settings":
 					{
-						"buffer_size": 396,
+						"buffer_size": 713,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								167,
-								167
+								678,
+								678
 							]
 						],
 						"settings":

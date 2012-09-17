@@ -29,7 +29,7 @@ global.OnRoomChanged = function(data){
 
 global.OnRegistered = function(data){
 	try{
-		Log(color("EVENT Registered: ", "blue") + JSON.stringify(data));
+		Log(color("EVENT Registered: ", "blue") + data.user[0].name + " - " + data.user[0].userid);
 
 		//Add new user(s) to cache
     	var users = data.user;
@@ -46,7 +46,7 @@ global.OnRegistered = function(data){
 
 global.OnDeregistered = function(data){
 	try{
-		Log(color("EVENT Deregistered: ", "blue") + JSON.stringify(data));
+		Log(color("EVENT Deregistered: ", "blue") + data.user[0].name + " - " + data.user[0].userid);
 
 		// Remove the user(s) from cache
 		var users = data.user;
@@ -97,8 +97,9 @@ global.OnUpdateVotes = function(data){
 global.OnBootedUser = function(data){
 	Log(color("EVENT Booted User: ", "blue") + JSON.stringify(data));
 	if (data.userid === botUserId){
-		bot.roomRegister(botRoomId);
 		botWasBooted = true;
+		bot.roomDeregister();
+		bot.roomRegister(botRoomId);
 	}
 };
 
@@ -107,11 +108,11 @@ global.OnUpdateUser = function(data){
 };
 
 global.OnAddDJ = function(data){
-	Log(color("EVENT Add DJ: ", "blue") + JSON.stringify(data));
+	Log(color("EVENT Add DJ: ", "blue") + data.user[0].name);
 };
 
 global.OnRemDJ = function(data){
-	Log(color("EVENT Remove DJ: ", "blue") + JSON.stringify(data));
+	Log(color("EVENT Remove DJ: ", "blue") + data.user[0].name);
 };
 
 global.OnNewModerator = function(data){

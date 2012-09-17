@@ -53,11 +53,9 @@ Log("Ready");
 setInterval(function(){
 	Log("Uptime Check");
 	try{
-		bot.roomInfo(function(data){
-			if (data.room.roomid !== botRoomId){
-				Log("Not in the right room.");
-				setTimeout( function() { bot.roomRegister(botRoomId); }, 300000);
-			}
+		bot.listRooms({ skip: 0 }, function(data){
+			// Set a var to see if there was a response, if not try again in a few minutes.
+			Log("Turntable.FM is up.");
 		});
 	} catch (e){
 		Log(color("TT is down.", "red"));
