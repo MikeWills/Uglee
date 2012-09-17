@@ -1,3 +1,5 @@
+NOTE: I am rewritting this bot from the ground up. The first big mission is to have the bot automatically recover from a downtime. This starts with `Uglee2.js`. I am avoiding any changes with the older versions at this time. I don't know why but I didn't create a branch for this new bot.
+
 This is Uglee. Uglee is a dwarven fighter/priest of Gwar. His is stupid and strong as an ox. He is now also a TT.FM bot. 
 
 While this is mostly for my learning and fun, feel free to use him in your own chatrooms. 
