@@ -1,13 +1,31 @@
 // Load Node.js modules
 var Bot = require('ttapi');
 var util = require('util');
-var mysql = require('mysql');
 global.color = require("ansi-color").set;
 
 // Load bot modules
+global.Database = require("./database.js");
 global.Events = require("./events.js");
 global.Functions = require("./functions.js");
 global.Quotes = require("./quotes.js");
+
+try {
+	global.mysql = require('mysql');
+ } catch (e) {
+ 	Log(e);
+ 	Log('It is likely that you do not have the mysql node module installed.' + '\nUse the command \'npm install mysql\' to install.');
+ 	process.exit(0); 
+ }
+
+//Connects to mysql server
+try {
+	global.client = mysql.createClient({ "host":dbHost, "user":dbLogin, "password":dbPassword});
+	SetUpDatabase();
+} catch (e) {
+    Log(e);
+	Log('Make sure that a mysql server instance is running and that the ' + 'username and password information in config.js are correct.');
+ 	process.exit(0); 
+}
 
 Log("Initializing");
 
@@ -18,13 +36,13 @@ global.AllUsers = {};
 global.danceCount = 0;
 global.lameCount = 0;
 
-process.on("uncaughtException", function(data){
+/*process.on("uncaughtException", function(data){
 	Log("Process error " + data);
 	setTimeout( function() { 
 		Log("Shutting down (forever should restart)")
 		process.exit(0); 
 	}, 150000); // 2.5 minutes
-});
+});*/
 
 // Start up bot
 try {

@@ -2,7 +2,6 @@ var botWasBooted = false;
 
 global.OnReady = function(data){
 	Log(color("EVENT Ready", "blue"));
-	SetUpDatabase();
 };
 
 global.OnRoomChanged = function(data){
