@@ -70,12 +70,18 @@ setInterval(function(){
 		setTimeout( function() { 
 			if (ttUp === false) {
 				Log("Turntable.FM is down.");
-				setTimeout( function() { process.exit(0); }, 150000);
+				setTimeout( function() { 
+					Log("Shutting down (forever should restart)")
+					process.exit(0); 
+				}, 150000);
 			} 
 		}, 60000);
 	} catch (e){
 		Log(color("TT is down.", "red"));
 		Log(color("** ERROR TT_UP_CHECK ** ", "red") + e);
-		setTimeout( function() { process.exit(0); }, 150000);
+				setTimeout( function() { 
+					Log("Shutting down (forever should restart)")
+					process.exit(0); 
+				}, 150000);
 	}
 },300000); // 300000
