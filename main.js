@@ -18,8 +18,17 @@ global.AllUsers = {};
 global.danceCount = 0;
 global.lameCount = 0;
 
+process.on("uncaughtException", function(data){
+	Log("Process error " + data);
+	setTimeout( function() { process.exit(0); }, 150000);
+});
+
 // Start up bot
-global.bot = new Bot(botAuthId, botUserId, botRoomId);
+try {
+	global.bot = new Bot(botAuthId, botUserId, botRoomId);
+} catch (e){
+	setTimeout( function() { process.exit(0); }, 300000);
+}
 Log("Done");
 
 Log("Hooking events");
@@ -51,15 +60,22 @@ Log("Ready");
 
 // Check that TT is up every 5 minutes. This is so the bot can gracefully restart when the site comes back up.
 setInterval(function(){
+	var ttUp = false;
 	Log("Uptime Check");
 	try{
 		bot.listRooms({ skip: 0 }, function(data){
-			// Set a var to see if there was a response, if not try again in a few minutes.
+			ttUp = true;
 			Log("Turntable.FM is up.");
 		});
+		setTimeout( function() { 
+			if (ttUp === false) {
+				Log("Turntable.FM is down.");
+				setTimeout( function() { process.exit(0); }, 150000);
+			} 
+		}, 60000);
 	} catch (e){
 		Log(color("TT is down.", "red"));
 		Log(color("** ERROR TT_UP_CHECK ** ", "red") + e);
-		setTimeout( function() { bot.roomRegister(botRoomId); }, 300000);
+		setTimeout( function() { process.exit(0); }, 150000);
 	}
-},300000);
+},300000); // 300000

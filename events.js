@@ -63,7 +63,6 @@ global.OnDeregistered = function(data){
 
 	} catch (e) {
 		Log(color("**ERROR** Room Changed ", "red") + e);
-		process.exit(0);
 	}
 };
 
