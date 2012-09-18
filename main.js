@@ -20,14 +20,20 @@ global.lameCount = 0;
 
 process.on("uncaughtException", function(data){
 	Log("Process error " + data);
-	setTimeout( function() { process.exit(0); }, 150000);
+	setTimeout( function() { 
+		Log("Shutting down (forever should restart)")
+		process.exit(0); 
+	}, 150000); // 2.5 minutes
 });
 
 // Start up bot
 try {
 	global.bot = new Bot(botAuthId, botUserId, botRoomId);
 } catch (e){
-	setTimeout( function() { process.exit(0); }, 300000);
+	setTimeout( function() { 
+		Log("Shutting down (forever should restart)")
+		process.exit(0); 
+	}, 150000); // 2.5 minutes
 }
 Log("Done");
 
@@ -73,15 +79,15 @@ setInterval(function(){
 				setTimeout( function() { 
 					Log("Shutting down (forever should restart)")
 					process.exit(0); 
-				}, 150000);
+				}, 150000); // 2.5 minutes
 			} 
-		}, 60000);
+		}, 60000); // 1 minute
 	} catch (e){
 		Log(color("TT is down.", "red"));
 		Log(color("** ERROR TT_UP_CHECK ** ", "red") + e);
 				setTimeout( function() { 
 					Log("Shutting down (forever should restart)")
 					process.exit(0); 
-				}, 150000);
+				}, 150000); // 2.5 minutes
 	}
-},300000); // 300000
+},300000); // 5 minutes
