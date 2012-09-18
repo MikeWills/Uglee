@@ -6,3 +6,5 @@ Required NPM packages:
 * npm install mysql
 * npm install util
 * [sudo] npm install forever -g // required to have the bot automatically come back up after a downtime.
+
+Most of the configuration is stored in the database, so the database is required.
