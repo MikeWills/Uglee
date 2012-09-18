@@ -5,3 +5,4 @@ Required NPM packages:
 * npm install ansi-color
 * npm install mysql
 * npm install util
+* [sudo] npm install forever -g // required to have the bot automatically come back up after a downtime.
