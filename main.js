@@ -38,13 +38,13 @@ global.AllUsers = {};
 global.danceCount = 0;
 global.lameCount = 0;
 
-/*process.on("uncaughtException", function(data){
+process.on("uncaughtException", function(data){
 	Log("Process error " + data);
 	setTimeout( function() { 
 		Log("Shutting down (forever should restart)")
 		process.exit(0); 
 	}, 150000); // 2.5 minutes
-});*/
+});
 
 // Start up bot
 try {
