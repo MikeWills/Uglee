@@ -1,3 +1,5 @@
+global.version = "0.1";
+
 // Load Node.js modules
 var Bot = require('ttapi');
 var util = require('util');
