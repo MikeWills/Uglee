@@ -4,4 +4,7 @@ actions.js
 nohup.out
 out.log
 err.log
-.c9revisions
+.c9revisions/
+uglee2.js
+*.log
+node_modules/
