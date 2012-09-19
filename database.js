@@ -20,7 +20,7 @@ global.SetValue = function(key, value) {
 	============== */
 global.GetValue = function(key, timeout, callback) {
 		client.query("SELECT `value`, `DateStamp` FROM " + dbTablePrefix + "Settings WHERE `key` = ?", [key], function select(error, results, fields) {
-			Log("Results: " + results);
+			//Log("Results: " + results);
 			if (results !== undefined) {
 				if (results.length !== 0) {
 					var now = new Date();

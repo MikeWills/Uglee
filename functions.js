@@ -123,6 +123,7 @@ global.DidUserLeaveQuickly = function(userid){
 	PopulateSongData - Gets the require information for a song for further processing.
 	============== */
 global.PopulateSongData = function(data) {
+	currentsong.id = data.room.metadata.current_song._id;
 	currentsong.artist = data.room.metadata.current_song.metadata.artist;
 	currentsong.song = data.room.metadata.current_song.metadata.song;
 	currentsong.djname = data.room.metadata.current_song.djname;

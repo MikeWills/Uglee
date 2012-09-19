@@ -12,6 +12,7 @@ global.Events = require("./events.js");
 global.Functions = require("./functions.js");
 global.Quotes = require("./quotes.js");
 
+// Setup mySQL
 try {
 	global.mysql = require('mysql');
  } catch (e) {

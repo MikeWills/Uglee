@@ -87,10 +87,9 @@ global.OnEndSong = function(data){
 	Log(color("EVENT End Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + 
 		data.room.metadata.current_song.metadata.song);
 
-	var pastsong = currentsong;
+	var endsongresponse = currentsong.song + ' stats: awesomes: ' + currentsong.up + ' lames: ' + currentsong.down + ' snags: ' + currentsong.snags;
 	GetValue("songstats", 0, function(value){
 		if (value === "true") {
-			var endsongresponse = pastsong.song + ' stats: awesomes: ' + pastsong.up + ' lames: ' + pastsong.down + ' snags: ' + pastsong.snags;
     		Speak(endsongresponse);
     	}
 	});
