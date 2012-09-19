@@ -135,6 +135,7 @@ global.SetUpDatabase = function() {
 		GetValue("version", 0, function(dbversion){
 			if (dbversion !== version) {
 				SetValue("version", version);
+				SetValue("songstats", "true");
 				SetValue("autobop", "false");
 				SetValue("autodj", "false");
 				SetValue("enableQueue", "false");
@@ -142,7 +143,6 @@ global.SetUpDatabase = function() {
 				SetValue("newsongcomments", "false");
 				SetValue("monitorsonglength", "false");
 				SetValue("maxsonglength", "30");
-				SetValue("bannedUsers", "['4f6ba010590ca24a2300249b', '504c33dfaaa5cd75910006b4', '503fe6a4eb35c1065e0001ec', '504ea4d2eb35c1057700002c']");
 				SetValue("ctsActive", "false");
 				SetValue("ctsSequenceMax", "0");
 				SetValue("ctsLastWords", "");
