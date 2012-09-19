@@ -1,5 +1,6 @@
 global.awesomeText =   ["I love it!", 
 						"This song is awesome!",
+						"How'd you know I'd love this song?",
 						"This fucking rocks!"];
 global.lameText = 	   ["Wow! I have heard banshee songs better than this.", 
 						"I want my money back! This song sucks."];
