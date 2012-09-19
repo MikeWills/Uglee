@@ -1,7 +1,7 @@
 /* 	============== 
 	SetCacheValue - Sets the value to the DB cache 
 	============== */
-global.SetCacheValue = function(key, value) {
+global.SetValue = function(key, value) {
 		client.query("SELECT `value` FROM " + dbTablePrefix + "Settings WHERE `key` = ?", [key], function select(error, results, fields) {
 			if (results !== undefined) {
 				if (results.length !== 0) {
@@ -18,7 +18,7 @@ global.SetCacheValue = function(key, value) {
 /* 	============== 
 	GetCacheValue - Gets the value from the DB cache 
 	============== */
-global.GetCacheValue = function(key, timeout, callback) {
+global.GetValue = function(key, timeout, callback) {
 		client.query("SELECT `value`, `DateStamp` FROM " + dbTablePrefix + "Settings WHERE `key` = ?", [key], function select(error, results, fields) {
 			Log("Results: " + results);
 			if (results !== undefined) {
@@ -41,7 +41,7 @@ global.GetCacheValue = function(key, timeout, callback) {
 /* 	============== 
 	RemoveCacheValue - Deletes the value to the DB cache 
 	============== */
-global.RemoveCacheValue = function(key) {
+global.RemoveValue = function(key) {
 	client.query("DELETE FROM " + dbTablePrefix + "Settings WHERE `key` = ?", [key]);
 };
 
@@ -132,21 +132,21 @@ global.SetUpDatabase = function() {
 			throw (error);
 		}
 
-		GetCacheValue("version", 0, function(dbversion){
+		GetValue("version", 0, function(dbversion){
 			if (dbversion !== version) {
-				SetCacheValue("version", version);
-				SetCacheValue("autobop", "false");
-				SetCacheValue("autodj", "false");
-				SetCacheValue("enableQueue", "false");
-				SetCacheValue("nextDjQueueTimeout", "30");
-				SetCacheValue("newsongcomments", "false");
-				SetCacheValue("monitorsonglength", "false");
-				SetCacheValue("maxsonglength", "30");
-				SetCacheValue("bannedUsers", "['4f6ba010590ca24a2300249b', '504c33dfaaa5cd75910006b4', '503fe6a4eb35c1065e0001ec', '504ea4d2eb35c1057700002c']");
-				SetCacheValue("ctsActive", "false");
-				SetCacheValue("ctsSequenceMax", "0");
-				SetCacheValue("ctsLastWords", "");
-				SetCacheValue("announcement", "");
+				SetValue("version", version);
+				SetValue("autobop", "false");
+				SetValue("autodj", "false");
+				SetValue("enableQueue", "false");
+				SetValue("nextDjQueueTimeout", "30");
+				SetValue("newsongcomments", "false");
+				SetValue("monitorsonglength", "false");
+				SetValue("maxsonglength", "30");
+				SetValue("bannedUsers", "['4f6ba010590ca24a2300249b', '504c33dfaaa5cd75910006b4', '503fe6a4eb35c1065e0001ec', '504ea4d2eb35c1057700002c']");
+				SetValue("ctsActive", "false");
+				SetValue("ctsSequenceMax", "0");
+				SetValue("ctsLastWords", "");
+				SetValue("announcement", "");
 			}
 		})
 	});
