@@ -2,7 +2,8 @@ global.version = "0.1";
 
 // Load Node.js modules
 var Bot = require('ttapi');
-var util = require('util');
+global.util = require('util');
+global.fs = require('fs');
 global.color = require("ansi-color").set;
 
 // Load bot modules
@@ -32,7 +33,8 @@ try {
 Log("Initializing");
 
 // Initialize global variables
-global.AllUsers = {};
+global.AllUsers = {};						// A list of all users in the room
+global.commands = new Array();              // Array of command handlers
 
 // Working data
 global.danceCount = 0;
@@ -55,6 +57,19 @@ try {
 		process.exit(0); 
 	}, 150000); // 2.5 minutes
 }
+
+// Load commands
+    try {
+        var filenames = fs.readdirSync('./commands');
+        for (i in filenames) {
+            var command = require('./commands/' + filenames[i]);
+            commands.push({name: command.name, handler: command.handler, hidden: command.hidden,
+                enabled: command.enabled, matchStart: command.matchStart});
+        }
+        Log("Following commands loaded: " + commands);
+    } catch (e) {
+        Log(color("**ERROR** Load Commands", "red") + e);
+    }
 Log("Done");
 
 Log("Hooking events");

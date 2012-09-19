@@ -75,9 +75,15 @@ global.NoPM = function(userid){
 global.Command = function(source, data) {
 	var isPM = source === "pm" ? true : false;
 
-	if (data.text.toLowerCase() == "dance"){
-		AwesomeSong();
-	}
+	for (i in commands) {
+        if (commands[i].matchStart && (data.text.indexOf(commands[i].name) == 0)) {
+            commands[i].handler({data: data, source: source});
+            break;
+        } else if (commands[i].name == data.text) {
+            commands[i].handler({data: data, source: source});
+            break;
+        }
+    }
 }
 
 /* 	==============
