@@ -14,6 +14,10 @@ global.OnRoomChanged = function(data){
 			//Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
 		}
 
+		if (data.room.metadata.current_song != null) {
+            PopulateSongData(data);
+        }
+
 		// Keep track of all users
 		var users = data.users;
         for (var i in users) {
@@ -31,6 +35,10 @@ global.OnRegistered = function(data){
 	try{
 		Log(color("EVENT Registered: ", "blue") + data.user[0].name + " - " + data.user[0].userid);
 
+		if (currentsong != null) {
+        	currentsong.listeners++;
+    	}
+
 		//Add new user(s) to cache
     	var users = data.user;
     	for (var i in users) {
@@ -47,6 +55,10 @@ global.OnRegistered = function(data){
 global.OnDeregistered = function(data){
 	try{
 		Log(color("EVENT Deregistered: ", "blue") + data.user[0].name + " - " + data.user[0].userid);
+
+		if (currentsong != null) {
+        	currentsong.listeners--;
+    	}
 
 		// Remove the user(s) from cache
 		var users = data.user;
@@ -74,12 +86,17 @@ global.OnSpeak = function(data){
 global.OnEndSong = function(data){
 	Log(color("EVENT End Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + 
 		data.room.metadata.current_song.metadata.song);
+	
+	var endsongresponse = currentsong.song + ' stats: awesomes: ' + currentsong.up + ' lames: ' + currentsong.down + ' snags: ' + currentsong.snags;
+    Speak(endsongresponse);
 };
 
 global.OnNewSong = function(data){
 	Log(color("EVENT New Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + 
 		data.room.metadata.current_song.metadata.song);
 	danceCount = 0;
+    //Populate new song data in currentsong
+    PopulateSongData(data);
 };
 
 global.OnNoSong = function(data){
@@ -91,6 +108,10 @@ global.OnUpdateVotes = function(data){
 	if (data.room.metadata.votelog[0][1] == "down"){
 		SpeakRandom(downVoteText);
 	}
+
+	currentsong.up = data.room.metadata.upvotes;
+    currentsong.down = data.room.metadata.downvotes;
+    currentsong.listeners = data.room.metadata.listeners;
 };
 
 global.OnBootedUser = function(data){
@@ -124,6 +145,8 @@ global.OnRemModerator = function(data){
 
 global.OnSnagged = function(data){
 	Log(color("EVENT Snagged: ", "blue") + JSON.stringify(data));
+	//Increase song snag count
+    currentsong.snags++;
 };
 
 global.OnPmmed = function(data){

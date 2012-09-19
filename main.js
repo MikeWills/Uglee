@@ -40,6 +40,19 @@ global.commands = new Array();              // Array of command handlers
 global.danceCount = 0;
 global.lameCount = 0;
 
+//Current song info
+global.currentsong = {
+    artist: null,
+    song: null,
+    djname: null,
+    djid: null,
+    up: 0,
+    down: 0,
+    listeners: 0,
+    snags: 0,
+    id: null };
+
+// This is a catch-all
 process.on("uncaughtException", function(data){
 	Log("Process error " + data);
 	setTimeout( function() { 
@@ -59,14 +72,13 @@ try {
 }
 
 // Load commands
-    try {
+try {
         var filenames = fs.readdirSync('./commands');
         for (i in filenames) {
             var command = require('./commands/' + filenames[i]);
             commands.push({name: command.name, handler: command.handler, hidden: command.hidden,
                 enabled: command.enabled, matchStart: command.matchStart});
         }
-        Log("Following commands loaded: " + commands);
     } catch (e) {
         Log(color("**ERROR** Load Commands", "red") + e);
     }

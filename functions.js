@@ -54,7 +54,7 @@ global.SpeakRandom = function(array, userName){
 	IsMod - Checks if the user is a moderator
 	============== */
 global.IsMod = function(userid, callback){
-	bot.roomInfo(data, function(){
+	bot.roomInfo(function(data){
 		var moderators = data.room.metadata.moderator_id;
 		if (moderators.indexOf(userid) != -1) { callback(true); } 
 		else { callback(false); }
@@ -74,13 +74,15 @@ global.NoPM = function(userid){
 	============== */
 global.Command = function(source, data) {
 	var isPM = source === "pm" ? true : false;
+	var userid = "";
+	if (isPM) { userid = data.senderid; } else { userid = data.userid; }
 
 	for (i in commands) {
         if (commands[i].matchStart && (data.text.indexOf(commands[i].name) == 0)) {
-            commands[i].handler({data: data, source: source});
+            commands[i].handler(data, userid, source);
             break;
         } else if (commands[i].name == data.text) {
-            commands[i].handler({data: data, source: source});
+            commands[i].handler(data, userid, source);
             break;
         }
     }
@@ -90,22 +92,16 @@ global.Command = function(source, data) {
 	AwesomeSong - Awesome (or vote up) this song.
 	============== */
 global.AwesomeSong = function(){
-	danceCount++;
-	if (danceCount > 1){
-		bot.vote("up");
-		SpeakRandom(awesomeText);
-	}
+	bot.vote("up");
+	SpeakRandom(awesomeText);
 }
 
 /* 	==============
 	LameSong - Lame (or down vote) this song.
 	============== */
 global.LameSong = function(){
-	lameCount++;
-	if (lameCount > 1){
-		bot.vote("down");
-		SpeakRandom(lameText);
-	}
+	bot.vote("down");
+	SpeakRandom(lameText);
 }
 
 /* 	==============
