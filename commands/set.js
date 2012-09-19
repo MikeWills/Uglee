@@ -9,7 +9,7 @@ exports.handler = function(data, userid, source) {
 			SetValue(split[1], split[2]);
 			TellUser(userid, "Value for " + split[1] + " set to " + split[2]);
 		} else {
-			TellUser(userid, "@" + AllUsers[userid].name + " correct syntax is set [option] [value]")
+			TellUser(userid, "@" + AllUsers[userid].name + " correct syntax is set [option] [value]");
 		}
 	}
 }
