@@ -123,7 +123,7 @@ setInterval(function(){
 		});
 		setTimeout( function() { 
 			if (ttUp === false) {
-				Log("Turntable.FM is down.");
+				Log(color("**DOWN** Turntable.FM is down.", "red"));
 				setTimeout( function() { 
 					Log("Shutting down (forever should restart)")
 					process.exit(0); 
@@ -131,7 +131,7 @@ setInterval(function(){
 			} 
 		}, 60000); // 1 minute
 	} catch (e){
-		Log(color("TT is down.", "red"));
+		Log(color("**DOWN** Turntable.FM is down.", "red"));
 		Log(color("** ERROR TT_UP_CHECK ** ", "red") + e);
 				setTimeout( function() { 
 					Log("Shutting down (forever should restart)")
