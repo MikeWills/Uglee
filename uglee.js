@@ -54,7 +54,7 @@ child = exec("t set active GilimYurhig", function(error, stdout, stderr) {
 
 
 /*  banned users */
-var bannedUsers = ['4fedd7baaaa5cd41130001d1'];
+var bannedUsers = ['4f6ba010590ca24a2300249b', '504c33dfaaa5cd75910006b4', '503fe6a4eb35c1065e0001ec', '504ea4d2eb35c1057700002c'];
 
 //Current song info
 var currentsong = {
@@ -107,7 +107,7 @@ var isAmmDown = false;
 var ammResponded = false;
 var ammRefreshIntervalId = null;
 var lastAnnouncement = new Date();
-var announcement = "HEAR YE! HEAR YE! On 6/17 @ 10pm CST, @PodcastMike will be marking a trio of events: 1 year on TT, 20k for his avatar, and 10k in room points. Come and help us celebrate!";
+var announcement = "";
 
 var bot = new Bot(config.botinfo.auth, config.botinfo.userid);
 
