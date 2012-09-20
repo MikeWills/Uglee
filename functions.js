@@ -79,10 +79,10 @@ global.Command = function(source, data) {
 
 	for (i in commands) {
 		if (commands[i].enabled) {
-        if (commands[i].matchStart && (data.text.indexOf(commands[i].name) == 0)) {
+        if (commands[i].matchStart && (data.text.toLowerCase().indexOf(commands[i].name) == 0)) {
             commands[i].handler(data, userid, source);
             break;
-        } else if (commands[i].name == data.text) {
+        } else if (commands[i].name == data.text.toLowerCase()) {
             commands[i].handler(data, userid, source);
             break;
         }
