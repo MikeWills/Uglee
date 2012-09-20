@@ -4,8 +4,32 @@
 		"selected_items":
 		[
 			[
+				"cur",
+				"current_song"
+			],
+			[
+				"lo",
+				"Log"
+			],
+			[
+				"dan",
+				"danceCount"
+			],
+			[
 				"user",
-				"userName"
+				"userid"
+			],
+			[
+				"db",
+				"dbversion"
+			],
+			[
+				"re",
+				"results"
+			],
+			[
+				"Set",
+				"SetCacheValue"
 			],
 			[
 				"time",
@@ -30,10 +54,6 @@
 			[
 				"bot",
 				"botName"
-			],
-			[
-				"re",
-				"response"
 			]
 		]
 	},
@@ -43,7 +63,7 @@
 			"file": "uglee2.js",
 			"settings":
 			{
-				"buffer_size": 524,
+				"buffer_size": 532,
 				"line_ending": "Unix"
 			}
 		},
@@ -51,7 +71,7 @@
 			"file": "main.js",
 			"settings":
 			{
-				"buffer_size": 1869,
+				"buffer_size": 3885,
 				"line_ending": "Unix"
 			}
 		},
@@ -59,7 +79,7 @@
 			"file": "events.js",
 			"settings":
 			{
-				"buffer_size": 3928,
+				"buffer_size": 4746,
 				"line_ending": "Unix"
 			}
 		},
@@ -67,15 +87,7 @@
 			"file": "functions.js",
 			"settings":
 			{
-				"buffer_size": 1907,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "quotes.js",
-			"settings":
-			{
-				"buffer_size": 713,
+				"buffer_size": 3839,
 				"line_ending": "Unix"
 			}
 		}
@@ -108,14 +120,25 @@
 	},
 	"file_history":
 	[
-		"/Users/mikewills/Projects/Uglee/uglee.js",
-		"/Users/mikewills/Projects/Uglee/readmeNew.md",
+		"/Users/mikewills/Projects/Uglee/commands/pmme.js",
+		"/Users/mikewills/Projects/Uglee/database.js",
 		"/Users/mikewills/Projects/Uglee/quotes.js",
+		"/Users/mikewills/Projects/Uglee/commands/dance.js",
+		"/Users/mikewills/Projects/Uglee/commands/a.js",
+		"/Users/mikewills/Projects/Uglee/commands/set.js",
+		"/Users/mikewills/Projects/Uglee/commands/reloadcommands.js",
+		"/Users/mikewills/Projects/Uglee/commands/addtoplaylist.js",
+		"/Users/mikewills/Projects/Uglee/commands/test.js",
+		"/Users/mikewills/Projects/Uglee/readmeNew.md",
+		"/Users/mikewills/Projects/Uglee/.gitignore",
+		"/Users/mikewills/Projects/Uglee/bot.js",
+		"/Users/mikewills/Projects/Uglee/node_modules/ttapi/websocket.js",
+		"/Users/mikewills/Projects/Uglee/node_modules/ttapi/bot.js",
+		"/Users/mikewills/Projects/Uglee/uglee.js",
 		"/Users/mikewills/Projects/Uglee/uglee2.js",
 		"/Users/mikewills/Projects/Uglee/main.js",
 		"/Users/mikewills/Projects/Uglee/events.js",
 		"/Users/mikewills/Projects/Uglee/functions.js",
-		"/Users/mikewills/Projects/Uglee/.gitignore",
 		"/Users/mikewills/Projects/Uglee/startUglee.sh",
 		"/Users/mikewills/Projects/ttModeratorBot/main.js",
 		"/Users/mikewills/Projects/ttModeratorBot/sampleconfig.js",
@@ -142,7 +165,7 @@
 	],
 	"find":
 	{
-		"height": 35.0
+		"height": 39.0
 	},
 	"find_in_files":
 	{
@@ -156,6 +179,15 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"Cache",
+			"GetCache",
+			"mysql",
+			"dateDiff",
+			"dateDiffDateDiff",
+			"dateDiff",
+			"EventEmitter",
+			"events",
+			"WebSocket",
 			"usersList",
 			"roll",
 			"ERROR",
@@ -177,7 +209,7 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -185,15 +217,15 @@
 					"file": "uglee2.js",
 					"settings":
 					{
-						"buffer_size": 524,
+						"buffer_size": 532,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								14,
-								14
+								232,
+								239
 							]
 						],
 						"settings":
@@ -211,15 +243,15 @@
 					"file": "main.js",
 					"settings":
 					{
-						"buffer_size": 1869,
+						"buffer_size": 3885,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								497,
-								506
+								1991,
+								1991
 							]
 						],
 						"settings":
@@ -228,7 +260,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 74.0,
+						"translation.y": 874.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -238,15 +270,15 @@
 					"file": "events.js",
 					"settings":
 					{
-						"buffer_size": 3928,
+						"buffer_size": 4746,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2595,
-								2595
+								562,
+								562
 							]
 						],
 						"settings":
@@ -255,7 +287,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 820.0,
+						"translation.y": 848.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -265,15 +297,15 @@
 					"file": "functions.js",
 					"settings":
 					{
-						"buffer_size": 1907,
+						"buffer_size": 3839,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								498,
-								498
+								2100,
+								2114
 							]
 						],
 						"settings":
@@ -282,33 +314,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "quotes.js",
-					"settings":
-					{
-						"buffer_size": 713,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								678,
-								678
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 949.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
