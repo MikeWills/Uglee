@@ -147,6 +147,8 @@ global.SetUpDatabase = function() {
 				SetValue("ctsSequenceMax", "0");
 				SetValue("ctsLastWords", "");
 				SetValue("announcement", "");
+				SetValue("gtfo", "false");
+				SetValue("lamer", "false");
 			}
 		})
 	});

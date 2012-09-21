@@ -40,6 +40,7 @@ global.commands = new Array();              // Array of command handlers
 // Working data
 global.danceCount = 0;
 global.lameCount = 0;
+global.snagCount = 0;
 
 //Current song info
 global.currentsong = {
@@ -55,7 +56,7 @@ global.currentsong = {
 
 // This is a catch-all
 process.on("uncaughtException", function(data){
-	Log("Process error " + data);
+	Log("**ERROR** Process error " + data);
 	setTimeout( function() { 
 		Log("Shutting down (forever should restart)")
 		process.exit(0); 

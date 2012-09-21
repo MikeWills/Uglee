@@ -64,10 +64,15 @@ global.OnDeregistered = function(data){
 		var users = data.user;
     	for (var i in users) {
     		var user = users[i];
-    	
+    		
     		var now = new Date();
+    		var username = AllUsers[user.userid].name;
 			if ((now - AllUsers[user.userid].loggedIn) < 30000){
-				SpeakRandom(userLeaveQuickText, AllUsers[user.userid].name);
+    			GetValue("gtfo", 0, function(value){
+					if (value === "true") {
+						SpeakRandom(userLeaveQuickText, username);
+					}
+				});
 			}
 
         	delete AllUsers[user.userid];
@@ -87,7 +92,7 @@ global.OnEndSong = function(data){
 	Log(color("EVENT End Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + 
 		data.room.metadata.current_song.metadata.song);
 
-	var endsongresponse = currentsong.song + ' stats: awesomes: ' + currentsong.up + ' lames: ' + currentsong.down + ' snags: ' + currentsong.snags;
+	var endsongresponse = currentsong.song + ' stats: :+1: ' + currentsong.up + ' :-1: ' + currentsong.down + ' <3 ' + currentsong.snags;
 	GetValue("songstats", 0, function(value){
 		if (value === "true") {
     		Speak(endsongresponse);
@@ -109,8 +114,12 @@ global.OnNoSong = function(data){
 
 global.OnUpdateVotes = function(data){
 	//Log(blue + "EVENT Update Votes: " + reset + JSON.stringify(data));
-	if (data.room.metadata.votelog[0][1] == "down"){
-		SpeakRandom(downVoteText);
+	if (data.room.metadata.votelog[0][1] == "down") {
+		GetValue("lamer", 0, function(value){
+			if (value === "true") {
+				SpeakRandom(downVoteText);
+			}
+		});	
 	}
 
 	currentsong.up = data.room.metadata.upvotes;
