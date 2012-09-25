@@ -6,6 +6,7 @@ exports.handler = function(data, userid, source) {
 	if (source === 'pm') {
 		IsMod(userid, function(isMod) {
 			if (isMod) {
+				Log("Bot is DJing");
 				bot.addDj();
 				bot.speak("Imma help you out for a bit.");
 				botDJing = true;
