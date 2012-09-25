@@ -1,9 +1,12 @@
 exports.name = ':metal:';
 exports.hidden = true;
-exports.enabled = false;
+exports.enabled = true;
 exports.matchStart = false;
 exports.handler = function(data, userid, source) {
-    if (IsMod(userid)) {
-        bot.vote('up');
-    }
+    IsMod(userid, function(isMod) {
+    	if (isMod) {
+        	bot.vote('up');
+        	Speak(":metal:");
+    	}
+    });
 }

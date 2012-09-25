@@ -98,6 +98,7 @@ global.OnEndSong = function(data){
     		Speak(endsongresponse);
     	}
 	});
+	danceRequesters = [ ];
 };
 
 global.OnNewSong = function(data){
@@ -160,6 +161,13 @@ global.OnSnagged = function(data){
 	Log(color("EVENT Snagged: ", "blue") + JSON.stringify(data));
 	//Increase song snag count
     currentsong.snags++;
+    if (currentsong.snags = 2) {
+    	bot.vote('up');
+    	bot.playlistAll(function (data) {
+        	bot.playlistAdd(currentsong.id, data.list.length);
+        });
+        bot.snag();
+    }
 };
 
 global.OnPmmed = function(data){

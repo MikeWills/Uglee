@@ -39,6 +39,7 @@ global.commands = new Array();              // Array of command handlers
 
 // Working data
 global.danceCount = 0;
+global.danceRequesters = [ ];
 global.lameCount = 0;
 global.snagCount = 0;
 
