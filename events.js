@@ -161,7 +161,10 @@ global.OnSnagged = function(data){
 	Log(color("EVENT Snagged: ", "blue") + JSON.stringify(data));
 	//Increase song snag count
     currentsong.snags++;
-    if (currentsong.snags = 2) {
+
+    // Add the song if there are 2 or more snags.
+    if (currentsong.snags === 2) {
+    	Log("Snagging the song " + currentsong.song + " by " + currentsong.artist);
     	bot.vote('up');
     	bot.playlistAll(function (data) {
         	bot.playlistAdd(currentsong.id, data.list.length);
