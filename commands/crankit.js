@@ -6,7 +6,7 @@ exports.handler = function(data, userid, source) {
 	IsMod(userid, function(isMod) {
 		if (isMod) {
 			bot.vote('up');
-			Speak("Already did!!");
+			SpeakRandom(crankIt, AllUsers[userid].name);
 		}
 	});
 }

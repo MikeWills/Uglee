@@ -13,3 +13,8 @@ global.userLeaveQuickText =    ["Hey! {u} just took our beer! That jerk!",
 								"We didn't want you here anyway {u}", 
 								"Good riddance! We didn't want you anyay {u}.", 
 								"Thanks for coming {u}!"];
+global.hitBot = 			   ["OMG! Okay I'll awesome. Whatta prick!",
+								"OUCH! Fine... I'll awsome."];
+global.crankIt = 			   ["Already did!!",
+								"Shit I think I broke the knob off trying to hit 11!",
+								"I'm on 11!"]								
