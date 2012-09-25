@@ -6,7 +6,6 @@ exports.handler = function(data, userid, source) {
 	if (danceRequesters.indexOf(userid) === -1) {
 		danceCount++;
 		danceRequesters.push(userid);
-		if (danceCount === 2)
-    		AwesomeSong();
-		}
+		if (danceCount === 2) AwesomeSong();
+	}
 }

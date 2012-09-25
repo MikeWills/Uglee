@@ -3,10 +3,10 @@ exports.hidden = true;
 exports.enabled = true;
 exports.matchStart = false;
 exports.handler = function(data, userid, source) {
-    if (userid === botAdmin){
-    	bot.stalk(botAdmin , function(stalkData){ 
-    		bot.roomDeregister();
-    		bot.roomRegister(stalkData.roomId);
-    	})
-    }
+	if (userid === botAdmin) {
+		bot.stalk(botAdmin, function(stalkData) {
+			bot.roomDeregister();
+			bot.roomRegister(stalkData.roomId);
+		})
+	}
 }

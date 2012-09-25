@@ -3,7 +3,7 @@ exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = true;
 exports.handler = function(data, userid, source) {
-	if (source === 'pm'){
+	if (source === 'pm') {
 		var split = data.text.split(' ');
 		if (split.length === 3) {
 			SetValue(split[1], split[2]);
