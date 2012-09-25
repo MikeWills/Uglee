@@ -18,7 +18,7 @@ exports.handler = function(data, userid, source) {
             }
             bonusvote = true;
         } else {
-            bot.speak("@Uglee roll");
+            bot.speak("@" + botName + " roll");
         }
     }
 }
