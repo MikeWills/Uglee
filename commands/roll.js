@@ -17,8 +17,8 @@ exports.handler = function(data, userid, source) {
                 bot.speak(data.name + ', you rolled a ' + roll + ', bummer.');
             }
             bonusvote = true;
-        } else {
-            bot.speak("@" + botName + " roll");
         }
+    } else {
+        bot.speak("@" + botName + " roll");
     }
 }
