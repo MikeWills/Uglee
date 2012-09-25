@@ -74,6 +74,17 @@ global.IsMod = function(userid, callback) {
 }
 
 /* 	==============
+	IsAdmin - Checks if the user is the bot administrator
+	============== */
+global.IsAdmin = function(userid) {
+	if (botAdmins.indexOf(userid) !== -1) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/* 	==============
 	NoPM - Checks if the user can't get a PM
 	============== */
 global.NoPM = function(userid) {

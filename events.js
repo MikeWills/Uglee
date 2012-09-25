@@ -98,6 +98,7 @@ global.OnEndSong = function(data) {
 		}
 	});
 	danceRequesters = [];
+	alreadyRolled = false;
 };
 
 global.OnNewSong = function(data) {
