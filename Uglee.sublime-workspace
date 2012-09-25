@@ -4,8 +4,20 @@
 		"selected_items":
 		[
 			[
+				"s",
+				"source"
+			],
+			[
 				"cur",
-				"current_song"
+				"currentsong"
+			],
+			[
+				"stal",
+				"stalkData"
+			],
+			[
+				"st",
+				"stalkData"
 			],
 			[
 				"lo",
@@ -60,10 +72,10 @@
 	"buffers":
 	[
 		{
-			"file": "uglee2.js",
+			"file": "uglee.js",
 			"settings":
 			{
-				"buffer_size": 532,
+				"buffer_size": 563,
 				"line_ending": "Unix"
 			}
 		},
@@ -71,7 +83,7 @@
 			"file": "main.js",
 			"settings":
 			{
-				"buffer_size": 3885,
+				"buffer_size": 3905,
 				"line_ending": "Unix"
 			}
 		},
@@ -79,7 +91,7 @@
 			"file": "events.js",
 			"settings":
 			{
-				"buffer_size": 4746,
+				"buffer_size": 5244,
 				"line_ending": "Unix"
 			}
 		},
@@ -87,7 +99,7 @@
 			"file": "functions.js",
 			"settings":
 			{
-				"buffer_size": 3839,
+				"buffer_size": 4839,
 				"line_ending": "Unix"
 			}
 		}
@@ -95,19 +107,27 @@
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 187.0,
+		"height": 207.0,
 		"selected_items":
 		[
 			[
 				"js",
-				"Set Syntax: JSON"
+				"Format: Javascript"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			],
+			[
+				"pack",
+				"Preferences: Browse Packages"
 			]
 		],
 		"width": 467.0
 	},
 	"console":
 	{
-		"height": 0.0
+		"height": 139.0
 	},
 	"distraction_free":
 	{
@@ -120,25 +140,71 @@
 	},
 	"file_history":
 	[
-		"/Users/mikewills/Projects/Uglee/commands/pmme.js",
-		"/Users/mikewills/Projects/Uglee/database.js",
+		"/Users/mikewills/Projects/Uglee/.gitignore",
 		"/Users/mikewills/Projects/Uglee/quotes.js",
-		"/Users/mikewills/Projects/Uglee/commands/dance.js",
-		"/Users/mikewills/Projects/Uglee/commands/a.js",
+		"/Users/mikewills/Projects/Uglee/commands/stepup2.js",
+		"/Users/mikewills/Projects/Uglee/commands/speak.js",
+		"/Users/mikewills/Projects/Uglee/commands/addtoplaylist2.js",
+		"/Users/mikewills/Projects/Uglee/commands/findidle.js",
+		"/Users/mikewills/Projects/Uglee/commands/setAvatar.js",
+		"/Users/mikewills/Projects/Uglee/commands/setLaptop.js",
+		"/Users/mikewills/Projects/Uglee/commands/skip2.js",
+		"/Users/mikewills/Projects/Uglee/commands/stepup.js",
+		"/Users/mikewills/Projects/Uglee/commands/stepdown2.js",
+		"/Users/mikewills/Projects/Uglee/commands/skip.js",
+		"/Users/mikewills/Projects/Uglee/commands/crankit.js",
+		"/Users/mikewills/Projects/Uglee/commands/stepdown.js",
+		"/Users/mikewills/Projects/Uglee/commands/djwarn.js",
+		"/Users/mikewills/Projects/Uglee/uglee2.js",
+		"/Users/mikewills/Projects/Uglee/functions.js",
+		"/Users/mikewills/Projects/Uglee/commands/ctsmax.js",
+		"/Users/mikewills/Projects/Uglee/commands/ctsend.js",
+		"/Users/mikewills/Projects/Uglee/commands/ctsstart.js",
+		"/Users/mikewills/Projects/Uglee/commands/queueend1.js",
+		"/Users/mikewills/Projects/Uglee/commands/queuestart1.js",
+		"/Users/mikewills/Projects/Uglee/commands/die.js",
+		"/Users/mikewills/Projects/Uglee/commands/die2.js",
+		"/Users/mikewills/Projects/Uglee/commands/addtoplaylist.js",
+		"/Users/mikewills/Projects/Uglee/commands/queueinsert1.js",
+		"/Users/mikewills/Projects/Uglee/commands/queuedelist1.js",
+		"/Users/mikewills/Projects/Uglee/commands/queuelist2.js",
+		"/Users/mikewills/Projects/Uglee/commands/queueremove2.js",
+		"/Users/mikewills/Projects/Uglee/commands/queueremove1.js",
+		"/Users/mikewills/Projects/Uglee/commands/queueadd6.js",
+		"/Users/mikewills/Projects/Uglee/commands/queueadd7.js",
+		"/Users/mikewills/Projects/Uglee/commands/queueadd8.js",
+		"/Users/mikewills/Projects/Uglee/commands/queueadd5.js",
+		"/Users/mikewills/Projects/Uglee/commands/queueadd4.js",
+		"/Users/mikewills/Projects/Uglee/commands/queueadd3.js",
+		"/Users/mikewills/Projects/Uglee/commands/queueadd2.js",
+		"/Users/mikewills/Projects/Uglee/commands/queueadd1.js",
+		"/Users/mikewills/Projects/Uglee/commands/modanswered.js",
+		"/Users/mikewills/Projects/Uglee/commands/modsummon.js",
+		"/Users/mikewills/Projects/Uglee/commands/modanswered",
+		"/Users/mikewills/Projects/Uglee/commands/listenercount.js",
+		"/Users/mikewills/Projects/Uglee/commands/hitbot2.js",
+		"/Users/mikewills/Projects/Uglee/commands/hitbot.js",
+		"/Users/mikewills/Projects/Uglee/commands/fuckyou.js",
+		"/Users/mikewills/Projects/Uglee/commands/a2.js",
+		"/Users/mikewills/Projects/Uglee/commands/l.js",
+		"/Users/mikewills/Projects/Uglee/commands/roll.js",
+		"/Users/mikewills/Projects/Uglee/commands/rollagain.js",
+		"/Users/mikewills/Projects/Uglee/commands/rollinfo.js",
+		"/Users/mikewills/Projects/Uglee/commands/pmme.js",
 		"/Users/mikewills/Projects/Uglee/commands/set.js",
 		"/Users/mikewills/Projects/Uglee/commands/reloadcommands.js",
-		"/Users/mikewills/Projects/Uglee/commands/addtoplaylist.js",
+		"/Users/mikewills/Projects/Uglee/commands/followme.js",
+		"/Users/mikewills/Projects/Uglee/commands/dance.js",
+		"/Users/mikewills/Projects/Uglee/database.js",
+		"/Users/mikewills/Projects/Uglee/commands/a.js",
 		"/Users/mikewills/Projects/Uglee/commands/test.js",
 		"/Users/mikewills/Projects/Uglee/readmeNew.md",
-		"/Users/mikewills/Projects/Uglee/.gitignore",
 		"/Users/mikewills/Projects/Uglee/bot.js",
 		"/Users/mikewills/Projects/Uglee/node_modules/ttapi/websocket.js",
 		"/Users/mikewills/Projects/Uglee/node_modules/ttapi/bot.js",
 		"/Users/mikewills/Projects/Uglee/uglee.js",
-		"/Users/mikewills/Projects/Uglee/uglee2.js",
 		"/Users/mikewills/Projects/Uglee/main.js",
 		"/Users/mikewills/Projects/Uglee/events.js",
-		"/Users/mikewills/Projects/Uglee/functions.js",
 		"/Users/mikewills/Projects/Uglee/startUglee.sh",
 		"/Users/mikewills/Projects/ttModeratorBot/main.js",
 		"/Users/mikewills/Projects/ttModeratorBot/sampleconfig.js",
@@ -179,6 +245,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"{0}",
+			"botAdmin",
 			"Cache",
 			"GetCache",
 			"mysql",
@@ -199,6 +267,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"{u}"
 		],
 		"reverse": false,
 		"show_context": true,
@@ -209,23 +278,23 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 3,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "uglee2.js",
+					"file": "uglee.js",
 					"settings":
 					{
-						"buffer_size": 532,
+						"buffer_size": 563,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								232,
-								239
+								446,
+								446
 							]
 						],
 						"settings":
@@ -243,15 +312,15 @@
 					"file": "main.js",
 					"settings":
 					{
-						"buffer_size": 3885,
+						"buffer_size": 3905,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1991,
-								1991
+								1270,
+								1278
 							]
 						],
 						"settings":
@@ -260,7 +329,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 874.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -270,15 +339,15 @@
 					"file": "events.js",
 					"settings":
 					{
-						"buffer_size": 4746,
+						"buffer_size": 5244,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								562,
-								562
+								308,
+								308
 							]
 						],
 						"settings":
@@ -287,7 +356,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 848.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -297,15 +366,15 @@
 					"file": "functions.js",
 					"settings":
 					{
-						"buffer_size": 3839,
+						"buffer_size": 4839,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2100,
-								2114
+								366,
+								366
 							]
 						],
 						"settings":
@@ -314,7 +383,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 949.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -355,7 +424,7 @@
 	"menu_visible": true,
 	"replace":
 	{
-		"height": 0.0
+		"height": 64.0
 	},
 	"save_all_on_build": true,
 	"select_file":
