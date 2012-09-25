@@ -115,6 +115,23 @@ global.Command = function(source, data) {
 			}
 		}
 	}
+
+	var result = data.text.match(/^\@(.*?)( .*)?$/);
+	if (result && result[1].trim().toLowerCase() === botName) {
+		var command = '';
+		if (result.length == 3 && result[2]) {
+			command = result[2].trim().toLowerCase();
+		}
+		var idx = findAction(command, Actions.chat_responses);
+		if (idx != -1) {
+			Speak(Actions.chat_responses[idx].response1, data.name);
+			if (Actions.chat_responses[idx].response2 !== "") {
+				setTimeout(function() {
+					Speak(Actions.chat_responses[idx].response2, data.name);
+				}, 500);
+			}
+		}
+	}
 }
 
 /* 	==============
@@ -160,4 +177,14 @@ global.PopulateSongData = function(data) {
 	currentsong.listeners = data.room.metadata.listeners;
 	currentsong.started = data.room.metadata.current_song.starttime;
 	currentsong.snags = 0;
-}
+
+
+	global.findAction = function(query, arr) {
+		query = escape(query);
+		for (var i = 0, l = arr.length; i < l; i++) {
+			var item = arr[i];
+			var reg = RegExp(escape(item.name), "i");
+			if (reg.test(query)) return i;
+		}
+		return -1;
+	}
