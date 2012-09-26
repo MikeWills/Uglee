@@ -165,6 +165,29 @@ global.OnUpdateVotes = function(data) {
 	currentsong.up = data.room.metadata.upvotes;
 	currentsong.down = data.room.metadata.downvotes;
 	currentsong.listeners = data.room.metadata.listeners;
+
+	/* If autobop is enabled, determine if the bot should autobop or not based on votes */
+	GetValue("autobop", 0, function(value) {
+		if (value === "true") {
+			var percentAwesome = 0;
+			var percentLame = 0;
+
+			if (data.room.metadata.upvotes !== 0) {
+				percentAwesome = (data.room.metadata.upvotes / data.room.metadata.listeners) * 100;
+			}
+			if (data.room.metadata.downvotes !== 0) {
+				percentLame = (data.room.metadata.downvotes / data.room.metadata.listeners) * 100;
+			}
+
+			if ((percentAwesome - percentLame) > 40) {
+				bot.vote('up');
+			}
+
+			if ((percentLame - percentAwesome) > 40) {
+				bot.vote('down');
+			}
+		}
+	});
 };
 
 global.OnBootedUser = function(data) {
