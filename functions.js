@@ -180,7 +180,9 @@ global.PopulateSongData = function(data) {
 	currentsong.snags = 0;
 }
 
-
+/* 	==============
+	findAction - Finds misc chat-only commands.
+	============== */
 global.findAction = function(query, arr) {
 	query = escape(query);
 	for (var i = 0, l = arr.length; i < l; i++) {
@@ -189,4 +191,44 @@ global.findAction = function(query, arr) {
 		if (reg.test(query)) return i;
 	}
 	return -1;
+}
+
+/* 	==============
+	ShouldBotDJ - Checks auto dj. That bot allows for 1 open spot (if DJing) 
+				  and will step down if all slots are full
+	============== */
+global.ShouldBotDJ = function() {
+	GetValue("autodj", 0, function(value) {
+		if (value === "true") {
+			bot.roomInfo(function(data) {
+				if (data.room.metadata.djcount <= (data.room.metadata.max_djs - 2)) {
+					if (!botDJing) {
+						Log("Bot is DJing");
+						bot.addDj();
+						bot.vote('up');
+						bot.speak("Imma help you out for a bit.");
+						botDJing = true;
+						return;
+					}
+				}
+
+				if (data.room.metadata.djcount == data.room.metadata.max_djs) {
+					if (botDJing && !botIsPlayingSong) {
+						Speak("Looks like me not needed anymore.");
+						setTimeout(function() {
+							Speak("/me pouts and slowly walks to the floor.");
+							setTimeout(function() {
+								bot.remDj();
+							}, 500)
+						}, 500)
+						botDJing = false;
+						return;
+					} else if (botOnTable && botIsPlayingSong) {
+						botStepDownAfterSong = true;
+					}
+				}
+
+			});
+		}
+	});
 }

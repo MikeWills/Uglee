@@ -26,6 +26,9 @@ global.OnRoomChanged = function(data) {
 			AllUsers[user.userid] = user;
 		}
 
+		// Check if the bot should DJ.
+		ShouldBotDJ();
+
 	} catch (e) {
 		Log(color("**ERROR** Room Changed ", "red") + e);
 	}
@@ -91,21 +94,58 @@ global.OnSpeak = function(data) {
 global.OnEndSong = function(data) {
 	Log(color("EVENT End Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + data.room.metadata.current_song.metadata.song);
 
+	// Reset song data.
+	danceRequesters = [];
+	alreadyRolled = false;
+
+	// Post song results
 	var endsongresponse = currentsong.song + ' stats: :+1: ' + currentsong.up + ' :-1: ' + currentsong.down + ' <3 ' + currentsong.snags;
 	GetValue("songstats", 0, function(value) {
 		if (value === "true") {
 			Speak(endsongresponse);
 		}
 	});
-	danceRequesters = [];
-	alreadyRolled = false;
+
+	// Make sure bot is aware that it is playing a song.
+	if (data.room.metadata.current_dj === botUserId) {
+		botIsPlayingSong = false;
+		Log("Song has ended.");
+	}
+
+	// Bot steps down if needed to after it's song.
+	if (botStepDownAfterSong) {
+		Speak("Looks like me not needed anymore.");
+		setTimeout(function() {
+			Speak("/me pouts and slowly walks to the floor.");
+			setTimeout(function() {
+				bot.remDj();
+			}, 500)
+		}, 500)
+		botDJing = false;
+		botStepDownAfterSong = false;
+	}
 };
 
 global.OnNewSong = function(data) {
 	Log(color("EVENT New Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + data.room.metadata.current_song.metadata.song);
 	danceCount = 0;
+
 	//Populate new song data in currentsong
 	PopulateSongData(data);
+
+	var rand = Math.ceil(Math.random() * 20);
+	var wait = rand * 1000;
+	if (botDJing) {
+		setTimeout(function() {
+			bot.vote('up');
+		}, wait);
+	}
+
+	// Make sure bot is aware that it is playing a song.
+	if (data.room.metadata.current_dj === botUserId) {
+		botIsPlayingSong = true;
+		Log("Playing song right now.");
+	}
 };
 
 global.OnNoSong = function(data) {
@@ -142,14 +182,20 @@ global.OnUpdateUser = function(data) {
 
 global.OnAddDJ = function(data) {
 	Log(color("EVENT Add DJ: ", "blue") + data.user[0].name);
+
+	// Check if the bot should DJ.
+	ShouldBotDJ();
 };
 
 global.OnRemDJ = function(data) {
 	Log(color("EVENT Remove DJ: ", "blue") + data.user[0].name);
-	if (data.user[0].userid === botUserId){
+	if (data.user[0].userid === botUserId) {
 		botDJing = false;
 		Log("Bot no longer DJing");
 	}
+
+	// Check if the bot should DJ.
+	ShouldBotDJ();
 };
 
 global.OnNewModerator = function(data) {

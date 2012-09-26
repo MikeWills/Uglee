@@ -49,6 +49,8 @@ global.alreadyRolled = false;
 
 // DJing bot
 global.botDJing = false;
+global.botIsPlayingSong = false;
+global.botStepDownAfterSong = false;
 
 //Current song info
 global.currentsong = {
