@@ -72,6 +72,14 @@
 	"buffers":
 	[
 		{
+			"file": "readme.md",
+			"settings":
+			{
+				"buffer_size": 551,
+				"line_ending": "Windows"
+			}
+		},
+		{
 			"file": "uglee.js",
 			"settings":
 			{
@@ -83,7 +91,7 @@
 			"file": "main.js",
 			"settings":
 			{
-				"buffer_size": 3905,
+				"buffer_size": 4002,
 				"line_ending": "Unix"
 			}
 		},
@@ -91,7 +99,7 @@
 			"file": "events.js",
 			"settings":
 			{
-				"buffer_size": 5244,
+				"buffer_size": 7014,
 				"line_ending": "Unix"
 			}
 		},
@@ -99,7 +107,7 @@
 			"file": "functions.js",
 			"settings":
 			{
-				"buffer_size": 4839,
+				"buffer_size": 5964,
 				"line_ending": "Unix"
 			}
 		}
@@ -140,16 +148,19 @@
 	},
 	"file_history":
 	[
+		"/Users/mikewills/Projects/Uglee/commands/ban.js",
+		"/Users/mikewills/Projects/Uglee/commands/unban.js",
+		"/Users/mikewills/Projects/Uglee/drunkenRegular.js",
+		"/Users/mikewills/Projects/Uglee/commands/stepup.js",
+		"/Users/mikewills/Projects/Uglee/commands/stepup2.js",
 		"/Users/mikewills/Projects/Uglee/.gitignore",
 		"/Users/mikewills/Projects/Uglee/quotes.js",
-		"/Users/mikewills/Projects/Uglee/commands/stepup2.js",
 		"/Users/mikewills/Projects/Uglee/commands/speak.js",
 		"/Users/mikewills/Projects/Uglee/commands/addtoplaylist2.js",
 		"/Users/mikewills/Projects/Uglee/commands/findidle.js",
 		"/Users/mikewills/Projects/Uglee/commands/setAvatar.js",
 		"/Users/mikewills/Projects/Uglee/commands/setLaptop.js",
 		"/Users/mikewills/Projects/Uglee/commands/skip2.js",
-		"/Users/mikewills/Projects/Uglee/commands/stepup.js",
 		"/Users/mikewills/Projects/Uglee/commands/stepdown2.js",
 		"/Users/mikewills/Projects/Uglee/commands/skip.js",
 		"/Users/mikewills/Projects/Uglee/commands/crankit.js",
@@ -283,6 +294,32 @@
 			[
 				{
 					"buffer": 0,
+					"file": "readme.md",
+					"settings":
+					{
+						"buffer_size": 551,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								551,
+								551
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Markdown/Markdown.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
 					"file": "uglee.js",
 					"settings":
 					{
@@ -293,8 +330,8 @@
 						"selection":
 						[
 							[
-								446,
-								446
+								361,
+								334
 							]
 						],
 						"settings":
@@ -308,19 +345,19 @@
 					"type": "text"
 				},
 				{
-					"buffer": 1,
+					"buffer": 2,
 					"file": "main.js",
 					"settings":
 					{
-						"buffer_size": 3905,
+						"buffer_size": 4002,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1270,
-								1278
+								1314,
+								1314
 							]
 						],
 						"settings":
@@ -329,52 +366,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "events.js",
-					"settings":
-					{
-						"buffer_size": 5244,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								308,
-								308
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 419.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "functions.js",
+					"file": "events.js",
 					"settings":
 					{
-						"buffer_size": 4839,
+						"buffer_size": 7014,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								366,
-								366
+								4682,
+								4682
 							]
 						],
 						"settings":
@@ -383,7 +393,34 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1261.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "functions.js",
+					"settings":
+					{
+						"buffer_size": 5964,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5116,
+								5116
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 3030.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
