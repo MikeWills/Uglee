@@ -189,13 +189,19 @@ global.OnAddDJ = function(data) {
 
 global.OnRemDJ = function(data) {
 	Log(color("EVENT Remove DJ: ", "blue") + data.user[0].name);
+	Log(JSON.stringify(data));
 	if (data.user[0].userid === botUserId) {
 		botDJing = false;
 		Log("Bot no longer DJing");
 	}
 
-	// Check if the bot should DJ.
-	ShouldBotDJ();
+	if (data.modid !== undefined) {
+		Log("Forcibly Removed");
+		SetValue("autodj", "false");
+	} else {
+		// Check if the bot should DJ.
+		ShouldBotDJ();
+	}
 };
 
 global.OnNewModerator = function(data) {
