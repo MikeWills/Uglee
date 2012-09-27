@@ -12,3 +12,4 @@ Most of the configuration is stored in the database, so a database is required.
 Core Functions:
 * AutoDJs
 * AutoBop at 40% of the room is bopping (lames if 40% of the room lames).
+* Ban users

@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"user",
+				"userName"
+			],
+			[
+				"alre",
+				"alreadyVoted"
+			],
+			[
 				"s",
 				"source"
 			],
@@ -26,10 +34,6 @@
 			[
 				"dan",
 				"danceCount"
-			],
-			[
-				"user",
-				"userid"
 			],
 			[
 				"db",
@@ -75,7 +79,7 @@
 			"file": "readme.md",
 			"settings":
 			{
-				"buffer_size": 551,
+				"buffer_size": 563,
 				"line_ending": "Windows"
 			}
 		},
@@ -91,7 +95,7 @@
 			"file": "main.js",
 			"settings":
 			{
-				"buffer_size": 4002,
+				"buffer_size": 4031,
 				"line_ending": "Unix"
 			}
 		},
@@ -99,7 +103,7 @@
 			"file": "events.js",
 			"settings":
 			{
-				"buffer_size": 7014,
+				"buffer_size": 7563,
 				"line_ending": "Unix"
 			}
 		},
@@ -107,7 +111,7 @@
 			"file": "functions.js",
 			"settings":
 			{
-				"buffer_size": 5964,
+				"buffer_size": 6038,
 				"line_ending": "Unix"
 			}
 		}
@@ -149,21 +153,31 @@
 	"file_history":
 	[
 		"/Users/mikewills/Projects/Uglee/commands/ban.js",
-		"/Users/mikewills/Projects/Uglee/commands/unban.js",
+		"/Users/mikewills/Projects/Uglee/database.js",
+		"/Users/mikewills/Projects/Uglee/.gitignore",
 		"/Users/mikewills/Projects/Uglee/drunkenRegular.js",
+		"/Users/mikewills/Projects/Uglee/commands/roll.js",
+		"/Users/mikewills/Projects/Uglee/commands/rollagain.js",
+		"/Users/mikewills/Projects/Uglee/commands/dance.js",
+		"/Users/mikewills/Projects/Uglee/commands/l.js",
+		"/Users/mikewills/Projects/Uglee/commands/hitbot.js",
+		"/Users/mikewills/Projects/Uglee/commands/hitbot2.js",
+		"/Users/mikewills/Projects/Uglee/commands/addtoplaylist2.js",
+		"/Users/mikewills/Projects/Uglee/commands/addtoplaylist.js",
+		"/Users/mikewills/Projects/Uglee/commands/crankit.js",
+		"/Users/mikewills/Projects/Uglee/commands/a2.js",
+		"/Users/mikewills/Projects/Uglee/commands/a.js",
+		"/Users/mikewills/Projects/Uglee/commands/unban.js",
 		"/Users/mikewills/Projects/Uglee/commands/stepup.js",
 		"/Users/mikewills/Projects/Uglee/commands/stepup2.js",
-		"/Users/mikewills/Projects/Uglee/.gitignore",
 		"/Users/mikewills/Projects/Uglee/quotes.js",
 		"/Users/mikewills/Projects/Uglee/commands/speak.js",
-		"/Users/mikewills/Projects/Uglee/commands/addtoplaylist2.js",
 		"/Users/mikewills/Projects/Uglee/commands/findidle.js",
 		"/Users/mikewills/Projects/Uglee/commands/setAvatar.js",
 		"/Users/mikewills/Projects/Uglee/commands/setLaptop.js",
 		"/Users/mikewills/Projects/Uglee/commands/skip2.js",
 		"/Users/mikewills/Projects/Uglee/commands/stepdown2.js",
 		"/Users/mikewills/Projects/Uglee/commands/skip.js",
-		"/Users/mikewills/Projects/Uglee/commands/crankit.js",
 		"/Users/mikewills/Projects/Uglee/commands/stepdown.js",
 		"/Users/mikewills/Projects/Uglee/commands/djwarn.js",
 		"/Users/mikewills/Projects/Uglee/uglee2.js",
@@ -175,7 +189,6 @@
 		"/Users/mikewills/Projects/Uglee/commands/queuestart1.js",
 		"/Users/mikewills/Projects/Uglee/commands/die.js",
 		"/Users/mikewills/Projects/Uglee/commands/die2.js",
-		"/Users/mikewills/Projects/Uglee/commands/addtoplaylist.js",
 		"/Users/mikewills/Projects/Uglee/commands/queueinsert1.js",
 		"/Users/mikewills/Projects/Uglee/commands/queuedelist1.js",
 		"/Users/mikewills/Projects/Uglee/commands/queuelist2.js",
@@ -193,21 +206,12 @@
 		"/Users/mikewills/Projects/Uglee/commands/modsummon.js",
 		"/Users/mikewills/Projects/Uglee/commands/modanswered",
 		"/Users/mikewills/Projects/Uglee/commands/listenercount.js",
-		"/Users/mikewills/Projects/Uglee/commands/hitbot2.js",
-		"/Users/mikewills/Projects/Uglee/commands/hitbot.js",
 		"/Users/mikewills/Projects/Uglee/commands/fuckyou.js",
-		"/Users/mikewills/Projects/Uglee/commands/a2.js",
-		"/Users/mikewills/Projects/Uglee/commands/l.js",
-		"/Users/mikewills/Projects/Uglee/commands/roll.js",
-		"/Users/mikewills/Projects/Uglee/commands/rollagain.js",
 		"/Users/mikewills/Projects/Uglee/commands/rollinfo.js",
 		"/Users/mikewills/Projects/Uglee/commands/pmme.js",
 		"/Users/mikewills/Projects/Uglee/commands/set.js",
 		"/Users/mikewills/Projects/Uglee/commands/reloadcommands.js",
 		"/Users/mikewills/Projects/Uglee/commands/followme.js",
-		"/Users/mikewills/Projects/Uglee/commands/dance.js",
-		"/Users/mikewills/Projects/Uglee/database.js",
-		"/Users/mikewills/Projects/Uglee/commands/a.js",
 		"/Users/mikewills/Projects/Uglee/commands/test.js",
 		"/Users/mikewills/Projects/Uglee/readmeNew.md",
 		"/Users/mikewills/Projects/Uglee/bot.js",
@@ -256,6 +260,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"bot.vote(",
 			"{0}",
 			"botAdmin",
 			"Cache",
@@ -289,7 +294,7 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -297,15 +302,15 @@
 					"file": "readme.md",
 					"settings":
 					{
-						"buffer_size": 551,
+						"buffer_size": 563,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								551,
-								551
+								563,
+								563
 							]
 						],
 						"settings":
@@ -330,7 +335,7 @@
 						"selection":
 						[
 							[
-								361,
+								486,
 								334
 							]
 						],
@@ -349,15 +354,15 @@
 					"file": "main.js",
 					"settings":
 					{
-						"buffer_size": 4002,
+						"buffer_size": 4031,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1314,
-								1314
+								367,
+								367
 							]
 						],
 						"settings":
@@ -366,7 +371,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 419.0,
+						"translation.y": 92.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -376,15 +381,15 @@
 					"file": "events.js",
 					"settings":
 					{
-						"buffer_size": 7014,
+						"buffer_size": 7563,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4682,
-								4682
+								306,
+								306
 							]
 						],
 						"settings":
@@ -393,7 +398,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1261.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -403,15 +408,15 @@
 					"file": "functions.js",
 					"settings":
 					{
-						"buffer_size": 5964,
+						"buffer_size": 6038,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5116,
-								5116
+								5714,
+								5714
 							]
 						],
 						"settings":
@@ -420,7 +425,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3030.0,
+						"translation.y": 3108.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
