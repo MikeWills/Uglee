@@ -216,7 +216,7 @@ global.ShouldBotDJ = function() {
 					}
 				}
 
-				if (data.room.metadata.djcount > 2) {
+				if (data.room.metadata.djcount > 3) {
 					if (botDJing && !botIsPlayingSong) {
 						Speak("Looks like me not needed anymore.");
 						setTimeout(function() {
