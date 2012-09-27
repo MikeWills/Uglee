@@ -6,5 +6,7 @@ out.log
 err.log
 .c9revisions/
 uglee2.js
+uglee.js
+drunkenRegular.js
 *.log
 node_modules/

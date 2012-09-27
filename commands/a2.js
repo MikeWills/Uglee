@@ -1,0 +1,12 @@
+exports.name = ':+1:';
+exports.hidden = true;
+exports.enabled = true;
+exports.matchStart = false;
+exports.handler = function(data, userid, source) {
+	IsMod(userid, function(isMod) {
+		if (isMod) {
+			bot.vote('up');
+			alreadyVoted == true;
+		}
+	});
+}
