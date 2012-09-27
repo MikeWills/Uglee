@@ -141,6 +141,7 @@ global.Command = function(source, data) {
 global.AwesomeSong = function() {
 	bot.vote("up");
 	SpeakRandom(awesomeText);
+	alreadyVoted == true;
 }
 
 /* 	==============
@@ -149,6 +150,7 @@ global.AwesomeSong = function() {
 global.LameSong = function() {
 	bot.vote("down");
 	SpeakRandom(lameText);
+	alreadyVoted == true;
 }
 
 /* 	==============
@@ -206,6 +208,7 @@ global.ShouldBotDJ = function() {
 						Log("Bot is DJing");
 						bot.addDj();
 						bot.vote('up');
+						alreadyVoted == true;
 						bot.speak("Imma help you out for a bit.");
 						botDJing = true;
 						return;

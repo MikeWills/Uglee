@@ -7,6 +7,7 @@ exports.handler = function(data, userid, source) {
 		if (isMod) {
 			bot.vote('up');
 			SpeakRandom(crankIt, AllUsers[userid].name);
+			alreadyVoted == true;
 		}
 	});
 }

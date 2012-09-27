@@ -5,4 +5,5 @@ exports.matchStart = false;
 exports.handler = function(data, userid, source) {
 	SpeakRandom(hitBot, AllUsers[userid].name);
 	bot.vote('up');
+	alreadyVoted == true;
 }

@@ -11,7 +11,7 @@ global.OnRoomChanged = function(data) {
 			Speak("You're despicable!");
 			botWasBooted = false;
 		} else {
-			Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
+			//Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
 		}
 
 		if (data.room.metadata.current_song != null) {
@@ -97,6 +97,7 @@ global.OnEndSong = function(data) {
 	// Reset song data.
 	danceRequesters = [];
 	alreadyRolled = false;
+	alreadyVoted = false;
 
 	// Post song results
 	var endsongresponse = currentsong.song + ' stats: :+1: ' + currentsong.up + ' :-1: ' + currentsong.down + ' <3 ' + currentsong.snags;
@@ -138,6 +139,7 @@ global.OnNewSong = function(data) {
 	if (botDJing) {
 		setTimeout(function() {
 			bot.vote('up');
+			alreadyVoted == true;
 		}, wait);
 	}
 
@@ -181,10 +183,12 @@ global.OnUpdateVotes = function(data) {
 
 			if ((percentAwesome - percentLame) > 40) {
 				bot.vote('up');
+				alreadyVoted == true;
 			}
 
 			if ((percentLame - percentAwesome) > 40) {
 				bot.vote('down');
+				alreadyVoted == true;
 			}
 		}
 	});
@@ -244,6 +248,7 @@ global.OnSnagged = function(data) {
 	if (currentsong.snags === 2) {
 		Log("Snagging the song " + currentsong.song + " by " + currentsong.artist);
 		bot.vote('up');
+		alreadyVoted == true;
 		bot.playlistAll(function(data) {
 			bot.playlistAdd(currentsong.id, data.list.length);
 		});

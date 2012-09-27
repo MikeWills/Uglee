@@ -3,9 +3,14 @@ exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = true;
 exports.handler = function(data, userid, source) {
-	if (danceRequesters.indexOf(userid) === -1) {
-		danceCount++;
-		danceRequesters.push(userid);
-		if (danceCount === 2) AwesomeSong();
+	if (!alreadyVoted) {
+		if (danceRequesters.indexOf(userid) === -1) {
+			danceCount++;
+			danceRequesters.push(userid);
+			if (danceCount === 2) {
+				AwesomeSong();
+				alreadyVoted == true;
+			}
+		}
 	}
 }
