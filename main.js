@@ -46,6 +46,7 @@ global.danceRequesters = [];
 global.lameCount = 0;
 global.snagCount = 0;
 global.alreadyRolled = false;
+global.alreadyVoted = false;
 
 // DJing bot
 global.botDJing = false;
