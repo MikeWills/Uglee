@@ -10,3 +10,4 @@ uglee.js
 drunkenRegular.js
 *.log
 node_modules/
+*.log
