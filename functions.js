@@ -203,7 +203,8 @@ global.ShouldBotDJ = function() {
 	GetValue("autodj", 0, function(value) {
 		if (value === "true") {
 			bot.roomInfo(function(data) {
-				if (data.room.metadata.djcount <= (data.room.metadata.max_djs - 2)) {
+				//if (data.room.metadata.djcount <= (data.room.metadata.max_djs - 2)) {
+				if (data.room.metadata.djcount <= 2) {
 					if (!botDJing) {
 						Log("Bot is DJing");
 						bot.addDj();
@@ -215,7 +216,7 @@ global.ShouldBotDJ = function() {
 					}
 				}
 
-				if (data.room.metadata.djcount == data.room.metadata.max_djs) {
+				if (data.room.metadata.djcount > 2) {
 					if (botDJing && !botIsPlayingSong) {
 						Speak("Looks like me not needed anymore.");
 						setTimeout(function() {
