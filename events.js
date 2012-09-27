@@ -42,6 +42,18 @@ global.OnRegistered = function(data) {
 			currentsong.listeners++;
 		}
 
+		// Check if User is banned
+		client.query("SELECT COUNT(*) as count FROM BANNED WHERE `userid` = ?", [data.user[0].userid], function select(error, results, fields) {
+			if (results !== undefined) {
+				if (results.length !== 0) {
+					if (results[0]["count"] > 0) {
+						Log(color("EVENT BOOT: ", "red") + data.user[0].name + " - " + data.user[0].userid);
+						bot.boot(data.user[0].userid, "");
+					}
+				}
+			}
+		});
+
 		//Add new user(s) to cache
 		var users = data.user;
 		for (var i in users) {

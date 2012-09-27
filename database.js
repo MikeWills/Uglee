@@ -114,7 +114,7 @@ global.SetUpDatabase = function() {
 	});
 
 	// Banned users
-	client.query("CREATE TABLE IF NOT EXISTS `BANNED` (`userid` varchar(255) NOT NULL)", function(error) {
+	client.query("CREATE TABLE IF NOT EXISTS `BANNED` (`userid` varchar(255) NOT NULL, `username` varchar(255) DEFAULT NULL,`timestamp` datetime DEFAULT NULL)", function(error) {
 		if (error && error.number != 1050) {
 			throw (error);
 		}
