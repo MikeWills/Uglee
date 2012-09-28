@@ -11,11 +11,11 @@ exports.handler = function(data, userid, source) {
                 if (roll > 4) {
                     bot.speak(data.name + ', you rolled a ' + roll + ', Awesome!');
                     bot.vote('up');
-                    alreadyVoted == true;
+                    alreadyVoted = true;
                 } else if (roll === 1) {
                     bot.speak(data.name + ', you rolled a ' + roll + ', Lame!');
                     bot.vote('down');
-                    alreadyVoted == true;
+                    alreadyVoted = true;
                 } else {
                     bot.speak(data.name + ', you rolled a ' + roll + ', bummer.');
                 }

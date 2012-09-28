@@ -10,7 +10,7 @@ exports.handler = function(data, userid, source) {
             });
             bot.snag();
             bot.vote('up');
-			alreadyVoted == true;
+			alreadyVoted = true;
         }
     });
 }

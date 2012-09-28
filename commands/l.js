@@ -6,7 +6,7 @@ exports.handler = function(data, userid, source) {
 	IsMod(userid, function(isMod) {
 		if (isMod) {
 			bot.vote('down');
-			alreadyVoted == true;
+			alreadyVoted = true;
 		}
 	});
 }

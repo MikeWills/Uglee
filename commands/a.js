@@ -8,7 +8,7 @@ exports.handler = function(data, userid, source) {
 			if (isMod) {
 				bot.vote('up');
 				Speak(":metal:");
-				alreadyVoted == true;
+				alreadyVoted = true;
 			}
 		});
 	}

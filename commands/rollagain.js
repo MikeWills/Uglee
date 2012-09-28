@@ -8,7 +8,7 @@ exports.handler = function(data, userid, source) {
             var roll = Math.ceil(Math.random() * 6);
             if (roll > 3) {
                 AwesomeSong();
-                alreadyVoted == true;
+                alreadyVoted = true;
             } else {
                 bot.speak("I told you I didn't like this song.");
             }

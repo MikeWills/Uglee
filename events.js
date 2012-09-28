@@ -151,7 +151,7 @@ global.OnNewSong = function(data) {
 	if (botDJing) {
 		setTimeout(function() {
 			bot.vote('up');
-			alreadyVoted == true;
+			alreadyVoted = true;
 		}, wait);
 	}
 
@@ -195,12 +195,12 @@ global.OnUpdateVotes = function(data) {
 
 			if ((percentAwesome - percentLame) > 40) {
 				bot.vote('up');
-				alreadyVoted == true;
+				alreadyVoted = true;
 			}
 
 			if ((percentLame - percentAwesome) > 40) {
 				bot.vote('down');
-				alreadyVoted == true;
+				alreadyVoted = true;
 			}
 		}
 	});
@@ -260,7 +260,7 @@ global.OnSnagged = function(data) {
 	if (currentsong.snags === 2) {
 		Log("Snagging the song " + currentsong.song + " by " + currentsong.artist);
 		bot.vote('up');
-		alreadyVoted == true;
+		alreadyVoted = true;
 		bot.playlistAll(function(data) {
 			bot.playlistAdd(currentsong.id, data.list.length);
 		});

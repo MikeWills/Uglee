@@ -9,7 +9,7 @@ exports.handler = function(data, userid, source) {
 			danceRequesters.push(userid);
 			if (danceCount === 2) {
 				AwesomeSong();
-				alreadyVoted == true;
+				alreadyVoted = true;
 			}
 		}
 	}
