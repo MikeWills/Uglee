@@ -28,7 +28,7 @@ global.OnRoomChanged = function(data) {
 
 		for (i in users) {
 			if (users[i].name !== null) {
-				client.query('INSERT INTO ' + dbTablePrefix + 'User(userid, username, lastseen)' + 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [users[i].userid, users[i].name]);
+				client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'User(userid, username, lastseen)' + 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [users[i].userid, users[i].name]);
 			}
 		}
 
@@ -49,7 +49,7 @@ global.OnRegistered = function(data) {
 		}
 
 		// Check if User is banned
-		client.query("SELECT COUNT(*) as count FROM BANNED WHERE `userid` = ?", [data.user[0].userid], function select(error, results, fields) {
+		client.query("SELECT COUNT(*) as count FROM " + dbName + '.' + "BANNED WHERE `userid` = ?", [data.user[0].userid], function select(error, results, fields) {
 			if (results !== undefined) {
 				if (results.length !== 0) {
 					if (results[0]["count"] > 0) {
@@ -69,7 +69,7 @@ global.OnRegistered = function(data) {
 		}
 
 		if (data.user[0].name !== null) {
-			client.query('INSERT INTO ' + dbTablePrefix + 'User(userid, username, lastseen)' + 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [data.user[0].userid, data.user[0].name]);
+			client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'User(userid, username, lastseen)' + 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [data.user[0].userid, data.user[0].name]);
 		}
 
 	} catch (e) {
