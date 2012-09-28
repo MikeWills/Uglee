@@ -26,6 +26,12 @@ global.OnRoomChanged = function(data) {
 			AllUsers[user.userid] = user;
 		}
 
+		for (i in users) {
+			if (users[i].name !== null) {
+				client.query('INSERT INTO ' + dbTablePrefix + 'User(userid, username, lastseen)' + 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [users[i].userid, users[i].name]);
+			}
+		}
+
 		// Check if the bot should DJ.
 		ShouldBotDJ();
 
@@ -60,6 +66,10 @@ global.OnRegistered = function(data) {
 			var user = users[i];
 			user.lastActivity = user.loggedIn = new Date();
 			AllUsers[user.userid] = user;
+		}
+
+		if (data.user[0].name !== null) {
+			client.query('INSERT INTO ' + dbTablePrefix + 'User(userid, username, lastseen)' + 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [data.user[0].userid, data.user[0].name]);
 		}
 
 	} catch (e) {
