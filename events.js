@@ -116,6 +116,8 @@ global.OnSpeak = function(data) {
 global.OnEndSong = function(data) {
 	Log(color("EVENT End Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + data.room.metadata.current_song.metadata.song);
 
+	AddSongToDb();
+
 	// Reset song data.
 	danceRequesters = [];
 	alreadyRolled = false;

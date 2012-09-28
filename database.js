@@ -49,7 +49,7 @@ global.RemoveValue = function(key) {
 	AddSongToDb - Add the song to the database.
 	============== */
 global.AddSongToDb = function(data) {
-	client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'SONG SET artist = ?,song = ?, djid = ?, up = ?, down = ?,' + 'listeners = ?, started = NOW(), snags = ?, bonus = ?', [currentsong.artist, currentsong.song, currentsong.djid, currentsong.up, currentsong.down, currentsong.listeners, currentsong.snags, 0]);
+	client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'Song SET artist = ?,song = ?, djid = ?, up = ?, down = ?,' + 'listeners = ?, started = NOW(), snags = ?, bonus = ?', [currentsong.artist, currentsong.song, currentsong.djid, currentsong.up, currentsong.down, currentsong.listeners, currentsong.snags, 0]);
 }
 
 /* 	============== 
