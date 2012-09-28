@@ -18,6 +18,7 @@ exports.handler = function(data, userid, source) {
                     alreadyVoted = true;
                 } else {
                     bot.speak(data.name + ', you rolled a ' + roll + ', bummer.');
+                    alreadyVoted = true;
                 }
                 bonusvote = true;
             }

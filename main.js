@@ -90,14 +90,16 @@ try {
 try {
 	var filenames = fs.readdirSync('./commands');
 	for (i in filenames) {
-		var command = require('./commands/' + filenames[i]);
-		commands.push({
-			name: command.name,
-			handler: command.handler,
-			hidden: command.hidden,
-			enabled: command.enabled,
-			matchStart: command.matchStart
-		});
+		if (filenames[i] !== ".DS_Store") {
+			var command = require('./commands/' + filenames[i]);
+			commands.push({
+				name: command.name,
+				handler: command.handler,
+				hidden: command.hidden,
+				enabled: command.enabled,
+				matchStart: command.matchStart
+			});
+		}
 	}
 } catch (e) {
 	Log(color("**ERROR** Load Commands", "red") + e);

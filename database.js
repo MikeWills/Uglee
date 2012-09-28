@@ -121,7 +121,7 @@ global.SetUpDatabase = function() {
 	});
 
 	// Settings table
-	client.query("CREATE TABLE IF NOT EXISTS `" + dbName + '.' + dbTablePrefix + "Settings` (`key` varchar(50) NOT NULL," + " `value` varchar(4096) NOT NULL, " + "`DateStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP " + ")", function(error) {
+	client.query("CREATE TABLE IF NOT EXISTS " + dbName + '.' + dbTablePrefix + "Settings (`key` varchar(50) NOT NULL," + " `value` varchar(4096) NOT NULL, " + "`DateStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP " + ")", function(error) {
 		//Handle an error if it's not a table already exists error
 		if (error && error.number != 1050) {
 			throw (error);
