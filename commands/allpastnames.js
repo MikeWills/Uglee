@@ -1,9 +1,9 @@
-exports.name = 'allpastnames';
+exports.name = '/allpastnames';
 exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = true;
 exports.handler = function(data, userid, source) {
-    if (data.source != 'pm') {
+    if (source != 'pm') {
         Speak('That is a PM-only command.');
     } else {
         client.query('SELECT username FROM ' + dbName + '.' + dbTablePrefix + 'User WHERE (userid like (SELECT ' + 'userid FROM ' + dbName + '.' + dbTablePrefix + 'User WHERE username LIKE ? limit 1)) ORDER BY RAND()', [data.text.substring(13)], function select(error, results, fields) {
