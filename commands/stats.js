@@ -13,7 +13,7 @@ exports.handler = function(data) {
             + dbName + '.' + dbTablePrefix + 'Song group by djid) as djtable');
         client.query('SELECT @uniquesongs as uniquesongs, @numdjs as numdjs, '
             + 'count(*) as total, sum(up) as up, avg(up) as avgup, '
-            + 'sum(down) as down, avg(down) as avgdown FROM ' + dbName + '.' + dbTablePrefix + 'Song,
+            + 'sum(down) as down, avg(down) as avgdown FROM ' + dbName + '.' + dbTablePrefix + 'Song',
             function select(error, results, fields) {
                 var response = ('In this room, '
                     + results[0]['total'] + ' songs ('
