@@ -1,4 +1,4 @@
-exports.name = '@' + botName.toLowerCase() + 'stats';
+exports.name = '@' + botName.toLowerCase() + ' stats';
 exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = false;
