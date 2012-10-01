@@ -1,4 +1,4 @@
-exports.name = "Isn't this song great?";
+exports.name = "isn't this song great?";
 exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = false;
