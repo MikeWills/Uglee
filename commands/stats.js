@@ -1,21 +1,19 @@
 //Returns the room's play count, total awesomes/lames, and average awesomes/lames
 //in the room
 
-exports.name = 'stats';
+exports.name = '/stats';
 exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = false;
 exports.handler = function(data) {
     if (config.database.usedb) {
         client.query('SELECT @uniquesongs := count(*) FROM (select * from '
-            + config.database.dbname + '.' + config.database.tablenames.song
-            + ' group by concat(song, \' by \', artist)) as songtbl');
+            + dbName + '.' + dbTablePrefix + 'Song group by concat(song, \' by \', artist)) as songtbl');
         client.query('SELECT @numdjs := count(*) FROM (select * from '
-            + config.database.dbname + '.' + config.database.tablenames.song + ' group by djid) as djtable');
+            + dbName + '.' + dbTablePrefix + 'Song group by djid) as djtable');
         client.query('SELECT @uniquesongs as uniquesongs, @numdjs as numdjs, '
             + 'count(*) as total, sum(up) as up, avg(up) as avgup, '
-            + 'sum(down) as down, avg(down) as avgdown FROM ' + config.database.dbname
-            + '.' + config.database.tablenames.song,
+            + 'sum(down) as down, avg(down) as avgdown FROM ' + dbName + '.' + dbTablePrefix + 'Song,
             function select(error, results, fields) {
                 var response = ('In this room, '
                     + results[0]['total'] + ' songs ('
