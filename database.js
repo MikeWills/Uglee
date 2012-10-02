@@ -2,15 +2,15 @@
 	SetCacheValue - Sets the value to the DB cache 
 	============== */
 global.SetValue = function(key, value) {
-	client.query("SELECT `value` FROM " + dbName + '.' + dbTablePrefix + "Settings WHERE `key` = ?", [key], function select(error, results, fields) {
+	client.query("SELECT `value` FROM " + dbName + '.' + dbTablePrefix + "Settings WHERE `roomid` = ? AND `key` = ?", [currentRoomId, key], function select(error, results, fields) {
 		if (results !== undefined) {
 			if (results.length !== 0) {
-				client.query("UPDATE " + dbName + '.' + dbTablePrefix + "Settings SET `value` = ? WHERE `key` = ?", [value, key]);
+				client.query("UPDATE " + dbName + '.' + dbTablePrefix + "Settings SET `roomid` = ?, `value` = ? WHERE `key` = ?", [currentRoomId, value, key]);
 			} else {
-				client.query("INSERT INTO " + dbName + '.' + dbTablePrefix + "Settings (`key`, `value`, `DateStamp`) VALUES (?, ?, CURRENT_TIMESTAMP)", [key, value]);
+				client.query("INSERT INTO " + dbName + '.' + dbTablePrefix + "Settings (`roomid`, `key`, `value`, `DateStamp`) VALUES (?, ?, ?, CURRENT_TIMESTAMP)", [currentRoomId, key, value]);
 			}
 		} else {
-			client.query("INSERT INTO " + dbName + '.' + dbTablePrefix + "Settings (`key`, `value`, `DateStamp`) VALUES (?, ?, CURRENT_TIMESTAMP)", [key, value]);
+			client.query("INSERT INTO " + dbName + '.' + dbTablePrefix + "Settings (`roomid`, `key`, `value`, `DateStamp`) VALUES (?, ?, ?, CURRENT_TIMESTAMP)", [currentRoomId, key, value]);
 		}
 	});
 };
@@ -19,7 +19,7 @@ global.SetValue = function(key, value) {
 	GetCacheValue - Gets the value from the DB cache 
 	============== */
 global.GetValue = function(key, timeout, callback) {
-	client.query("SELECT `value`, `DateStamp` FROM " + dbName + '.' + dbTablePrefix + "Settings WHERE `key` = ?", [key], function select(error, results, fields) {
+	client.query("SELECT `value`, `DateStamp` FROM " + dbName + '.' + dbTablePrefix + "Settings WHERE `roomid` = ? AND `key` = ?", [currentRoomId, key], function select(error, results, fields) {
 		//Log("Results: " + results);
 		if (results !== undefined) {
 			if (results.length !== 0) {
@@ -42,7 +42,7 @@ global.GetValue = function(key, timeout, callback) {
 	RemoveCacheValue - Deletes the value to the DB cache 
 	============== */
 global.RemoveValue = function(key) {
-	client.query("DELETE FROM " + dbName + '.' + dbTablePrefix + "Settings WHERE `key` = ?", [key]);
+	client.query("DELETE FROM " + dbName + '.' + dbTablePrefix + "Settings WHERE `roomid` = ? AND `key` = ?", [currentRoomId, key]);
 };
 
 /* 	==============
@@ -114,37 +114,41 @@ global.SetUpDatabase = function() {
 	});
 
 	// Banned users
-	client.query("CREATE TABLE IF NOT EXISTS " + dbName + '.' + "BANNED (`userid` varchar(255) NOT NULL, `username` varchar(255) DEFAULT NULL,`timestamp` datetime DEFAULT NULL)", function(error) {
+	client.query('CREATE TABLE IF NOT EXISTS ' + dbName + '.BANNED (' + 'id INT(11) AUTO_INCREMENT PRIMARY KEY, ' + 'userid VARCHAR(255), ' + 'banned_by VARCHAR(255), ' + 'timestamp DATETIME)', function(error) {
+		if (error && error.number != 1050) {
+			throw error;
+		}
+	});
+
+
+	// Settings table
+	client.query("CREATE TABLE IF NOT EXISTS " + dbName + '.' + dbTablePrefix + "Settings (`roomid` VARCHAR( 255 ) NOT NULL, `key` varchar(50) NOT NULL," + " `value` varchar(4096) NOT NULL, " + "`DateStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP " + ")", function(error) {
+		//Handle an error if it's not a table already exists error
 		if (error && error.number != 1050) {
 			throw (error);
 		}
 	});
 
-	// Settings table
-	client.query("CREATE TABLE IF NOT EXISTS " + dbName + '.' + dbTablePrefix + "Settings (`key` varchar(50) NOT NULL," + " `value` varchar(4096) NOT NULL, " + "`DateStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP " + ")", function(error) {
-		//Handle an error if it's not a table already exists error
-		if (error && error.number != 1050) {
-			throw (error);
-		}
+	SetUpRoom();
+};
 
-		GetValue("version", 0, function(dbversion) {
-			if (dbversion !== version) {
-				SetValue("version", version);
-				SetValue("songstats", "true");
-				SetValue("autobop", "false");
-				SetValue("autodj", "false");
-				SetValue("enableQueue", "false");
-				SetValue("nextDjQueueTimeout", "30");
-				SetValue("newsongcomments", "false");
-				SetValue("monitorsonglength", "false");
-				SetValue("maxsonglength", "30");
-				SetValue("ctsActive", "false");
-				SetValue("ctsSequenceMax", "0");
-				SetValue("ctsLastWords", "");
-				SetValue("announcement", "");
-				SetValue("gtfo", "false");
-				SetValue("lamer", "false");
-			}
-		})
+global.SetUpRoom = function() {
+	client.query("SELECT * FROM " + dbName + '.' + dbTablePrefix + "Settings WHERE `roomid` = ? limit 1", [currentRoomId], function select(error, results, fields) {
+		if (results !== undefined) {
+			SetValue("songstats", "true");
+			SetValue("autobop", "false");
+			SetValue("autodj", "false");
+			SetValue("enableQueue", "false");
+			SetValue("nextDjQueueTimeout", "30");
+			SetValue("newsongcomments", "false");
+			SetValue("monitorsonglength", "false");
+			SetValue("maxsonglength", "30");
+			SetValue("ctsActive", "false");
+			SetValue("ctsSequenceMax", "0");
+			SetValue("ctsLastWords", "");
+			SetValue("announcement", "");
+			SetValue("gtfo", "false");
+			SetValue("lamer", "false");
+		}
 	});
 };

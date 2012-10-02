@@ -1,4 +1,4 @@
-global.version = "0.1";
+global.version = "0.2";
 
 // Load Node.js modules
 var Bot = require('ttapi');
@@ -11,6 +11,7 @@ global.Database = require("./database.js");
 global.Events = require("./events.js");
 global.Functions = require("./functions.js");
 global.Quotes = require("./quotes.js");
+global.currentRoomId = botRoomId;
 
 // Setup mySQL
 try {
@@ -34,7 +35,7 @@ try {
 	Log('Make sure that a mysql server instance is running and that the ' + 'username and password information in config.js are correct.');
 	process.exit(0);
 }
-
+ 
 Log("Initializing");
 
 // Initialize global variables
@@ -68,13 +69,13 @@ global.currentsong = {
 };
 
 // This is a catch-all
-process.on("uncaughtException", function(data) {
+/*process.on("uncaughtException", function(data) {
 	Log("**ERROR** Process error " + data);
 	setTimeout(function() {
 		Log("Shutting down (forever should restart)")
 		process.exit(0);
 	}, 150000); // 2.5 minutes
-});
+});*/
 
 // Start up bot
 try {

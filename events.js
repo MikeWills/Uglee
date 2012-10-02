@@ -14,6 +14,11 @@ global.OnRoomChanged = function(data) {
 			Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
 		}
 
+		if (currentRoomId !== data.room.roomid) {
+			currentRoomId = data.room.roomid;
+			SetUpRoom();
+		}
+
 		if (data.room.metadata.current_song != null) {
 			PopulateSongData(data);
 		}
