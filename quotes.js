@@ -6,6 +6,7 @@ global.lameText = 			   ["Wow! I have heard banshee songs better than this.",
 								"I want my money back! This song sucks."];
 global.downVoteText = 		   ["If you can't be nice, don't vote at all.", 
 								"A lame? Imma lame your ass next time you play a song!", 
+								"An all music mix room encourages people to take risks with their song choices, laming discourages that.",
 								"You wouldn't lame your momma would you? So why lame this person?"];
 global.userLeaveQuickText =    ["Hey! {u} just took our beer! That jerk!", 
 								"OMG! {u} just took our last bottle of Jack!", 
