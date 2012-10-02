@@ -67,10 +67,10 @@ global.OnRegistered = function(data) {
 
 		// Check if User is banned
 		client.query('SELECT userid, banned_by, DATE_FORMAT(timestamp, \'%c/%e/%y\')' + ' FROM BANNED_USERS WHERE userid LIKE \'' + user.userid + '\'', function cb(error, results, fields) {
-            if (results != null && results.length > 0) {
-                bot.boot(user.userid, 'You were banned from this room by ' + results[0]['banned_by'] + ' on ' + results[0]['timestamp']);
-            }
-        });
+			if (results != null && results.length > 0) {
+				bot.boot(user.userid, 'You were banned from this room by ' + results[0]['banned_by'] + ' on ' + results[0]['timestamp']);
+			}
+		});
 
 	} catch (e) {
 		Log(color("**ERROR** Room Changed ", "red") + e);
@@ -111,6 +111,7 @@ global.OnDeregistered = function(data) {
 global.OnSpeak = function(data) {
 	//Log(blue + "EVENT Speak: " + reset + JSON.stringify(data));
 	Command("speak", data);
+	AllUsers[data.userid].lastActivity = new Date();
 };
 
 global.OnEndSong = function(data) {
@@ -188,6 +189,17 @@ global.OnUpdateVotes = function(data) {
 		});
 	}
 
+	var votelog = data.room.metadata.votelog;
+	for (var i = 0; i < votelog.length; i++) {
+		var userid = votelog[i][0];
+		//Log("Update Vote: " + userid);
+		if (userid !== "") {
+			AllUsers[userid].lastActivity = new Date();
+		} else {
+			Log("Update Vote: " + userid);
+		}
+	}
+
 	currentsong.up = data.room.metadata.upvotes;
 	currentsong.down = data.room.metadata.downvotes;
 	currentsong.listeners = data.room.metadata.listeners;
@@ -234,6 +246,9 @@ global.OnUpdateUser = function(data) {
 global.OnAddDJ = function(data) {
 	Log(color("EVENT Add DJ: ", "blue") + data.user[0].name);
 
+	var user = data.user[0];
+	AllUsers[user.userid].lastActivity = new Date();
+
 	// Check if the bot should DJ.
 	ShouldBotDJ();
 };
@@ -268,6 +283,9 @@ global.OnSnagged = function(data) {
 	//Increase song snag count
 	currentsong.snags++;
 
+	var userid = data.userid;
+	AllUsers[userid].lastActivity = new Date();
+
 	// Add the song if there are 2 or more snags.
 	if (currentsong.snags === 2) {
 		Log("Snagging the song " + currentsong.song + " by " + currentsong.artist);
@@ -283,6 +301,7 @@ global.OnSnagged = function(data) {
 global.OnPmmed = function(data) {
 	Log(color("EVENT PMmed: ", "blue") + JSON.stringify(data));
 	Command("pm", data);
+	AllUsers[data.senderid].lastActivity = new Date();
 };
 
 global.OnError = function(data) {

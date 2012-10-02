@@ -134,7 +134,7 @@ global.SetUpDatabase = function() {
 
 global.SetUpRoom = function() {
 	client.query("SELECT * FROM " + dbName + '.' + dbTablePrefix + "Settings WHERE `roomid` = ? limit 1", [currentRoomId], function select(error, results, fields) {
-		if (results !== undefined) {
+		if (results === undefined || results === null) {
 			SetValue("songstats", "true");
 			SetValue("autobop", "false");
 			SetValue("autodj", "false");
@@ -149,6 +149,8 @@ global.SetUpRoom = function() {
 			SetValue("announcement", "");
 			SetValue("gtfo", "false");
 			SetValue("lamer", "false");
+			SetValue("idleTime", "6");
+			SetValue("bootOnIdle", "false");
 		}
 	});
 };

@@ -35,7 +35,7 @@ try {
 	Log('Make sure that a mysql server instance is running and that the ' + 'username and password information in config.js are correct.');
 	process.exit(0);
 }
- 
+
 Log("Initializing");
 
 // Initialize global variables
@@ -162,4 +162,24 @@ setInterval(function() {
 			process.exit(0);
 		}, 150000); // 2.5 minutes
 	}
-}, 300000); // 5 minutes
+}, 600000); // 10 minutes
+
+// Look for users that are idle and boot them
+GetValue('bootOnIdle', 0, function(retVal) {
+	if (retVal === "true") {
+		setInterval(function() {
+			GetValue("idleTime", 0, function(val) {
+				for (var z in AllUsers) {
+					var startDate = new Date();
+					var idleTime = Math.round((startDate - AllUsers[z].lastActivity) / 3600000); // in hours
+					//var idleTime = Math.round((startDate - AllUsers[z].lastActivity) / 60000); // for testing minutes
+					//Log(AllUsers[z].name + ": " + idleTime);
+					if (idleTime >= val) {
+						Log("Bot booted " + AllUsers[z].name);
+						//bot.bootUser(z, "You have been booted for being idle."); // Uncomment this to activate
+					}
+				}
+			});
+		}, 3600000); // 1 Hour
+	}
+});
