@@ -133,24 +133,27 @@ global.SetUpDatabase = function() {
 };
 
 global.SetUpRoom = function() {
-	client.query("SELECT * FROM " + dbName + '.' + dbTablePrefix + "Settings WHERE `roomid` = ? limit 1", [currentRoomId], function select(error, results, fields) {
-		if (results === undefined || results === null) {
-			SetValue("songstats", "true");
-			SetValue("autobop", "false");
-			SetValue("autodj", "false");
-			SetValue("enableQueue", "false");
-			SetValue("nextDjQueueTimeout", "30");
-			SetValue("newsongcomments", "false");
-			SetValue("monitorsonglength", "false");
-			SetValue("maxsonglength", "30");
-			SetValue("ctsActive", "false");
-			SetValue("ctsSequenceMax", "0");
-			SetValue("ctsLastWords", "");
-			SetValue("announcement", "");
-			SetValue("gtfo", "false");
-			SetValue("lamer", "false");
-			SetValue("idleTime", "6");
-			SetValue("bootOnIdle", "false");
+	client.query("SELECT * FROM " + dbName + '.' + dbTablePrefix + "Settings WHERE `roomid` = ?", [currentRoomId], function select(error, results, fields) {
+		Log("Results: " + JSON.stringify(results));
+		if (results !== undefined || results !== null) {
+			if (results.length == 0) {
+				SetValue("songstats", "true");
+				SetValue("autobop", "false");
+				SetValue("autodj", "false");
+				SetValue("enableQueue", "false");
+				SetValue("nextDjQueueTimeout", "30");
+				SetValue("newsongcomments", "false");
+				SetValue("monitorsonglength", "false");
+				SetValue("maxsonglength", "30");
+				SetValue("ctsActive", "false");
+				SetValue("ctsSequenceMax", "0");
+				SetValue("ctsLastWords", "");
+				SetValue("announcement", "");
+				SetValue("gtfo", "false");
+				SetValue("lamer", "false");
+				SetValue("idleTime", "6");
+				SetValue("bootOnIdle", "false");
+			}
 		}
 	});
 };
