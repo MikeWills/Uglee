@@ -11,7 +11,7 @@ global.OnRoomChanged = function(data) {
 			Speak("You're despicable!");
 			botWasBooted = false;
 		} else {
-			Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
+			//Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
 		}
 
 		if (currentRoomId !== data.room.roomid) {
@@ -53,13 +53,6 @@ global.OnRegistered = function(data) {
 			currentsong.listeners++;
 		}
 
-		// Check if User is banned
-		client.query('SELECT userid, banned_by, DATE_FORMAT(timestamp, \'%c/%e/%y\')' + ' FROM BANNED_USERS WHERE userid LIKE \'' + user.userid + '\'', function cb(error, results, fields) {
-            if (results != null && results.length > 0) {
-                bot.boot(user.userid, 'You were banned from this room by ' + results[0]['banned_by'] + ' on ' + results[0]['timestamp']);
-            }
-        });
-
 		//Add new user(s) to cache
 		var users = data.user;
 		for (var i in users) {
@@ -71,6 +64,13 @@ global.OnRegistered = function(data) {
 		if (data.user[0].name !== null) {
 			client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'User(userid, username, lastseen)' + 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [data.user[0].userid, data.user[0].name]);
 		}
+
+		// Check if User is banned
+		client.query('SELECT userid, banned_by, DATE_FORMAT(timestamp, \'%c/%e/%y\')' + ' FROM BANNED_USERS WHERE userid LIKE \'' + user.userid + '\'', function cb(error, results, fields) {
+            if (results != null && results.length > 0) {
+                bot.boot(user.userid, 'You were banned from this room by ' + results[0]['banned_by'] + ' on ' + results[0]['timestamp']);
+            }
+        });
 
 	} catch (e) {
 		Log(color("**ERROR** Room Changed ", "red") + e);
