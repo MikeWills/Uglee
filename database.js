@@ -49,7 +49,7 @@ global.RemoveValue = function(key) {
 	AddSongToDb - Add the song to the database.
 	============== */
 global.AddSongToDb = function(data) {
-	client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'Song SET artist = ?,song = ?, djid = ?, up = ?, down = ?,' + 'listeners = ?, started = NOW(), snags = ?, bonus = ?', [currentsong.artist, currentsong.song, currentsong.djid, currentsong.up, currentsong.down, currentsong.listeners, currentsong.snags, 0]);
+	client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'Song SET roomid = ?, artist = ?,song = ?, djid = ?, up = ?, down = ?,' + 'listeners = ?, started = NOW(), snags = ?, bonus = ?', [currentRoomId, currentsong.artist, currentsong.song, currentsong.djid, currentsong.up, currentsong.down, currentsong.listeners, currentsong.snags, 0]);
 }
 
 /* 	============== 
@@ -98,7 +98,7 @@ global.SetUpDatabase = function() {
 	client.query('USE ' + dbName);
 
 	// Song table
-	client.query('CREATE TABLE ' + dbName + '.' + dbTablePrefix + 'Song(id INT(11) AUTO_INCREMENT PRIMARY KEY,' + ' artist VARCHAR(255),' + ' song VARCHAR(255),' + ' djid VARCHAR(255),' + ' up INT(3),' + ' down INT(3),' + ' listeners INT(3),' + ' started DATETIME,' + ' snags INT(3),' + ' bonus INT(3))', function(error) {
+	client.query('CREATE TABLE ' + dbName + '.' + dbTablePrefix + 'Song(`roomid` VARCHAR( 255 ) NOT NULL, id INT(11) AUTO_INCREMENT PRIMARY KEY,' + ' artist VARCHAR(255),' + ' song VARCHAR(255),' + ' djid VARCHAR(255),' + ' up INT(3),' + ' down INT(3),' + ' listeners INT(3),' + ' started DATETIME,' + ' snags INT(3),' + ' bonus INT(3))', function(error) {
 		//Handle an error if it's not a table already exists error
 		if (error && error.number != 1050) {
 			throw (error);
@@ -106,7 +106,7 @@ global.SetUpDatabase = function() {
 	});
 
 	// User table
-	client.query('CREATE TABLE ' + dbName + '.' + dbTablePrefix + 'User(userid VARCHAR(255), ' + 'username VARCHAR(255), ' + 'lastseen DATETIME, ' + 'PRIMARY KEY (userid, username))', function(error) {
+	client.query('CREATE TABLE ' + dbName + '.' + dbTablePrefix + 'User(`roomid` VARCHAR( 255 ) NOT NULL, userid VARCHAR(255), ' + 'username VARCHAR(255), ' + 'lastseen DATETIME, ' + 'PRIMARY KEY (userid, username))', function(error) {
 		//Handle an error if it's not a table already exists error
 		if (error && error.number != 1050) {
 			throw (error);

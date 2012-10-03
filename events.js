@@ -11,7 +11,7 @@ global.OnRoomChanged = function(data) {
 			Speak("You're despicable!");
 			botWasBooted = false;
 		} else {
-			Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
+			//Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
 		}
 
 		if (currentRoomId !== data.room.roomid) {
@@ -33,7 +33,7 @@ global.OnRoomChanged = function(data) {
 
 		for (i in users) {
 			if (users[i].name !== null) {
-				client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'User(userid, username, lastseen)' + 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [users[i].userid, users[i].name]);
+				client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'User(roomid, userid, username, lastseen)' + 'VALUES (?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [currentRoomId, users[i].userid, users[i].name]);
 			}
 		}
 
@@ -62,7 +62,7 @@ global.OnRegistered = function(data) {
 		}
 
 		if (data.user[0].name !== null) {
-			client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'User(userid, username, lastseen)' + 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [data.user[0].userid, data.user[0].name]);
+			client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'User(roomid, userid, username, lastseen)' + 'VALUES (?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [currentRoomId, data.user[0].userid, data.user[0].name]);
 		}
 
 		// Check if User is banned
