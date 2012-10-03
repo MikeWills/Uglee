@@ -19,6 +19,8 @@ global.OnRoomChanged = function(data) {
 			SetUpRoom();
 		}
 
+		SetValue("roomName", data.room.name);
+
 		if (data.room.metadata.current_song != null) {
 			PopulateSongData(data);
 		}
@@ -177,6 +179,9 @@ global.OnNewSong = function(data) {
 
 global.OnNoSong = function(data) {
 	Log(color("EVENT No Song: ", "red") + JSON.stringify(data));
+	if (botDJing) {
+		bot.skip();
+	}
 };
 
 global.OnUpdateVotes = function(data) {
