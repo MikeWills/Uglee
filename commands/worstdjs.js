@@ -8,7 +8,7 @@ exports.handler = function(data, userid, source) {
         for (i in results) {
             response += results[i]['username'] + ': ' + results[i]['downvotes'] + ' lames.  ';
         }
-        Speak(response);
+        Speak(response, "", source, userid);
     });
 
 }

@@ -17,6 +17,6 @@ exports.handler = function(data, userid, source) {
                 response += results[i]['username'] + ', ';
             }
         }
-        Speak(response.substring(0, response.length - 2));
+        Speak(response.substring(0, response.length - 2), "", source, userid);
     });
 }

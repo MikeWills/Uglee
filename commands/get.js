@@ -18,14 +18,14 @@ exports.handler = function(data, userid, source) {
 				for (i in settings) {
 					text = text + settings[i] + ", ";
 				}
-				TellUser(userid, text.substring(0, text.length - 2));
+				Speak(text.substring(0, text.length - 2), "", source, userid);
 			}
 
 			if (split.length === 2) {
 				var text = "The current setting for " + split[1] + " is: ";
 				GetValue(split[1], 0, function(val) {
 					text = text + val;
-					TellUser(userid, "@" + AllUsers[userid].name + " " + text);
+					Speak("@" + AllUsers[userid].name + " " + text, "", source, userid);
 				});
 			}
 

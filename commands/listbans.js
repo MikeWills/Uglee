@@ -8,6 +8,6 @@ exports.handler = function(data, userid, source) {
         for (i in results) {
             rp += results[i]['username'] + ' (banned ' + results[i]['date'] + ' by ' + results[i]['banned_by'] + '), ';
         }
-        Speak(rp.substring(0, rp.length - 2));
+        Speak(rp.substring(0, rp.length - 2), "", source, userid);
     });
 }

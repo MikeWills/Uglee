@@ -8,6 +8,6 @@ exports.handler = function(data, userid, source) {
         for (i in results) {
             response += results[i]['current_username'] + ': ' + results[i]['name_count'] + ' name changes.  ';
         }
-        Speak(response);
+        Speak(response, "", source, userid);
     });
 }

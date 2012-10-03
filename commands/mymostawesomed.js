@@ -9,7 +9,7 @@ exports.handler = function(data, userid, source) {
         for (i in results) {
             response += results[i]['TRACK'] + ': ' + results[i]['SUM'] + ' awesomes.  ';
         }
-        Speak(response);
+        Speak(response, "", source, userid);
     });
 
 }

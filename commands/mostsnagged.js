@@ -8,6 +8,6 @@ exports.handler = function(data, userid, source) {
         for (i in results) {
             response += results[i]['TRACK'] + ': ' + results[i]['SNAGS'] + ' snags.  ';
         }
-        Speak(response);
+        Speak(response, "", source, userid);
     });
 }

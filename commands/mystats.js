@@ -10,6 +10,6 @@ exports.handler = function(data, userid, source) {
         //played, total awesomes, lames, and averages
         client.query('SELECT @rank as rank, count(*) as total, sum(up) as up, avg(up) as avgup, ' + 'sum(down) as down, avg(down) as avgdown ' + 'FROM ' + dbName + '.' + dbTablePrefix + 'Song  WHERE `roomid` = ? AND `djid` LIKE \'' + data.userid + '\'',[currentRoomId], function select(error, results, fields) {
             var response = (data.name + ', you have played ' + results[0]['total'] + ' songs in this room with a total of ' + results[0]['up'] + ' awesomes and ' + results[0]['down'] + ' lames (avg +' + new Number(results[0]['avgup']).toFixed(1) + '/-' + new Number(results[0]['avgdown']).toFixed(1) + ') (Rank: ' + results[0]['rank'] + ')');
-            Speak(response);
+            Speak(response, "", source, userid);
         });
 }

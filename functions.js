@@ -11,7 +11,7 @@ global.Log = function(data) {
 /* 	==============
 	Speak - Puts text in to the chatroom.
 	============== */
-global.Speak = function(text, userName) {
+global.Speak = function(text, userName, source, userid) {
 	var textOut = "";
 
 	if (userName !== undefined) {
@@ -20,10 +20,14 @@ global.Speak = function(text, userName) {
 		textOut = text;
 	}
 
-	try {
+	if (source !== undefined) {
+		if (source === "pm"){
+			bot.pm(textOut, userid);
+		} else {
+			bot.speak(textOut);
+		}
+	} else {
 		bot.speak(textOut);
-	} catch (e) {
-		Log(color("**ERROR** Speak() ", "red") + e);
 	}
 };
 

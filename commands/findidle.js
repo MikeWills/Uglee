@@ -17,7 +17,8 @@ exports.handler = function(data, userid, source) {
 							pmText += AllUsers[z].name + ": " + idleTime + " on " + AllUsers[z].laptop + " | ";
 						}
 					}
-					TellUser(userid, pmText);
+
+					Speak(pmText, "", source, userid);
 				});
 			}
 		});
