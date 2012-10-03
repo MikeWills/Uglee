@@ -3,7 +3,8 @@ exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = true;
 exports.handler = function(data, userid, source) {
-    client.query('SELECT username FROM ' + dbName + '.' + dbTablePrefix + 'User WHERE (userid like (SELECT ' + 'userid FROM ' + dbName + '.' + dbTablePrefix + 'User WHERE username LIKE ? limit 1)) ORDER BY RAND()', [data.text.substring(11)], function select(error, results, fields) {
+    Log("Name: " + data.text.substring(11));
+    client.query('SELECT username FROM ' + dbName + '.' + dbTablePrefix + 'User  WHERE `roomid` = ? AND (userid like (SELECT ' + 'userid FROM ' + dbName + '.' + dbTablePrefix + 'User  WHERE `roomid` = ? AND username LIKE ? limit 1)) ORDER BY RAND()', [currentRoomId, currentRoomId, data.text.substring(11)], function select(error, results, fields) {
         var response = '';
         if (results != null && results.length > 6) {
             response = 'That user has gone by ' + results.length + ' names, including: ';
