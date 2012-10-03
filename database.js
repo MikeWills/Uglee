@@ -134,7 +134,6 @@ global.SetUpDatabase = function() {
 
 global.SetUpRoom = function() {
 	client.query("SELECT * FROM " + dbName + '.' + dbTablePrefix + "Settings WHERE `roomid` = ?", [currentRoomId], function select(error, results, fields) {
-		Log("Results: " + JSON.stringify(results));
 		if (results !== undefined || results !== null) {
 			if (results.length == 0) {
 				SetValue("songstats", "true");

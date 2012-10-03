@@ -69,13 +69,13 @@ global.currentsong = {
 };
 
 // This is a catch-all
-/*process.on("uncaughtException", function(data) {
+process.on("uncaughtException", function(data) {
 	Log("**ERROR** Process error " + data);
 	setTimeout(function() {
 		Log("Shutting down (forever should restart)")
 		process.exit(0);
 	}, 150000); // 2.5 minutes
-});*/
+});
 
 // Start up bot
 try {
@@ -143,7 +143,7 @@ setInterval(function() {
 			skip: 0
 		}, function(data) {
 			ttUp = true;
-			Log("Turntable.FM is up.");
+			//Log("Turntable.FM is up.");
 		});
 		setTimeout(function() {
 			if (ttUp === false) {
