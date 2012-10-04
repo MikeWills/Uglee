@@ -41,6 +41,13 @@ Log("Initializing");
 // Initialize global variables
 global.AllUsers = {}; // A list of all users in the room
 global.commands = new Array(); // Array of command handlers
+
+// DJ Data
+global.Djs = {};
+global.PastDjs = {};
+global.lastDJ = "";
+global.currentDj = "";
+
 // Working data
 global.danceCount = 0;
 global.danceRequesters = [];
@@ -69,13 +76,13 @@ global.currentsong = {
 };
 
 // This is a catch-all
-process.on("uncaughtException", function(data) {
-	Log("**ERROR** Process error " + data);
+/*process.on("uncaughtException", function(data) {
+	Log(color("**ERROR** Process error ", "red") + data);
 	setTimeout(function() {
 		Log("Shutting down (forever should restart)")
 		process.exit(0);
 	}, 150000); // 2.5 minutes
-});
+});*/
 
 // Start up bot
 try {

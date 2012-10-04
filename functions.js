@@ -240,3 +240,17 @@ global.ShouldBotDJ = function() {
 		}
 	});
 }
+
+/* 	============
+	SpeakPlayCout - Announce how many songs remain for each DJ.
+	============ */
+global.SpeakPlayCount = function() {
+	var count = ['x', 'x', 'x', 'x', 'x'];
+	var x = 0;
+	for (var i in Djs) {
+		count[x] = Djs[i].remainingPlays;
+		x++;
+	}
+	var playCount = count[0] + '-' + count[1] + '-' + count[2] + '-' + count[3] + '-' + count[4];
+	Speak("Songs Remaining: " + playCount);
+};

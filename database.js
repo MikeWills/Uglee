@@ -152,6 +152,8 @@ global.SetUpRoom = function() {
 				SetValue("lamer", "false");
 				SetValue("idleTime", "6");
 				SetValue("bootOnIdle", "false");
+				SetValue("isModerating", "false");
+				SetValue("maxPlays", "4");
 			}
 		}
 	});

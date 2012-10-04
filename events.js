@@ -1,7 +1,11 @@
 var botWasBooted = false;
+var totalPlays = 0;
 
 global.OnReady = function(data) {
 	Log(color("EVENT Ready", "blue"));
+	GetValue("maxPlays", 0, function(max) {
+		totalPlays = Number(max);
+	});
 };
 
 global.OnRoomChanged = function(data) {
@@ -11,7 +15,7 @@ global.OnRoomChanged = function(data) {
 			Speak("You're despicable!");
 			botWasBooted = false;
 		} else {
-			Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
+			//Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
 		}
 
 		if (currentRoomId !== data.room.roomid) {
@@ -26,18 +30,30 @@ global.OnRoomChanged = function(data) {
 		}
 
 		// Keep track of all users
+		Log("Loading Users");
 		var users = data.users;
 		for (var i in users) {
 			var user = users[i];
 			user.lastActivity = user.loggedIn = new Date();
 			AllUsers[user.userid] = user;
-		}
-
-		for (i in users) {
 			if (users[i].name !== null) {
 				client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'User(roomid, userid, username, lastseen)' + 'VALUES (?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [currentRoomId, users[i].userid, users[i].name]);
 			}
 		}
+
+		Log("Loading Djs");
+		var djs = data.room.metadata.djs;
+		for (var i = 0; i < djs.length; i++) {
+			var djInfo = {
+				userid: djs[i],
+				remainingPlays: totalPlays,
+				afkCount: 0,
+				waitDjs: 0
+			}
+			Djs[djs[i]] = djInfo;
+		}
+
+		currentDj = data.room.metadata.current_dj;
 
 		// Check if the bot should DJ.
 		ShouldBotDJ();
@@ -157,13 +173,16 @@ global.OnEndSong = function(data) {
 global.OnNewSong = function(data) {
 	Log(color("EVENT New Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + data.room.metadata.current_song.metadata.song);
 	danceCount = 0;
+	lameCount = 0;
+	snagCount = 0;
 
-	//Populate new song data in currentsong
+	// Populate new song data in currentsong
 	PopulateSongData(data);
 
-	var rand = Math.ceil(Math.random() * 20);
-	var wait = rand * 1000;
+	// If the bot is DJing, randomize when it bops
 	if (botDJing) {
+		var rand = Math.ceil(Math.random() * 20);
+		var wait = rand * 1000;
 		setTimeout(function() {
 			bot.vote('up');
 			alreadyVoted = true;
@@ -175,6 +194,20 @@ global.OnNewSong = function(data) {
 		botIsPlayingSong = true;
 		Log("Playing song right now.");
 	}
+
+	lastDj = currentDj;
+	currentDj = data.room.metadata.current_dj;
+	Djs[lastDj].remainingPlays--;
+
+	GetValue("isModerating", 0, function(isModerating) {
+		if (isModerating === "true") {
+			if (Djs[lastDj].remainingPlays === 0) {
+				Log("Remove DJ " + AllUsers[lastDj] + "after reaching max plays.");
+				bot.remDj(lastDj);
+			}
+			SpeakPlayCount();
+		}
+	});
 };
 
 global.OnNoSong = function(data) {
@@ -254,25 +287,54 @@ global.OnAddDJ = function(data) {
 	var user = data.user[0];
 	AllUsers[user.userid].lastActivity = new Date();
 
+	// If the bot is moderating the room, save the DJs
+	if (PastDjs[user.userid] !== undefined) {
+		if (PastDjs[user.userid].remainingPlays !== 0) {
+			Djs[user.userid] = PastDjs[user.userid];
+			Djs[user.userid].waitDjs = 0;
+		} else {
+			Log("Remove DJ");
+			//bot.remDj(user.userid);
+		}
+	} else {
+		GetValue("maxPlays", 0, function(max) {
+			var djInfo = {
+				userid: user.userid,
+				remainingPlays: Number(max),
+				afkCount: 0,
+				waitDjs: 0
+			}
+			Djs[user.userid] = djInfo;
+		});
+	}
+
 	// Check if the bot should DJ.
 	ShouldBotDJ();
 };
 
 global.OnRemDJ = function(data) {
 	Log(color("EVENT Remove DJ: ", "blue") + data.user[0].name);
-	Log(JSON.stringify(data));
+
+	// If the bot is removed from the table, mark the bot as not DJing. 
+	// If the bot was forcefully removed, disable autodj to make sure it doesn't step up again.
 	if (data.user[0].userid === botUserId) {
 		botDJing = false;
 		Log("Bot no longer DJing");
+		if (data.modid !== undefined) {
+			Log("Forcibly Removed");
+			SetValue("autodj", "false");
+		}
 	}
 
-	if (data.modid !== undefined) {
-		Log("Forcibly Removed");
-		SetValue("autodj", "false");
-	} else {
-		// Check if the bot should DJ.
-		ShouldBotDJ();
-	}
+	// If the bot is moderating the room, save the DJ info in case they steped down early
+	var user = data.user[0];
+	PastDjs[user.userid] = Djs[user.userid];
+	delete Djs[user.userid];
+	PastDjs[user.userid].waitDjs = 2;
+	PastDjs[user.userid].afkCount = 0;
+
+	// Check if the bot should DJ.
+	ShouldBotDJ();
 };
 
 global.OnNewModerator = function(data) {
