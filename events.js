@@ -56,7 +56,9 @@ global.OnRoomChanged = function(data) {
 		currentDj = data.room.metadata.current_dj;
 
 		// Check if the bot should DJ.
-		ShouldBotDJ();
+		setInterval(function() {
+			ShouldBotDJ();
+		}, 5000);
 
 	} catch(e) {
 		Log(color("**ERROR** Room Changed ", "red") + e);
@@ -201,15 +203,17 @@ global.OnNewSong = function(data) {
 		Djs[currentDj].remainingPlays--;
 	}
 
-	GetValue("isModerating", 0, function(isModerating) {
-		if(isModerating === "true") {
-			if(Djs[lastDj].remainingPlays === 0) {
-				Log("Remove DJ " + AllUsers[lastDj] + "after reaching max plays.");
-				bot.remDj(lastDj);
+	if(lastDj !== undefined) {
+		GetValue("isModerating", 0, function(isModerating) {
+			if(isModerating === "true") {
+				if(Djs[lastDj] !== undefined && Djs[lastDj].remainingPlays === 0) {
+					Log("Remove DJ " + AllUsers[lastDj].name + "after reaching max plays.");
+					bot.remDj(lastDj);
+				}
+				SpeakPlayCount();
 			}
-			SpeakPlayCount();
-		}
-	});
+		});
+	}
 };
 
 global.OnNoSong = function(data) {
@@ -294,14 +298,15 @@ global.OnAddDJ = function(data) {
 		if(PastDjs[user.userid].remainingPlays !== 0) {
 			Djs[user.userid] = PastDjs[user.userid];
 			Djs[user.userid].waitDjs = 0;
-		} else {
+		}
+		/*else {
 			GetValue("isModerating", 0, function(isModerating) {
 				if(isModerating === "true") {
 					Log("Remove DJ");
 					bot.remDj(user.userid);
 				}
 			});
-		}
+		}*/
 	} else {
 		GetValue("maxPlays", 0, function(max) {
 			var djInfo = {
@@ -336,7 +341,8 @@ global.OnRemDJ = function(data) {
 	var user = data.user[0];
 	PastDjs[user.userid] = Djs[user.userid];
 	delete Djs[user.userid];
-	PastDjs[user.userid].waitDjs = 2;
+	/*PastDjs[user.userid].waitDjs = 2;
+	PastDjs[user.userid].stepDownTime = new Date();*/
 	PastDjs[user.userid].afkCount = 0;
 
 	// Check if the bot should DJ.
