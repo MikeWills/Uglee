@@ -11,39 +11,39 @@ global.OnReady = function(data) {
 global.OnRoomChanged = function(data) {
 	try {
 		Log(color("EVENT Room Changed to " + data.room.name, "blue"));
-		if (botWasBooted) {
+		if(botWasBooted) {
 			Speak("You're despicable!");
 			botWasBooted = false;
 		} else {
 			//Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
 		}
 
-		if (currentRoomId !== data.room.roomid) {
+		if(currentRoomId !== data.room.roomid) {
 			currentRoomId = data.room.roomid;
 			SetUpRoom();
 		}
 
 		SetValue("roomName", data.room.name);
 
-		if (data.room.metadata.current_song != null) {
+		if(data.room.metadata.current_song != null) {
 			PopulateSongData(data);
 		}
 
 		// Keep track of all users
 		Log("Loading Users");
 		var users = data.users;
-		for (var i in users) {
+		for(var i in users) {
 			var user = users[i];
 			user.lastActivity = user.loggedIn = new Date();
 			AllUsers[user.userid] = user;
-			if (users[i].name !== null) {
+			if(users[i].name !== null) {
 				client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'User(roomid, userid, username, lastseen)' + 'VALUES (?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [currentRoomId, users[i].userid, users[i].name]);
 			}
 		}
 
 		Log("Loading Djs");
 		var djs = data.room.metadata.djs;
-		for (var i = 0; i < djs.length; i++) {
+		for(var i = 0; i < djs.length; i++) {
 			var djInfo = {
 				userid: djs[i],
 				remainingPlays: totalPlays,
@@ -58,7 +58,7 @@ global.OnRoomChanged = function(data) {
 		// Check if the bot should DJ.
 		ShouldBotDJ();
 
-	} catch (e) {
+	} catch(e) {
 		Log(color("**ERROR** Room Changed ", "red") + e);
 	}
 };
@@ -67,30 +67,30 @@ global.OnRegistered = function(data) {
 	try {
 		Log(color("EVENT Registered: ", "blue") + data.user[0].name + " - " + data.user[0].userid);
 
-		if (currentsong != null) {
+		if(currentsong != null) {
 			currentsong.listeners++;
 		}
 
 		//Add new user(s) to cache
 		var users = data.user;
-		for (var i in users) {
+		for(var i in users) {
 			var user = users[i];
 			user.lastActivity = user.loggedIn = new Date();
 			AllUsers[user.userid] = user;
 		}
 
-		if (data.user[0].name !== null) {
+		if(data.user[0].name !== null) {
 			client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'User(roomid, userid, username, lastseen)' + 'VALUES (?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [currentRoomId, data.user[0].userid, data.user[0].name]);
 		}
 
 		// Check if User is banned
 		client.query('SELECT userid, banned_by, DATE_FORMAT(timestamp, \'%c/%e/%y\')' + ' FROM BANNED_USERS WHERE userid LIKE \'' + user.userid + '\'', function cb(error, results, fields) {
-			if (results != null && results.length > 0) {
+			if(results != null && results.length > 0) {
 				bot.boot(user.userid, 'You were banned from this room by ' + results[0]['banned_by'] + ' on ' + results[0]['timestamp']);
 			}
 		});
 
-	} catch (e) {
+	} catch(e) {
 		Log(color("**ERROR** Room Changed ", "red") + e);
 	}
 };
@@ -99,20 +99,20 @@ global.OnDeregistered = function(data) {
 	try {
 		Log(color("EVENT Deregistered: ", "blue") + data.user[0].name + " - " + data.user[0].userid);
 
-		if (currentsong != null) {
+		if(currentsong != null) {
 			currentsong.listeners--;
 		}
 
 		// Remove the user(s) from cache
 		var users = data.user;
-		for (var i in users) {
+		for(var i in users) {
 			var user = users[i];
 
 			var now = new Date();
 			var username = AllUsers[user.userid].name;
-			if ((now - AllUsers[user.userid].loggedIn) < 30000) {
+			if((now - AllUsers[user.userid].loggedIn) < 30000) {
 				GetValue("gtfo", 0, function(value) {
-					if (value === "true") {
+					if(value === "true") {
 						SpeakRandom(userLeaveQuickText, username);
 					}
 				});
@@ -121,7 +121,7 @@ global.OnDeregistered = function(data) {
 			delete AllUsers[user.userid];
 		}
 
-	} catch (e) {
+	} catch(e) {
 		Log(color("**ERROR** Room Changed ", "red") + e);
 	}
 };
@@ -145,19 +145,19 @@ global.OnEndSong = function(data) {
 	// Post song results
 	var endsongresponse = currentsong.song + ' stats: :+1: ' + currentsong.up + ' :-1: ' + currentsong.down + ' <3 ' + currentsong.snags;
 	GetValue("songstats", 0, function(value) {
-		if (value === "true") {
+		if(value === "true") {
 			Speak(endsongresponse);
 		}
 	});
 
 	// Make sure bot is aware that it is playing a song.
-	if (data.room.metadata.current_dj === botUserId) {
+	if(data.room.metadata.current_dj === botUserId) {
 		botIsPlayingSong = false;
 		Log("Song has ended.");
 	}
 
 	// Bot steps down if needed to after it's song.
-	if (botStepDownAfterSong) {
+	if(botStepDownAfterSong) {
 		Speak("Looks like me not needed anymore.");
 		setTimeout(function() {
 			Speak("/me pouts and slowly walks to the floor.");
@@ -180,7 +180,7 @@ global.OnNewSong = function(data) {
 	PopulateSongData(data);
 
 	// If the bot is DJing, randomize when it bops
-	if (botDJing) {
+	if(botDJing) {
 		var rand = Math.ceil(Math.random() * 20);
 		var wait = rand * 1000;
 		setTimeout(function() {
@@ -190,18 +190,20 @@ global.OnNewSong = function(data) {
 	}
 
 	// Make sure bot is aware that it is playing a song.
-	if (data.room.metadata.current_dj === botUserId) {
+	if(data.room.metadata.current_dj === botUserId) {
 		botIsPlayingSong = true;
 		Log("Playing song right now.");
 	}
 
 	lastDj = currentDj;
 	currentDj = data.room.metadata.current_dj;
-	Djs[lastDj].remainingPlays--;
+	if(lastDj !== botUserId) {
+		Djs[lastDj].remainingPlays--;
+	}
 
 	GetValue("isModerating", 0, function(isModerating) {
-		if (isModerating === "true") {
-			if (Djs[lastDj].remainingPlays === 0) {
+		if(isModerating === "true") {
+			if(Djs[lastDj].remainingPlays === 0) {
 				Log("Remove DJ " + AllUsers[lastDj] + "after reaching max plays.");
 				bot.remDj(lastDj);
 			}
@@ -212,26 +214,26 @@ global.OnNewSong = function(data) {
 
 global.OnNoSong = function(data) {
 	Log(color("EVENT No Song: ", "red") + JSON.stringify(data));
-	if (botDJing) {
+	if(botDJing) {
 		bot.skip();
 	}
 };
 
 global.OnUpdateVotes = function(data) {
 	//Log(blue + "EVENT Update Votes: " + reset + JSON.stringify(data));
-	if (data.room.metadata.votelog[0][1] == "down") {
+	if(data.room.metadata.votelog[0][1] == "down") {
 		GetValue("lamer", 0, function(value) {
-			if (value === "true") {
+			if(value === "true") {
 				SpeakRandom(downVoteText);
 			}
 		});
 	}
 
 	var votelog = data.room.metadata.votelog;
-	for (var i = 0; i < votelog.length; i++) {
+	for(var i = 0; i < votelog.length; i++) {
 		var userid = votelog[i][0];
 		//Log("Update Vote: " + userid);
-		if (userid !== "") {
+		if(userid !== "") {
 			AllUsers[userid].lastActivity = new Date();
 		} else {
 			Log("Update Vote: " + userid);
@@ -244,23 +246,23 @@ global.OnUpdateVotes = function(data) {
 
 	/* If autobop is enabled, determine if the bot should autobop or not based on votes */
 	GetValue("autobop", 0, function(value) {
-		if (value === "true") {
+		if(value === "true") {
 			var percentAwesome = 0;
 			var percentLame = 0;
 
-			if (data.room.metadata.upvotes !== 0) {
+			if(data.room.metadata.upvotes !== 0) {
 				percentAwesome = (data.room.metadata.upvotes / data.room.metadata.listeners) * 100;
 			}
-			if (data.room.metadata.downvotes !== 0) {
+			if(data.room.metadata.downvotes !== 0) {
 				percentLame = (data.room.metadata.downvotes / data.room.metadata.listeners) * 100;
 			}
 
-			if ((percentAwesome - percentLame) > 40) {
+			if((percentAwesome - percentLame) > 40) {
 				bot.vote('up');
 				alreadyVoted = true;
 			}
 
-			if ((percentLame - percentAwesome) > 40) {
+			if((percentLame - percentAwesome) > 40) {
 				bot.vote('down');
 				alreadyVoted = true;
 			}
@@ -270,7 +272,7 @@ global.OnUpdateVotes = function(data) {
 
 global.OnBootedUser = function(data) {
 	Log(color("EVENT Booted User: ", "blue") + JSON.stringify(data));
-	if (data.userid === botUserId) {
+	if(data.userid === botUserId) {
 		botWasBooted = true;
 		bot.roomDeregister();
 		bot.roomRegister(botRoomId);
@@ -288,13 +290,17 @@ global.OnAddDJ = function(data) {
 	AllUsers[user.userid].lastActivity = new Date();
 
 	// If the bot is moderating the room, save the DJs
-	if (PastDjs[user.userid] !== undefined) {
-		if (PastDjs[user.userid].remainingPlays !== 0) {
+	if(PastDjs[user.userid] !== undefined) {
+		if(PastDjs[user.userid].remainingPlays !== 0) {
 			Djs[user.userid] = PastDjs[user.userid];
 			Djs[user.userid].waitDjs = 0;
 		} else {
-			Log("Remove DJ");
-			//bot.remDj(user.userid);
+			GetValue("isModerating", 0, function(isModerating) {
+				if(isModerating === "true") {
+					Log("Remove DJ");
+					bot.remDj(user.userid);
+				}
+			});
 		}
 	} else {
 		GetValue("maxPlays", 0, function(max) {
@@ -317,10 +323,10 @@ global.OnRemDJ = function(data) {
 
 	// If the bot is removed from the table, mark the bot as not DJing. 
 	// If the bot was forcefully removed, disable autodj to make sure it doesn't step up again.
-	if (data.user[0].userid === botUserId) {
+	if(data.user[0].userid === botUserId) {
 		botDJing = false;
 		Log("Bot no longer DJing");
-		if (data.modid !== undefined) {
+		if(data.modid !== undefined) {
 			Log("Forcibly Removed");
 			SetValue("autodj", "false");
 		}
@@ -354,7 +360,7 @@ global.OnSnagged = function(data) {
 	AllUsers[userid].lastActivity = new Date();
 
 	// Add the song if there are 2 or more snags.
-	if (currentsong.snags === 2) {
+	if(currentsong.snags === 2) {
 		Log("Snagging the song " + currentsong.song + " by " + currentsong.artist);
 		bot.vote('up');
 		alreadyVoted = true;
