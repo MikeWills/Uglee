@@ -197,8 +197,8 @@ global.OnNewSong = function(data) {
 
 	lastDj = currentDj;
 	currentDj = data.room.metadata.current_dj;
-	if(lastDj !== botUserId) {
-		Djs[lastDj].remainingPlays--;
+	if(currentDj !== botUserId) {
+		Djs[currentDj].remainingPlays--;
 	}
 
 	GetValue("isModerating", 0, function(isModerating) {
