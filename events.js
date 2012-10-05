@@ -56,7 +56,7 @@ global.OnRoomChanged = function(data) {
 		currentDj = data.room.metadata.current_dj;
 
 		// Check if the bot should DJ.
-		setInterval(function() {
+		setTimeout(function() {
 			ShouldBotDJ();
 		}, 5000);
 
@@ -210,7 +210,10 @@ global.OnNewSong = function(data) {
 					Log("Remove DJ " + AllUsers[lastDj].name + "after reaching max plays.");
 					bot.remDj(lastDj);
 				}
-				SpeakPlayCount();
+				setTimeout(function() {
+					SpeakPlayCount();
+				}, 2000);
+
 			}
 		});
 	}
@@ -339,11 +342,13 @@ global.OnRemDJ = function(data) {
 
 	// If the bot is moderating the room, save the DJ info in case they steped down early
 	var user = data.user[0];
-	PastDjs[user.userid] = Djs[user.userid];
+	if(Djs[user.userid].remainingPlays !== 0) {
+		PastDjs[user.userid] = Djs[user.userid];
+		/*PastDjs[user.userid].waitDjs = 2;
+		PastDjs[user.userid].stepDownTime = new Date();
+		PastDjs[user.userid].afkCount = 0;*/
+	}
 	delete Djs[user.userid];
-	/*PastDjs[user.userid].waitDjs = 2;
-	PastDjs[user.userid].stepDownTime = new Date();*/
-	PastDjs[user.userid].afkCount = 0;
 
 	// Check if the bot should DJ.
 	ShouldBotDJ();
