@@ -3,9 +3,9 @@
 	============== */
 global.SetValue = function(key, value) {
 	client.query("SELECT `value` FROM " + dbName + '.' + dbTablePrefix + "Settings WHERE `roomid` = ? AND `key` = ?", [currentRoomId, key], function select(error, results, fields) {
-		if (results !== undefined) {
-			if (results.length !== 0) {
-				client.query("UPDATE " + dbName + '.' + dbTablePrefix + "Settings SET `roomid` = ?, `value` = ? WHERE `key` = ?", [currentRoomId, value, key]);
+		if(results !== undefined) {
+			if(results.length !== 0) {
+				client.query("UPDATE " + dbName + '.' + dbTablePrefix + "Settings SET `value` = ? WHERE `roomid` = ? AND `key` = ?", [value, currentRoomId, key]);
 			} else {
 				client.query("INSERT INTO " + dbName + '.' + dbTablePrefix + "Settings (`roomid`, `key`, `value`, `DateStamp`) VALUES (?, ?, ?, CURRENT_TIMESTAMP)", [currentRoomId, key, value]);
 			}
@@ -21,10 +21,10 @@ global.SetValue = function(key, value) {
 global.GetValue = function(key, timeout, callback) {
 	client.query("SELECT `value`, `DateStamp` FROM " + dbName + '.' + dbTablePrefix + "Settings WHERE `roomid` = ? AND `key` = ?", [currentRoomId, key], function select(error, results, fields) {
 		//Log("Results: " + JSON.stringify(results));
-		if (results !== undefined) {
-			if (results.length !== 0) {
+		if(results !== undefined) {
+			if(results.length !== 0) {
 				var now = new Date();
-				if (timeout === 0 || DateDiff(now, results[0]['DateStamp'], 'min') <= timeout) {
+				if(timeout === 0 || DateDiff(now, results[0]['DateStamp'], 'min') <= timeout) {
 					callback(results[0]['value']);
 				} else {
 					callback(null);
@@ -64,22 +64,22 @@ function DateDiff(a, b, format) {
 	var months = milliseconds / 2628000000;
 	var years = milliseconds / 31557600000;
 
-	if (format == "min") {
+	if(format == "min") {
 		return Math.round(minutes);
 	}
-	if (format == "h") {
+	if(format == "h") {
 		return Math.round(hours);
 	}
-	if (format == "d") {
+	if(format == "d") {
 		return Math.round(days);
 	}
-	if (format == "w") {
+	if(format == "w") {
 		return Math.round(weeks);
 	}
-	if (format == "m") {
+	if(format == "m") {
 		return Math.round(months);
 	}
-	if (format == "y") {
+	if(format == "y") {
 		return Math.round(years);
 	}
 }
@@ -91,8 +91,8 @@ global.SetUpDatabase = function() {
 	Log("Setting up the database.");
 	//Creates DB and tables if needed, connects to db
 	client.query('CREATE DATABASE ' + dbName, function(error) {
-		if (error && error.number != mysql.ERROR_DB_CREATE_EXISTS) {
-			throw (error);
+		if(error && error.number != mysql.ERROR_DB_CREATE_EXISTS) {
+			throw(error);
 		}
 	});
 	client.query('USE ' + dbName);
@@ -100,22 +100,22 @@ global.SetUpDatabase = function() {
 	// Song table
 	client.query('CREATE TABLE ' + dbName + '.' + dbTablePrefix + 'Song(`roomid` VARCHAR( 255 ) NOT NULL, id INT(11) AUTO_INCREMENT PRIMARY KEY,' + ' artist VARCHAR(255),' + ' song VARCHAR(255),' + ' djid VARCHAR(255),' + ' up INT(3),' + ' down INT(3),' + ' listeners INT(3),' + ' started DATETIME,' + ' snags INT(3),' + ' bonus INT(3))', function(error) {
 		//Handle an error if it's not a table already exists error
-		if (error && error.number != 1050) {
-			throw (error);
+		if(error && error.number != 1050) {
+			throw(error);
 		}
 	});
 
 	// User table
 	client.query('CREATE TABLE ' + dbName + '.' + dbTablePrefix + 'User(`roomid` VARCHAR( 255 ) NOT NULL, userid VARCHAR(255), ' + 'username VARCHAR(255), ' + 'lastseen DATETIME, ' + 'PRIMARY KEY (userid, username))', function(error) {
 		//Handle an error if it's not a table already exists error
-		if (error && error.number != 1050) {
-			throw (error);
+		if(error && error.number != 1050) {
+			throw(error);
 		}
 	});
 
 	// Banned users
 	client.query('CREATE TABLE IF NOT EXISTS ' + dbName + '.BANNED (' + 'id INT(11) AUTO_INCREMENT PRIMARY KEY, ' + 'userid VARCHAR(255), ' + 'banned_by VARCHAR(255), ' + 'timestamp DATETIME)', function(error) {
-		if (error && error.number != 1050) {
+		if(error && error.number != 1050) {
 			throw error;
 		}
 	});
@@ -124,8 +124,8 @@ global.SetUpDatabase = function() {
 	// Settings table
 	client.query("CREATE TABLE IF NOT EXISTS " + dbName + '.' + dbTablePrefix + "Settings (`roomid` VARCHAR( 255 ) NOT NULL, `key` varchar(50) NOT NULL," + " `value` varchar(4096) NOT NULL, " + "`DateStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP " + ")", function(error) {
 		//Handle an error if it's not a table already exists error
-		if (error && error.number != 1050) {
-			throw (error);
+		if(error && error.number != 1050) {
+			throw(error);
 		}
 	});
 
@@ -133,28 +133,94 @@ global.SetUpDatabase = function() {
 };
 
 global.SetUpRoom = function() {
-	client.query("SELECT * FROM " + dbName + '.' + dbTablePrefix + "Settings WHERE `roomid` = ?", [currentRoomId], function select(error, results, fields) {
-		if (results !== undefined || results !== null) {
-			if (results.length == 0) {
-				SetValue("songstats", "true");
-				SetValue("autobop", "false");
-				SetValue("autodj", "false");
-				SetValue("enableQueue", "false");
-				SetValue("nextDjQueueTimeout", "30");
-				SetValue("newsongcomments", "false");
-				SetValue("monitorsonglength", "false");
-				SetValue("maxsonglength", "30");
-				SetValue("ctsActive", "false");
-				SetValue("ctsSequenceMax", "0");
-				SetValue("ctsLastWords", "");
-				SetValue("announcement", "");
-				SetValue("gtfo", "false");
-				SetValue("lamer", "false");
-				SetValue("idleTime", "6");
-				SetValue("bootOnIdle", "false");
-				SetValue("isModerating", "false");
-				SetValue("maxPlays", "4");
-			}
+	GetValue("songstats", 0, function(value) {
+		if(value === null) {
+			SetValue("songstats", "true");
+		}
+	});
+	GetValue("autobop", 0, function(value) {
+		if(value === null) {
+			SetValue("autobop", "false");
+		}
+	});
+	GetValue("autodj", 0, function(value) {
+		if(value === null) {
+			SetValue("autodj", "false");
+		}
+	});
+	GetValue("enableQueue", 0, function(value) {
+		if(value === null) {
+			SetValue("enableQueue", "false");
+		}
+	});
+	GetValue("nextDjQueueTimeout", 0, function(value) {
+		if(value === null) {
+			SetValue("nextDjQueueTimeout", "30");
+		}
+	});
+	GetValue("newsongcomments", 0, function(value) {
+		if(value === null) {
+			SetValue("newsongcomments", "false");
+		}
+	});
+	GetValue("monitorsonglength", 0, function(value) {
+		if(value === null) {
+			SetValue("monitorsonglength", "false");
+		}
+	});
+	GetValue("maxsonglength", 0, function(value) {
+		if(value === null) {
+			SetValue("maxsonglength", "600");
+		}
+	});
+	GetValue("ctsActive", 0, function(value) {
+		if(value === null) {
+			SetValue("ctsActive", "false");
+		}
+	});
+	GetValue("ctsSequenceMax", 0, function(value) {
+		if(value === null) {
+			SetValue("ctsSequenceMax", "0");
+		}
+	});
+	GetValue("ctsLastWords", 0, function(value) {
+		if(value === null) {
+			SetValue("ctsLastWords", "");
+		}
+	});
+	GetValue("announcement", 0, function(value) {
+		if(value === null) {
+			SetValue("announcement", "");
+		}
+	});
+	GetValue("gtfo", 0, function(value) {
+		if(value === null) {
+			SetValue("gtfo", "false");
+		}
+	});
+	GetValue("lamer", 0, function(value) {
+		if(value === null) {
+			SetValue("lamer", "false");
+		}
+	});
+	GetValue("idleTime", 0, function(value) {
+		if(value === null) {
+			SetValue("idleTime", "6");
+		}
+	});
+	GetValue("bootOnIdle", 0, function(value) {
+		if(value === null) {
+			SetValue("bootOnIdle", "false");
+		}
+	});
+	GetValue("isModerating", 0, function(value) {
+		if(value === null) {
+			SetValue("isModerating", "false");
+		}
+	});
+	GetValue("maxPlays", 0, function(value) {
+		if(value === null) {
+			SetValue("maxPlays", "3");
 		}
 	});
 };
