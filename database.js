@@ -133,91 +133,109 @@ global.SetUpDatabase = function() {
 };
 
 global.SetUpRoom = function() {
+	// Announces song stats after every song.
 	GetValue("songstats", 0, function(value) {
 		if(value === null) {
 			SetValue("songstats", "true");
 		}
 	});
+	// Automatically bops on every song
 	GetValue("autobop", 0, function(value) {
 		if(value === null) {
 			SetValue("autobop", "false");
 		}
 	});
+	// Automatically DJs if there is fewer than 3 DJs on the table.
 	GetValue("autodj", 0, function(value) {
 		if(value === null) {
 			SetValue("autodj", "false");
 		}
 	});
+	// Enables the DJ queue (not enabled yet)
 	GetValue("enableQueue", 0, function(value) {
 		if(value === null) {
 			SetValue("enableQueue", "false");
 		}
 	});
+	// Sets how long the next DJ has to step up. (not enabled yet)
 	GetValue("nextDjQueueTimeout", 0, function(value) {
 		if(value === null) {
 			SetValue("nextDjQueueTimeout", "30");
 		}
 	});
+	// Bots gives comments based on the song (not enabled yet)
 	GetValue("newsongcomments", 0, function(value) {
 		if(value === null) {
 			SetValue("newsongcomments", "false");
 		}
 	});
+	// Bot does special stuff if a song is too long (not enabled yet)
 	GetValue("monitorsonglength", 0, function(value) {
 		if(value === null) {
 			SetValue("monitorsonglength", "false");
 		}
 	});
+	// The max length of the song before the events (not enabled yet)
 	GetValue("maxsonglength", 0, function(value) {
 		if(value === null) {
 			SetValue("maxsonglength", "600");
 		}
 	});
+	// Connect the songs (CTS) (not enabled yet)
 	GetValue("ctsActive", 0, function(value) {
 		if(value === null) {
 			SetValue("ctsActive", "false");
 		}
 	});
+	// The highest score achieved in CTS (not enabled yet)
 	GetValue("ctsSequenceMax", 0, function(value) {
 		if(value === null) {
 			SetValue("ctsSequenceMax", "0");
 		}
 	});
+	// Last words used in CTS (not enabled yet)
 	GetValue("ctsLastWords", 0, function(value) {
 		if(value === null) {
 			SetValue("ctsLastWords", "");
 		}
 	});
+	// Bot gives an announcement if there is one. (not enabled yet)
 	GetValue("announcement", 0, function(value) {
 		if(value === null) {
 			SetValue("announcement", "");
 		}
 	});
+	// Get the f**k out!
 	GetValue("gtfo", 0, function(value) {
 		if(value === null) {
 			SetValue("gtfo", "false");
 		}
 	});
+	// Says that someone lamed (not enabled yet)
 	GetValue("lamer", 0, function(value) {
 		if(value === null) {
 			SetValue("lamer", "false");
 		}
 	});
+	// How many hours before a person is considered idle
 	GetValue("idleTime", 0, function(value) {
 		if(value === null) {
 			SetValue("idleTime", "6");
 		}
 	});
+	// Should the bot boot if they are idle
 	GetValue("bootOnIdle", 0, function(value) {
 		if(value === null) {
 			SetValue("bootOnIdle", "false");
 		}
 	});
+	// Bot is now a moderator and should enforce play counts
 	GetValue("isModerating", 0, function(value) {
 		if(value === null) {
 			SetValue("isModerating", "false");
 		}
 	});
+	// Max # of songs allowed per time DJing
 	GetValue("maxPlays", 0, function(value) {
 		if(value === null) {
 			SetValue("maxPlays", "3");
