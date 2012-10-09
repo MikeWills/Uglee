@@ -136,7 +136,7 @@ global.SetUpRoom = function() {
 	// Announces song stats after every song.
 	GetValue("songstats", 0, function(value) {
 		if(value === null) {
-			SetValue("songstats", "true");
+			SetValue("songstats", "false");
 		}
 	});
 	// Automatically bops on every song
