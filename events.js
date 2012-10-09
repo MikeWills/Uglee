@@ -230,7 +230,7 @@ global.OnUpdateVotes = function(data) {
 	//Log(blue + "EVENT Update Votes: " + reset + JSON.stringify(data));
 	if(data.room.metadata.votelog[0][1] == "down") {
 		GetValue("lamer", 0, function(value) {
-			if(value === "true") {
+			if(value === "true" && botUserId !== data.room.metadata.votelog[0][0]) {
 				SpeakRandom(downVoteText);
 			}
 		});

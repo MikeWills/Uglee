@@ -14,7 +14,10 @@ exports.handler = function(data, userid, source) {
                     alreadyVoted = true;
                 } else if (roll === 1) {
                     bot.speak(data.name + ', you rolled a ' + roll + ', Lame!');
-                    bot.vote('down');
+                    bot.vote('up');
+                    setTimeout(function(){
+                        bot.vote('down');
+                    }, 1000);
                     alreadyVoted = true;
                 } else {
                     bot.speak(data.name + ', you rolled a ' + roll + ', bummer.');
