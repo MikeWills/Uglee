@@ -3,7 +3,6 @@ exports.hidden = true;
 exports.enabled = true;
 exports.matchStart = false;
 exports.handler = function(data, userid, source) {
-	if (userid !== botUserId) {
 		IsMod(userid, function(isMod) {
 			if (isMod) {
 				SetValue("isModerating", "false");
@@ -12,5 +11,4 @@ exports.handler = function(data, userid, source) {
 				Speak("I am no longer moderating this room!")
 			}
 		});
-	}
 }
