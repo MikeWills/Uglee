@@ -9,6 +9,7 @@ exports.handler = function(data, userid, source) {
 				SetValue("isModerating", "true");
 				SetValue("autodj", "true");
 				SetValue("autobop", "true");
+				Speak("I am now moderating this room!")
 			}
 		});
 	}
