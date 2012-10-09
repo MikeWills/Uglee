@@ -209,6 +209,7 @@ global.OnNewSong = function(data) {
 				if(Djs[lastDj] !== undefined && Djs[lastDj].remainingPlays === 0) {
 					Log("Remove DJ " + AllUsers[lastDj].name + "after reaching max plays.");
 					bot.remDj(lastDj);
+					Speak("Thanks for the awesome songs @" + AllUsers[lastDj].name + "!");
 				}
 				setTimeout(function() {
 					SpeakPlayCount();
