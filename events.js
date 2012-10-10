@@ -343,7 +343,7 @@ global.OnRemDJ = function(data) {
 
 	// If the bot is moderating the room, save the DJ info in case they steped down early
 	var user = data.user[0];
-	if(Djs[user.userid] !== undefined && Djs[user.userid].remainingPlays !== 0) {
+	if(Djs[user.userid] !== undefined && Djs[user.userid].remainingPlays >= 0) {
 		PastDjs[user.userid] = Djs[user.userid];
 		/*PastDjs[user.userid].waitDjs = 2;
 		PastDjs[user.userid].stepDownTime = new Date();
