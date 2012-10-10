@@ -1,0 +1,28 @@
+{
+  "name": "Uglee",
+  "version": "0.0.0",
+  "description": "A \"fun\" bot for TurnTable.fm",
+  "main": "main.js",
+  "dependencies": {
+    "mysql": "~0.9.6",
+    "forever": "~0.10.0",
+    "ttapi": "~1.5.0",
+    "util": "~0.4.9",
+    "ansi-color": "~0.2.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MikeWills/Uglee.git"
+  },
+  "keywords": [
+    "uglee",
+    "ttapi",
+    "turntable"
+  ],
+  "author": "MikeWills",
+  "license": "BSD"
+}
