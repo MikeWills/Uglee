@@ -15,7 +15,7 @@ global.OnRoomChanged = function(data) {
 			Speak("You're despicable!");
 			botWasBooted = false;
 		} else {
-			Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
+			//Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
 		}
 
 		if(currentRoomId !== data.room.roomid) {
@@ -46,12 +46,15 @@ global.OnRoomChanged = function(data) {
 		for(var i = 0; i < djs.length; i++) {
 			var djInfo = {
 				userid: djs[i],
+				name: AllUsers[djs[i]].name,
 				remainingPlays: totalPlays,
 				afkCount: 0,
 				waitDjs: 0
 			}
 			Djs[djs[i]] = djInfo;
 		}
+		Log("DJs: " + JSON.stringify(Djs));
+		Log("Past DJs: " + JSON.stringify(PastDjs));
 
 		currentDj = data.room.metadata.current_dj;
 
@@ -218,6 +221,8 @@ global.OnNewSong = function(data) {
 			}
 		});
 	}
+	Log("DJs: " + JSON.stringify(Djs));
+	Log("Past DJs: " + JSON.stringify(PastDjs));
 };
 
 global.OnNoSong = function(data) {
@@ -302,6 +307,7 @@ global.OnAddDJ = function(data) {
 		if(PastDjs[user.userid].remainingPlays !== 0) {
 			Djs[user.userid] = PastDjs[user.userid];
 			Djs[user.userid].waitDjs = 0;
+			delete PastDjs[user.userid];
 		}
 		/*else {
 			GetValue("isModerating", 0, function(isModerating) {
@@ -315,6 +321,7 @@ global.OnAddDJ = function(data) {
 		GetValue("maxPlays", 0, function(max) {
 			var djInfo = {
 				userid: user.userid,
+				name: AllUsers[user.userid].name,
 				remainingPlays: Number(max),
 				afkCount: 0,
 				waitDjs: 0
@@ -322,6 +329,20 @@ global.OnAddDJ = function(data) {
 			Djs[user.userid] = djInfo;
 		});
 	}
+
+	// Update the past DJs until they can DJ again.
+	for(var i in PastDjs) {
+		PastDjs[i].waitDjs--;
+		Log("Wait Djs for " + PastDjs[i].name + ": " + PastDjs[i].waitDjs);
+		Log(PastDjs[i].waitDjs <= 0);
+		if(PastDjs[i].waitDjs <= 0) {
+			Log("Delete " + PastDjs[i].name);
+			delete PastDjs[i];
+		}
+	}
+
+	Log("DJs: " + JSON.stringify(Djs));
+	Log("Past DJs: " + JSON.stringify(PastDjs));
 
 	// Check if the bot should DJ.
 	ShouldBotDJ();
@@ -345,11 +366,13 @@ global.OnRemDJ = function(data) {
 	var user = data.user[0];
 	if(Djs[user.userid] !== undefined && Djs[user.userid].remainingPlays >= 0) {
 		PastDjs[user.userid] = Djs[user.userid];
-		/*PastDjs[user.userid].waitDjs = 2;
+		PastDjs[user.userid].waitDjs = 2;
 		PastDjs[user.userid].stepDownTime = new Date();
-		PastDjs[user.userid].afkCount = 0;*/
+		PastDjs[user.userid].afkCount = 0;
 	}
 	delete Djs[user.userid];
+	Log("DJs: " + JSON.stringify(Djs));
+	Log("Past DJs: " + JSON.stringify(PastDjs));
 
 	// Check if the bot should DJ.
 	ShouldBotDJ();
