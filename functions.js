@@ -225,10 +225,7 @@ global.ShouldBotDJ = function() {
 					if (botDJing && !botIsPlayingSong) {
 						Speak("Looks like me not needed anymore.");
 						setTimeout(function() {
-							Speak("/me pouts and slowly walks to the floor.");
-							setTimeout(function() {
-								bot.remDj();
-							}, 500)
+							bot.remDj();
 						}, 500)
 						botDJing = false;
 						return;
