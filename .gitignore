@@ -12,3 +12,4 @@ drunkenRegular.js
 node_modules/
 *.sublime-project
 *.sublime-workspace
+commands/test.js
