@@ -409,7 +409,9 @@ global.OnSnagged = function(data) {
 global.OnPmmed = function(data) {
 	Log(color("EVENT PMmed: ", "blue") + JSON.stringify(data));
 	Command("pm", data);
-	AllUsers[data.senderid].lastActivity = new Date();
+	if(AllUsers[data.senderid] !== undefined){
+		AllUsers[data.senderid].lastActivity = new Date();
+	}
 };
 
 global.OnError = function(data) {
