@@ -6,8 +6,6 @@ exports.handler = function(data, userid, source) {
 	IsMod(userid, function(isMod) {
 		if(isMod) {
 			SetValue("isModerating", "true");
-			SetValue("autodj", "true");
-			SetValue("autobop", "true");
 			Speak("I am now moderating this room!")
 		}
 	});

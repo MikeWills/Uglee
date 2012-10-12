@@ -1,4 +1,4 @@
-exports.name = '/unbanuser';
+exports.name = '/unban';
 exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = true;
@@ -6,7 +6,7 @@ exports.handler = function(data, userid, source) {
     IsMod(userid, function(isMod) {
         if (isMod) {
             //Get name and userid
-            var givenname = data.text.substring(11);
+            var givenname = data.text.substring(7);
             client.query('SELECT userid FROM ' + dbName + '.' + dbTablePrefix + 'User WHERE username LIKE ? limit 1', [givenname], function select(error, results, fields) {
                 if (results.length > 0) {
                     removeFromBanList(results[0]['userid'], givenname, data.name);
