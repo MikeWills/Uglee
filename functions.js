@@ -4,7 +4,8 @@
 global.Log = function(data) {
 	if (logtoconsole) {
 		var now = new Date();
-		console.log(botName, ">>>", now.toLocaleString(), " | ", data);
+		//console.log(botName, ">>>", new Date().setTimezone("CST").toISOString(), " | ", data);
+		console.log(botName, ">>>", new Date().toISOString(), " | ", data);
 	}
 };
 

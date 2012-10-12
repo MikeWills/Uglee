@@ -8,7 +8,8 @@
     "forever": "~0.10.0",
     "ttapi": "~1.5.0",
     "util": "~0.4.9",
-    "ansi-color": "~0.2.1"
+    "ansi-color": "~0.2.1",
+    "datejs": "~0.0.2"
   },
   "devDependencies": {},
   "scripts": {

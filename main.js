@@ -5,6 +5,7 @@ var Bot = require('ttapi');
 global.util = require('util');
 global.fs = require('fs');
 global.color = require("ansi-color").set;
+require("datejs");
 
 // Load bot modules
 global.Database = require("./database.js");
