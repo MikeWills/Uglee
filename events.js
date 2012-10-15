@@ -53,8 +53,6 @@ global.OnRoomChanged = function(data) {
 			}
 			Djs[djs[i]] = djInfo;
 		}
-		Log("DJs: " + JSON.stringify(Djs));
-		//Log("Past DJs: " + JSON.stringify(PastDjs));
 
 		currentDj = data.room.metadata.current_dj;
 
@@ -221,8 +219,6 @@ global.OnNewSong = function(data) {
 			}
 		});
 	}
-	Log("DJs: " + JSON.stringify(Djs));
-	//Log("Past DJs: " + JSON.stringify(PastDjs));
 };
 
 global.OnNoSong = function(data) {
@@ -302,22 +298,6 @@ global.OnAddDJ = function(data) {
 	var user = data.user[0];
 	AllUsers[user.userid].lastActivity = new Date();
 
-	// If the bot is moderating the room, save the DJs
-	/*if(PastDjs[user.userid] !== undefined) {
-		if(PastDjs[user.userid].remainingPlays !== 0) {
-			Djs[user.userid] = PastDjs[user.userid];
-			Djs[user.userid].waitDjs = 0;
-			delete PastDjs[user.userid];
-		}*/
-		/*else {
-			GetValue("isModerating", 0, function(isModerating) {
-				if(isModerating === "true") {
-					Log("Remove DJ");
-					bot.remDj(user.userid);
-				}
-			});
-		}*/
-	//} else {
 		GetValue("maxPlays", 0, function(max) {
 			var djInfo = {
 				userid: user.userid,
@@ -328,21 +308,6 @@ global.OnAddDJ = function(data) {
 			}
 			Djs[user.userid] = djInfo;
 		});
-	//}
-
-	// Update the past DJs until they can DJ again.
-	/*for(var i in PastDjs) {
-		PastDjs[i].waitDjs--;
-		Log("Wait Djs for " + PastDjs[i].name + ": " + PastDjs[i].waitDjs);
-		Log(PastDjs[i].waitDjs <= 0);
-		if(PastDjs[i].waitDjs <= 0) {
-			Log("Delete " + PastDjs[i].name);
-			delete PastDjs[i];
-		}
-	}*/
-
-	Log("DJs: " + JSON.stringify(Djs));
-	//Log("Past DJs: " + JSON.stringify(PastDjs));
 
 	// Check if the bot should DJ.
 	ShouldBotDJ();
@@ -364,15 +329,7 @@ global.OnRemDJ = function(data) {
 
 	// If the bot is moderating the room, save the DJ info in case they steped down early
 	var user = data.user[0];
-	/*if(Djs[user.userid] !== undefined && Djs[user.userid].remainingPlays >= 0) {
-		PastDjs[user.userid] = Djs[user.userid];
-		PastDjs[user.userid].waitDjs = 2;
-		PastDjs[user.userid].stepDownTime = new Date();
-		PastDjs[user.userid].afkCount = 0;
-	}*/
 	delete Djs[user.userid];
-	Log("DJs: " + JSON.stringify(Djs));
-	//Log("Past DJs: " + JSON.stringify(PastDjs));
 
 	// Check if the bot should DJ.
 	ShouldBotDJ();
