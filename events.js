@@ -8,6 +8,7 @@ global.OnReady = function(data) {
 	});
 
 	GetValue("DjQueue", 10, function(results) {
+		if (results !== null){
 		if(results.length !== 0) {
 			Log(results);
 			var jsonResult = JSON.parse(results);
@@ -18,6 +19,7 @@ global.OnReady = function(data) {
 			}
 			Log(DjQueue);
 		}
+	}
 	});
 };
 
