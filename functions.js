@@ -382,12 +382,14 @@ global.NextDjOnQueue = function() {
 				}
 
 				if(queueRefreshIntervalId === null) {
-					var text = "It is now @" + DjQueue[nextDj].name + "'s turn to DJ! You have " + config.nextDjQueueTimeout + " seconds to step up.";
-					waitingOnNextDj = true;
-					bot.speak(text);
-					bot.pm("It's your turn to DJ.", nextDj);
-					nextDjTime = new Date();
-					queueRefreshIntervalId = setInterval(CheckForNextDjFromQueue, 5000);
+					GetValue("nextDjQueueTimeout", 0, function(nextDjQueueTimeout) {
+						var text = "It is now @" + DjQueue[nextDj].name + "'s turn to DJ! You have " + nextDjQueueTimeout + " seconds to step up.";
+						waitingOnNextDj = true;
+						bot.speak(text);
+						bot.pm("It's your turn to DJ.", nextDj);
+						nextDjTime = new Date();
+						queueRefreshIntervalId = setInterval(CheckForNextDjFromQueue, 5000);
+					});
 				}
 			} else {
 				bot.speak("The queue is empty. Anyone can DJ at this time!");
@@ -402,28 +404,30 @@ global.NextDjOnQueue = function() {
 global.CheckForNextDjFromQueue = function() {
 	if(nextDj !== null) {
 		var currentTime = new Date();
-		if(currentTime.getTime() - nextDjTime.getTime() > (config.nextDjQueueTimeout * 1000)) {
-			var pastDj = DjQueue[nextDj];
-			Log(pastDj);
-			pastDj.afkCount++;
+		GetValue("nextDjQueueTimeout", 0, function(nextDjQueueTimeout) {
+			if(currentTime.getTime() - nextDjTime.getTime() > (Number(nextDjQueueTimeout) * 1000)) {
+				var pastDj = DjQueue[nextDj];
+				Log(pastDj);
+				pastDj.afkCount++;
 
-			delete DjQueue[nextDj];
-			DjQueue.length--;
+				delete DjQueue[nextDj];
+				DjQueue.length--;
 
-			if(pastDj.afkCount >= 2) {
-				bot.speak("Sorry @" + pastDj.name + ", you missed out! Whatta looser! You can add yourself back to the queue, but pay attention this time.");
-			} else {
-				DjQueue[nextDj] = pastDj;
-				DjQueue.length++;
-				bot.speak("Too late @" + pastDj.name + " you can try once more on the next opening.");
+				if(pastDj.afkCount >= 2) {
+					bot.speak("Sorry @" + pastDj.name + ", you missed out! Whatta looser! You can add yourself back to the queue, but pay attention this time.");
+				} else {
+					DjQueue[nextDj] = pastDj;
+					DjQueue.length++;
+					bot.speak("Too late @" + pastDj.name + " you can try once more on the next opening.");
+				}
+
+				waitingOnNextDj = false;
+
+				SetValue('DjQueue', JSON.stringify(DjQueue));
+				clearInterval(queueRefreshIntervalId);
+				NextDjOnQueue();
 			}
-
-			waitingOnNextDj = false;
-
-			SetValue('DjQueue', JSON.stringify(DjQueue));
-			clearInterval(queueRefreshIntervalId);
-			NextDjOnQueue();
-		}
+		});
 	}
 };
 

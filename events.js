@@ -6,6 +6,19 @@ global.OnReady = function(data) {
 	GetValue("maxPlays", 0, function(max) {
 		totalPlays = Number(max);
 	});
+
+	GetValue("DjQueue", 10, function(results) {
+		if(results.length !== 0) {
+			Log(results);
+			var jsonResult = JSON.parse(results);
+			DjQueue.length = jsonResult.length;
+			for(var i in jsonResult) {
+				var dj = jsonResult[i];
+				DjQueue[i] = dj;
+			}
+			Log(DjQueue);
+		}
+	});
 };
 
 global.OnRoomChanged = function(data) {
@@ -100,7 +113,7 @@ global.OnRegistered = function(data) {
 					DjQueue[data.user[0].userid].isAfk = false;
 					DjQueue[data.user[0].userid].akfTime = null;
 					DjQueue.length++;
-					SetCacheValue('DjQueue', JSON.stringify(DjQueue));
+					SetValue('DjQueue', JSON.stringify(DjQueue));
 				}
 				//bot.pm("Greetings @" + data.user[0].name + ". If you would like to DJ, please type 'q+' to get added to the queue.", data.user[0].userid);
 			}
@@ -144,7 +157,7 @@ global.OnDeregistered = function(data) {
 					DjQueue[data.user[0].userid].isAfk = true;
 					DjQueue[data.user[0].userid].akfTime = new Date();
 					DjQueue.length--;
-					SetCacheValue('DjQueue', JSON.stringify(DjQueue));
+					SetValue('DjQueue', JSON.stringify(DjQueue));
 				}
 			}
 		});

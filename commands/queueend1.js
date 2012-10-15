@@ -7,6 +7,7 @@ exports.handler = function(data, userid, source) {
 		if(isMod) {
 			SetValue("enableQueue", "false");
 			Speak("We are no longer using a queue.");
+			DjQueue = { "length": 0};
 		}
 	});
 }
