@@ -93,6 +93,19 @@ global.OnRegistered = function(data) {
 			}
 		});
 
+		// Mark the user as back in the room
+		GetValue("enableQueue", 0, function(queueEnabled) {
+			if(queueEnabled === "true") {
+				if(djQueue[data.user[0].userid] !== undefined) {
+					djQueue[data.user[0].userid].isAfk = false;
+					djQueue[data.user[0].userid].akfTime = null;
+					djQueue.length++;
+					SetCacheValue('djQueue', JSON.stringify(djQueue));
+				}
+				//bot.pm("Greetings @" + data.user[0].name + ". If you would like to DJ, please type 'q+' to get added to the queue.", data.user[0].userid);
+			}
+		});
+
 	} catch(e) {
 		Log(color("**ERROR** Room Changed ", "red") + e);
 	}
@@ -123,6 +136,18 @@ global.OnDeregistered = function(data) {
 
 			delete AllUsers[user.userid];
 		}
+
+		// Mark the user as AFK (or out of the room in this case)
+		GetValue("enableQueue", 0, function(queueEnabled) {
+			if(queueEnabled === "true") {
+				if(djQueue[data.user[0].userid] !== undefined) {
+					djQueue[data.user[0].userid].isAfk = true;
+					djQueue[data.user[0].userid].akfTime = new Date();
+					djQueue.length--;
+					SetCacheValue('djQueue', JSON.stringify(djQueue));
+				}
+			}
+		});
 
 	} catch(e) {
 		Log(color("**ERROR** Room Changed ", "red") + e);
@@ -295,19 +320,21 @@ global.OnUpdateUser = function(data) {
 global.OnAddDJ = function(data) {
 	Log(color("EVENT Add DJ: ", "blue") + data.user[0].name);
 
+	NewDjFromQueue(data);
+
 	var user = data.user[0];
 	AllUsers[user.userid].lastActivity = new Date();
 
-		GetValue("maxPlays", 0, function(max) {
-			var djInfo = {
-				userid: user.userid,
-				name: AllUsers[user.userid].name,
-				remainingPlays: Number(max),
-				afkCount: 0,
-				waitDjs: 0
-			}
-			Djs[user.userid] = djInfo;
-		});
+	GetValue("maxPlays", 0, function(max) {
+		var djInfo = {
+			userid: user.userid,
+			name: AllUsers[user.userid].name,
+			remainingPlays: Number(max),
+			afkCount: 0,
+			waitDjs: 0
+		}
+		Djs[user.userid] = djInfo;
+	});
 
 	// Check if the bot should DJ.
 	ShouldBotDJ();
@@ -315,6 +342,11 @@ global.OnAddDJ = function(data) {
 
 global.OnRemDJ = function(data) {
 	Log(color("EVENT Remove DJ: ", "blue") + data.user[0].name);
+
+	waitingOnNextDj = false;
+
+	/* Notify the next DJ on the list */
+	NextDjOnQueue();
 
 	// If the bot is removed from the table, mark the bot as not DJing. 
 	// If the bot was forcefully removed, disable autodj to make sure it doesn't step up again.
@@ -366,7 +398,7 @@ global.OnSnagged = function(data) {
 global.OnPmmed = function(data) {
 	Log(color("EVENT PMmed: ", "blue") + JSON.stringify(data));
 	Command("pm", data);
-	if(AllUsers[data.senderid] !== undefined){
+	if(AllUsers[data.senderid] !== undefined) {
 		AllUsers[data.senderid].lastActivity = new Date();
 	}
 };
