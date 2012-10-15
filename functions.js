@@ -261,7 +261,7 @@ global.AddToQueue = function(userid) {
 	GetValue("enableQueue", 0, function(queueEnabled) {
 		if(queueEnabled === "true") {
 			// Check if they are a DJ
-			if(Djs.indexOf(userid) == -1) {
+			if(Djs[userid] === undefined) {
 				// Check if they are already on the queue
 				if(DjQueue[userid] === undefined && AllUsers[userid] !== undefined) {
 					DjQueue[userid] = {
