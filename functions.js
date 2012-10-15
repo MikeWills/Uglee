@@ -366,10 +366,11 @@ global.NextDjOnQueue = function() {
 				Log(DjQueue);
 				for(var i in DjQueue) {
 					if(DjQueue[i].id !== undefined) {
-						if(DjQueue[i].isAfk) DjQueue[i].afkCount++;
-						else {
+						if(DjQueue[i].isAfk) {
+							DjQueue[i].afkCount++;
+						} else {
 							nextDj = DjQueue[i].id;
-							Log("Next DJ is: " + AllUsers[nextDj]);
+							Log("Next DJ is: " + DjQueue[i].name);
 							break;
 						}
 					}
@@ -380,12 +381,14 @@ global.NextDjOnQueue = function() {
 					return;
 				}
 
-				var text = "It is now @" + DjQueue[nextDj].name + "'s turn to DJ! You have " + config.nextDjQueueTimeout + " seconds to step up.";
-				waitingOnNextDj = true;
-				bot.speak(text);
-				bot.pm("It's your turn to DJ.", nextDj);
-				nextDjTime = new Date();
-				queueRefreshIntervalId = setInterval(CheckForNextDjFromQueue, 5000);
+				if(queueRefreshIntervalId === null) {
+					var text = "It is now @" + DjQueue[nextDj].name + "'s turn to DJ! You have " + config.nextDjQueueTimeout + " seconds to step up.";
+					waitingOnNextDj = true;
+					bot.speak(text);
+					bot.pm("It's your turn to DJ.", nextDj);
+					nextDjTime = new Date();
+					queueRefreshIntervalId = setInterval(CheckForNextDjFromQueue, 5000);
+				}
 			} else {
 				bot.speak("The queue is empty. Anyone can DJ at this time!");
 			}
