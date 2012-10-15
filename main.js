@@ -49,6 +49,17 @@ global.PastDjs = {};
 global.lastDJ = "";
 global.currentDj = "";
 
+// Queue Data
+global.DjQueue = {
+    "length": 0
+};
+global.nextDj = null;
+global.nextDjTime = null;
+global.queueRefreshIntervalId = null;
+global.missedQueue = [];
+global.qPosn = 0;
+global.waitingOnNextDj = false;
+
 // Working data
 global.danceCount = 0;
 global.danceRequesters = [];

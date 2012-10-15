@@ -2,7 +2,7 @@
 	Log - Log the information to the console
 	============== */
 global.Log = function(data) {
-	if (logtoconsole) {
+	if(logtoconsole) {
 		var now = new Date();
 		//console.log(botName, ">>>", new Date().setTimezone("CST").toISOString(), " | ", data);
 		console.log(botName, ">>>", new Date().toISOString(), " | ", data);
@@ -15,14 +15,14 @@ global.Log = function(data) {
 global.Speak = function(text, userName, source, userid) {
 	var textOut = "";
 
-	if (userName !== undefined) {
+	if(userName !== undefined) {
 		textOut = text.replace(/\{u\}/gi, userName);
 	} else {
 		textOut = text;
 	}
 
-	if (source !== undefined) {
-		if (source === "pm"){
+	if(source !== undefined) {
+		if(source === "pm") {
 			bot.pm(textOut, userid);
 		} else {
 			bot.speak(textOut);
@@ -38,12 +38,12 @@ global.Speak = function(text, userName, source, userid) {
 global.TellUser = function(userid, text) {
 	var textOut = "";
 	try {
-		if (NoPM()) {
+		if(NoPM()) {
 			bot.speak(text);
 		} else {
 			bot.pm(text, userid);
 		}
-	} catch (e) {
+	} catch(e) {
 		Log(color("**ERROR** TellUser() ", "red") + e);
 	}
 };
@@ -55,7 +55,7 @@ global.SpeakRandom = function(array, userName) {
 	var textOut = "";
 	var rand = Math.ceil(Math.random() * array.length) - 1;
 
-	if (userName !== undefined) {
+	if(userName !== undefined) {
 		textOut = array[rand].replace(/\{u\}/gi, userName);
 	} else {
 		textOut = array[rand];
@@ -70,7 +70,7 @@ global.SpeakRandom = function(array, userName) {
 global.IsMod = function(userid, callback) {
 	bot.roomInfo(function(data) {
 		var moderators = data.room.metadata.moderator_id;
-		if (moderators.indexOf(userid) != -1) {
+		if(moderators.indexOf(userid) != -1) {
 			callback(true);
 		} else {
 			callback(false);
@@ -82,7 +82,7 @@ global.IsMod = function(userid, callback) {
 	IsAdmin - Checks if the user is the bot administrator
 	============== */
 global.IsAdmin = function(userid) {
-	if (botAdmins.indexOf(userid) !== -1) {
+	if(botAdmins.indexOf(userid) !== -1) {
 		return true;
 	} else {
 		return false;
@@ -103,18 +103,18 @@ global.NoPM = function(userid) {
 global.Command = function(source, data) {
 	var isPM = source === "pm" ? true : false;
 	var userid = "";
-	if (isPM) {
+	if(isPM) {
 		userid = data.senderid;
 	} else {
 		userid = data.userid;
 	}
 
-	for (i in commands) {
-		if (commands[i].enabled) {
-			if (commands[i].matchStart && (data.text.toLowerCase().indexOf(commands[i].name) == 0)) {
+	for(i in commands) {
+		if(commands[i].enabled) {
+			if(commands[i].matchStart && (data.text.toLowerCase().indexOf(commands[i].name) == 0)) {
 				commands[i].handler(data, userid, source);
 				break;
-			} else if (commands[i].name == data.text.toLowerCase()) {
+			} else if(commands[i].name == data.text.toLowerCase()) {
 				commands[i].handler(data, userid, source);
 				break;
 			}
@@ -123,15 +123,15 @@ global.Command = function(source, data) {
 
 	// If it isn't a real command, it might be a chat command.
 	var result = data.text.match(/^\@(.*?)( .*)?$/);
-	if (result && result[1].trim().toLowerCase() === botName.toLowerCase()) {
+	if(result && result[1].trim().toLowerCase() === botName.toLowerCase()) {
 		var command = '';
-		if (result.length == 3 && result[2]) {
+		if(result.length == 3 && result[2]) {
 			command = result[2].trim().toLowerCase();
 		}
 		var idx = findAction(command, chat_responses);
-		if (idx != -1) {
+		if(idx != -1) {
 			Speak(chat_responses[idx].response1, data.name);
-			if (chat_responses[idx].response2 !== "") {
+			if(chat_responses[idx].response2 !== "") {
 				setTimeout(function() {
 					Speak(chat_responses[idx].response2, data.name);
 				}, 500);
@@ -166,7 +166,7 @@ global.DidUserLeaveQuickly = function(userid) {
 	var loggedIn = AllUsers[userid].loggedIn;
 	var timeOn = now = loggedIn;
 	Log("Logged in time: " + timeOn);
-	if (now - AllUsers[userid].lastActivity < 30000) {
+	if(now - AllUsers[userid].lastActivity < 30000) {
 		SpeakRandom(userLeaveQuickText);
 	}
 }
@@ -192,10 +192,10 @@ global.PopulateSongData = function(data) {
 	============== */
 global.findAction = function(query, arr) {
 	query = escape(query);
-	for (var i = 0, l = arr.length; i < l; i++) {
+	for(var i = 0, l = arr.length; i < l; i++) {
 		var item = arr[i];
 		var reg = RegExp(escape(item.name), "i");
-		if (reg.test(query)) return i;
+		if(reg.test(query)) return i;
 	}
 	return -1;
 }
@@ -206,11 +206,11 @@ global.findAction = function(query, arr) {
 	============== */
 global.ShouldBotDJ = function() {
 	GetValue("autodj", 0, function(value) {
-		if (value === "true") {
+		if(value === "true") {
 			bot.roomInfo(function(data) {
 				//if (data.room.metadata.djcount <= (data.room.metadata.max_djs - 2)) {
-				if (data.room.metadata.djcount <= 2) {
-					if (!botDJing) {
+				if(data.room.metadata.djcount <= 2) {
+					if(!botDJing) {
 						Log("Bot is DJing");
 						bot.addDj();
 						bot.vote('up');
@@ -221,15 +221,15 @@ global.ShouldBotDJ = function() {
 					}
 				}
 
-				if (data.room.metadata.djcount > 3) {
-					if (botDJing && !botIsPlayingSong) {
+				if(data.room.metadata.djcount > 3) {
+					if(botDJing && !botIsPlayingSong) {
 						Speak("Looks like me not needed anymore.");
 						setTimeout(function() {
 							bot.remDj();
 						}, 500)
 						botDJing = false;
 						return;
-					} else if (botOnTable && botIsPlayingSong) {
+					} else if(botOnTable && botIsPlayingSong) {
 						botStepDownAfterSong = true;
 					}
 				}
@@ -245,10 +245,220 @@ global.ShouldBotDJ = function() {
 global.SpeakPlayCount = function() {
 	var count = ['x', 'x', 'x', 'x', 'x'];
 	var x = 0;
-	for (var i in Djs) {
+	for(var i in Djs) {
 		count[x] = Djs[i].remainingPlays;
 		x++;
 	}
 	var playCount = count[0] + '-' + count[1] + '-' + count[2] + '-' + count[3] + '-' + count[4];
 	Speak("Remaining: " + playCount);
+};
+
+/*  ============== 
+ 	AddToQueue - Add a person to the queue
+	============== */
+global.AddToQueue = function(userid) {
+	var text = "";
+	GetValue("enableQueue", 0, function(queueEnabled) {
+		if(queueEnabled === "true") {
+			// Check if they are a DJ
+			if(Djs.indexOf(userid) == -1) {
+				// Check if they are already on the queue
+				if(DjQueue[userid] === undefined && AllUsers[userid] !== undefined) {
+					DjQueue[userid] = {
+						"id": userid,
+						"name": AllUsers[userid].name,
+						"isAfk": false,
+						"akfCount": 0,
+						"akfTime": null
+					};
+					DjQueue.length++;
+
+					text = "@" + DjQueue[userid].name + ", you have been added to the queue. There is a total of " + DjQueue.length + " now.";
+					bot.speak(text);
+					SetValue('DjQueue', JSON.stringify(DjQueue));
+				} else {
+					// TODO respond with place in line
+				}
+			} else {
+				text = "@" + AllUsers[userid].name + ", seriously?!? Can't you wait until you're OFF the TABLE before adding yourself to the queue again? FAIL! ";
+				bot.speak(text);
+			}
+		}
+	});
+};
+
+/* 	============== 
+	InsertInQueue - Inserts a person in to the middle of the queue
+	============== */
+global.InsertInQueue = function(userid, position) {
+	// TODO fix bugs in here
+	var text = "";
+
+	GetValue("enableQueue", 0, function(queueEnabled) {
+		if(queueEnabled === "true") {
+			// Check if they are a DJ 
+			if(Djs.indexOf(userid) == -1) {
+				// Check if they are already on the queue
+				if(DjQueue.indexOf(userid) == -1) {
+					DjQueue.splice((position - 1), 0, userid);
+					text = "@" + AllUsers[userid].name + ", you have been added to the queue. There is a total of " + DjQueue.length + " now.";
+					bot.speak(text);
+					Log(DjQueue);
+					DjQueue.length++;
+					SetValue('DjQueue', JSON.stringify(DjQueue));
+				}
+			}
+		}
+	});
+};
+
+/* 	============== 
+	RemoveFromQueue - Removes a user from the queue
+	============== */
+global.RemoveFromQueue = function(userid) {
+	GetValue("enableQueue", 0, function(queueEnabled) {
+		if(queueEnabled === "true") {
+			if(DjQueue[userid] !== undefined) {
+				delete DjQueue[userid];
+				DjQueue.length--;
+				bot.speak("You have been removed from the queue @" + AllUsers[userid].name);
+				SetValue('DjQueue', JSON.stringify(DjQueue));
+			}
+		}
+	});
+};
+
+/* 	==============
+	NewDjFromQueue - This checks to see if the DJ that just stepped up is the next DJ in the queueEnabled
+	============== */
+global.NewDjFromQueue = function(data) {
+	GetValue("enableQueue", 0, function(queueEnabled) {
+		if(queueEnabled === "true") {
+			var text = "";
+			if(DjQueue.length > 0 && (nextDj !== null || nextDj === undefined)) {
+				if(data.user[0].userid != nextDj) {
+					bot.remDj(data.user[0].userid);
+					text = "Sorry @" + AllUsers[data.user[0].userid].name + ", it's @" + AllUsers[nextDj].name + " turn. You need to wait your turn.";
+					bot.speak(text);
+				} else {
+					delete DjQueue[data.user[0].userid];
+					DjQueue.length--;
+					SetValue('DjQueue', JSON.stringify(DjQueue));
+					waitingOnNextDj = false;
+					clearInterval(queueRefreshIntervalId);
+					nextDj = null;
+				}
+			}
+		}
+	});
+};
+
+/* ============== */
+/* NextDjOnQueue - This lets the room know who is next to DJ */
+/* ============== */
+global.NextDjOnQueue = function() {
+	qPosn = 0;
+	nextDj = null;
+	Log("Waiting on next DJ" + waitingOnNextDj);
+	GetValue("enableQueue", 0, function(queueEnabled) {
+		if(queueEnabled === "true" && !waitingOnNextDj) {
+			if(DjQueue.length > 0) {
+				Log(DjQueue);
+				for(var i in DjQueue) {
+					if(DjQueue[i].id !== undefined) {
+						if(DjQueue[i].isAfk) DjQueue[i].afkCount++;
+						else {
+							nextDj = DjQueue[i].id;
+							Log("Next DJ is: " + AllUsers[nextDj]);
+							break;
+						}
+					}
+				}
+
+				if(nextDj === null) {
+					bot.speak("The queue is empty. All DJs in the queue are currently not here. Anyone can DJ at this time!");
+					return;
+				}
+
+				var text = "It is now @" + DjQueue[nextDj].name + "'s turn to DJ! You have " + config.nextDjQueueTimeout + " seconds to step up.";
+				waitingOnNextDj = true;
+				bot.speak(text);
+				bot.pm("It's your turn to DJ.", nextDj);
+				nextDjTime = new Date();
+				queueRefreshIntervalId = setInterval(CheckForNextDjFromQueue, 5000);
+			} else {
+				bot.speak("The queue is empty. Anyone can DJ at this time!");
+			}
+		}
+	});
+};
+
+/* ============== */
+/* CheckForNextDjFromQueue */
+/* ============== */
+global.CheckForNextDjFromQueue = function() {
+	if(nextDj !== null) {
+		var currentTime = new Date();
+		if(currentTime.getTime() - nextDjTime.getTime() > (config.nextDjQueueTimeout * 1000)) {
+			var pastDj = DjQueue[nextDj];
+			Log(pastDj);
+			pastDj.afkCount++;
+
+			delete DjQueue[nextDj];
+			DjQueue.length--;
+
+			if(pastDj.afkCount >= 2) {
+				bot.speak("Sorry @" + pastDj.name + ", you missed out! Whatta looser! You can add yourself back to the queue, but pay attention this time.");
+			} else {
+				DjQueue[nextDj] = pastDj;
+				DjQueue.length++;
+				bot.speak("Too late @" + pastDj.name + " you can try once more on the next opening.");
+			}
+
+			waitingOnNextDj = false;
+
+			SetValue('DjQueue', JSON.stringify(DjQueue));
+			clearInterval(queueRefreshIntervalId);
+			NextDjOnQueue();
+		}
+	}
+};
+
+/* ============== */
+/* QueueStatus */
+/* ============== */
+global.QueueStatus = function() {
+
+	GetValue("enableQueue", 0, function(queueEnabled) {
+		if(queueEnabled === "true") {
+			var djList = "";
+
+			for(var i in DjQueue) {
+				var queuedDj = DjQueue[i];
+				Log(queuedDj);
+				if(!queuedDj.isAfk) {
+					if(queuedDj.name !== undefined) {
+						djList += queuedDj.name + ", ";
+					}
+				} else {
+					var now = new Date();
+					var afkTime = new Date(queuedDj.akfTime);
+					var afkFor = dateDiff(now, afkTime, 'min');
+					Log(afkFor);
+					if(queuedDj.isAfk && afkFor >= 5) {
+						Log("Remove DJ: " + DjQueue[i].name);
+						delete DjQueue[i];
+					}
+				}
+			}
+
+			if(djList !== "") {
+				var text = DjQueue.length + " DJ(s) in the queue. They are: " + djList;
+				bot.speak(text.substring(0, text.length - 2));
+			} else {
+				bot.speak("Queue is empty!");
+			}
+			SetValue('DjQueue', JSON.stringify(DjQueue));
+		}
+	});
 };
