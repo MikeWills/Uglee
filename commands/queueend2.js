@@ -1,4 +1,4 @@
-exports.name = '@' + botName.toLowerCase() + ' endq';
+exports.name = '/endq';
 exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = false;

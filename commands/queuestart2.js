@@ -1,7 +1,7 @@
-exports.name = '@' + botName.toLowerCase() + ' endq';
+exports.name = '/startq';
 exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = false;
 exports.handler = function(data, userid, source) {
-	SetValue("enableQueue", "false");
+	SetValue("enableQueue", "true");
 }
