@@ -96,11 +96,11 @@ global.OnRegistered = function(data) {
 		// Mark the user as back in the room
 		GetValue("enableQueue", 0, function(queueEnabled) {
 			if(queueEnabled === "true") {
-				if(djQueue[data.user[0].userid] !== undefined) {
-					djQueue[data.user[0].userid].isAfk = false;
-					djQueue[data.user[0].userid].akfTime = null;
-					djQueue.length++;
-					SetCacheValue('djQueue', JSON.stringify(djQueue));
+				if(DjQueue[data.user[0].userid] !== undefined) {
+					DjQueue[data.user[0].userid].isAfk = false;
+					DjQueue[data.user[0].userid].akfTime = null;
+					DjQueue.length++;
+					SetCacheValue('DjQueue', JSON.stringify(DjQueue));
 				}
 				//bot.pm("Greetings @" + data.user[0].name + ". If you would like to DJ, please type 'q+' to get added to the queue.", data.user[0].userid);
 			}
@@ -140,11 +140,11 @@ global.OnDeregistered = function(data) {
 		// Mark the user as AFK (or out of the room in this case)
 		GetValue("enableQueue", 0, function(queueEnabled) {
 			if(queueEnabled === "true") {
-				if(djQueue[data.user[0].userid] !== undefined) {
-					djQueue[data.user[0].userid].isAfk = true;
-					djQueue[data.user[0].userid].akfTime = new Date();
-					djQueue.length--;
-					SetCacheValue('djQueue', JSON.stringify(djQueue));
+				if(DjQueue[data.user[0].userid] !== undefined) {
+					DjQueue[data.user[0].userid].isAfk = true;
+					DjQueue[data.user[0].userid].akfTime = new Date();
+					DjQueue.length--;
+					SetCacheValue('DjQueue', JSON.stringify(DjQueue));
 				}
 			}
 		});
