@@ -14,3 +14,4 @@ Core Functions:
 * You can ban users
 * The bot can have per-room settings. So you can move it between rooms easily.
 * The bot can keep track of the play count and boot after so many songs. (Beta, known issues)
+* The bot can use a DJ queue. (This feature isn't well tested and is in alpha stage)
