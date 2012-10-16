@@ -5,7 +5,7 @@ exports.matchStart = false;
 exports.handler = function(data, userid, source) {
 	IsMod(userid, function(isMod) {
 		if(isMod) {
-			Speak("Looks like me not needed anymore.");
+			Speak(stepDown);
 			setTimeout(function() {
 				bot.remDj();
 			}, 500)
