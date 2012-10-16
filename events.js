@@ -30,6 +30,21 @@ global.OnReady = function(data) {
 			Subscribers = jsonResult;
 		}
 	});
+
+	/*GetValue("Djs", 10, function(results) {
+		if(results !== null) {
+			if(results.length !== 0) {
+				Log(results);
+				var jsonResult = JSON.parse(results);
+				Djs.length = jsonResult.length;
+				for(var i in jsonResult) {
+					var dj = jsonResult[i];
+					Djs[i] = dj;
+				}
+				Log(Djs);
+			}
+		}
+	});*/
 };
 
 global.OnRoomChanged = function(data) {
@@ -77,6 +92,7 @@ global.OnRoomChanged = function(data) {
 			}
 			Djs[djs[i]] = djInfo;
 		}
+		SetValue('Djs', JSON.stringify(Djs));
 
 		currentDj = data.room.metadata.current_dj;
 
@@ -257,6 +273,7 @@ global.OnNewSong = function(data) {
 					Log("Remove DJ " + AllUsers[lastDj].name + "after reaching max plays.");
 					bot.remDj(lastDj);
 					Speak("Thanks for the awesome songs @" + AllUsers[lastDj].name + "!");
+					SetValue('Djs', JSON.stringify(Djs));
 				}
 				setTimeout(function() {
 					SpeakPlayCount();
@@ -356,6 +373,7 @@ global.OnAddDJ = function(data) {
 		}
 		Djs[user.userid] = djInfo;
 	});
+	SetValue('Djs', JSON.stringify(Djs));
 
 	// Check if the bot should DJ.
 	ShouldBotDJ();
@@ -383,6 +401,7 @@ global.OnRemDJ = function(data) {
 	// If the bot is moderating the room, save the DJ info in case they steped down early
 	var user = data.user[0];
 	delete Djs[user.userid];
+	SetValue('Djs', JSON.stringify(Djs));
 
 	// Check if the bot should DJ.
 	ShouldBotDJ();
