@@ -7,6 +7,7 @@ global.OnReady = function(data) {
 		totalPlays = Number(max);
 	});
 
+	// Get the cached version of the DJ queue
 	GetValue("DjQueue", 10, function(results) {
 		if(results !== null) {
 			if(results.length !== 0) {
@@ -22,6 +23,7 @@ global.OnReady = function(data) {
 		}
 	});
 
+	// Get the subscribers for the PM list
 	GetValue("Subscribers", 0, function(results) {
 		if(results !== null) {
 			var jsonResult = JSON.parse(results);
