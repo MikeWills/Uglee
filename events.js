@@ -30,22 +30,7 @@ global.OnReady = function(data) {
 			Subscribers = jsonResult;
 		}
 	});
-
-	/*GetValue("Djs", 10, function(results) {
-		if(results !== null) {
-			if(results.length !== 0) {
-				Log(results);
-				var jsonResult = JSON.parse(results);
-				Djs.length = jsonResult.length;
-				for(var i in jsonResult) {
-					var dj = jsonResult[i];
-					Djs[i] = dj;
-				}
-				Log(Djs);
-			}
-		}
-	});*/
-};
+}
 
 global.OnRoomChanged = function(data) {
 	try {
@@ -80,19 +65,58 @@ global.OnRoomChanged = function(data) {
 			}
 		}
 
-		Log("Loading Djs");
-		var djs = data.room.metadata.djs;
-		for(var i = 0; i < djs.length; i++) {
-			var djInfo = {
-				userid: djs[i],
-				name: AllUsers[djs[i]].name,
-				remainingPlays: totalPlays,
-				afkCount: 0,
-				waitDjs: 0
-			}
-			Djs[djs[i]] = djInfo;
-		}
-		SetValue('Djs', JSON.stringify(Djs));
+		setTimeout(function() {
+			Log("Loading Djs");
+			var djs = data.room.metadata.djs;
+
+			GetValue("Djs", 10, function(results) {
+				if(results !== null) {
+					if(results.length !== 0 && results !== " ") {
+						var jsonResult = JSON.parse(results);
+						var x = 0;
+						for(var i in jsonResult) {
+							var dj = jsonResult[i];
+							if(djs[x] == dj.userid) {
+								Djs[i] = dj;
+							} else {
+								var djInfo = {
+									userid: djs[i],
+									name: AllUsers[djs[x]].name,
+									remainingPlays: totalPlays,
+									afkCount: 0,
+									waitDjs: 0
+								}
+								Djs[djs[i]] = djInfo;
+							}
+							x++;
+						}
+					} else {
+						for(var i = 0; i < djs.length; i++) {
+							var djInfo = {
+								userid: djs[i],
+								name: AllUsers[djs[i]].name,
+								remainingPlays: totalPlays,
+								afkCount: 0,
+								waitDjs: 0
+							}
+							Djs[djs[i]] = djInfo;
+						}
+					}
+				} else {
+					for(var i = 0; i < djs.length; i++) {
+						var djInfo = {
+							userid: djs[i],
+							name: AllUsers[djs[i]].name,
+							remainingPlays: totalPlays,
+							afkCount: 0,
+							waitDjs: 0
+						}
+						Djs[djs[i]] = djInfo;
+					}
+				}
+				SetValue('Djs', JSON.stringify(Djs));
+			});
+		}, 2000);
 
 		currentDj = data.room.metadata.current_dj;
 
@@ -264,6 +288,7 @@ global.OnNewSong = function(data) {
 	currentDj = data.room.metadata.current_dj;
 	if(currentDj !== botUserId && Djs[currentDj] !== undefined) {
 		Djs[currentDj].remainingPlays--;
+		SetValue('Djs', JSON.stringify(Djs));
 	}
 
 	if(lastDj !== undefined) {

@@ -359,9 +359,9 @@ global.NewDjFromQueue = function(data) {
 global.NextDjOnQueue = function() {
 	qPosn = 0;
 	nextDj = null;
-	Log("Waiting on next DJ" + waitingOnNextDj);
 	GetValue("enableQueue", 0, function(queueEnabled) {
 		if(queueEnabled === "true" && !waitingOnNextDj) {
+			Log("Waiting on next DJ " + waitingOnNextDj);
 			if(DjQueue.length > 0) {
 				Log(DjQueue);
 				for(var i in DjQueue) {
