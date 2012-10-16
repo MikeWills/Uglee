@@ -23,7 +23,7 @@ global.OnReady = function(data) {
 	});
 
 	GetValue("Subscribers", 0, function(results) {
-		if (results !== null){
+		if(results !== null) {
 			var jsonResult = JSON.parse(results);
 			Subscribers = jsonResult;
 		}
@@ -208,12 +208,9 @@ global.OnEndSong = function(data) {
 
 	// Bot steps down if needed to after it's song.
 	if(botStepDownAfterSong) {
-		Speak("Looks like me not needed anymore.");
+		Speak(stepDownText);
 		setTimeout(function() {
-			Speak("/me pouts and slowly walks to the floor.");
-			setTimeout(function() {
-				bot.remDj();
-			}, 500)
+			bot.remDj();
 		}, 500)
 		botDJing = false;
 		botStepDownAfterSong = false;

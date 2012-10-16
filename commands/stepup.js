@@ -8,7 +8,7 @@ exports.handler = function(data, userid, source) {
 			Log("Bot is DJing");
 			bot.addDj();
 			bot.vote('up');
-			bot.speak(stepUp);
+			bot.speak(stepUpText);
 			botDJing = true;
 			alreadyVoted = true;
 		}
