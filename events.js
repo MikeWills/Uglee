@@ -39,7 +39,7 @@ global.OnRoomChanged = function(data) {
 			Speak("You're despicable!");
 			botWasBooted = false;
 		} else {
-			//Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
+			Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
 		}
 
 		if(currentRoomId !== data.room.roomid) {
@@ -166,7 +166,7 @@ global.OnRegistered = function(data) {
 					DjQueue.length++;
 					SetValue('DjQueue', JSON.stringify(DjQueue));
 				}
-				//bot.pm("Greetings @" + data.user[0].name + ". If you would like to DJ, please type 'q+' to get added to the queue.", data.user[0].userid);
+				bot.pm("Greetings @" + data.user[0].name + ". If you would like to DJ, please type 'q+' to get added to the queue.", data.user[0].userid);
 			}
 		});
 
