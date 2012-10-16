@@ -8,18 +8,25 @@ global.OnReady = function(data) {
 	});
 
 	GetValue("DjQueue", 10, function(results) {
-		if (results !== null){
-		if(results.length !== 0) {
-			Log(results);
-			var jsonResult = JSON.parse(results);
-			DjQueue.length = jsonResult.length;
-			for(var i in jsonResult) {
-				var dj = jsonResult[i];
-				DjQueue[i] = dj;
+		if(results !== null) {
+			if(results.length !== 0) {
+				Log(results);
+				var jsonResult = JSON.parse(results);
+				DjQueue.length = jsonResult.length;
+				for(var i in jsonResult) {
+					var dj = jsonResult[i];
+					DjQueue[i] = dj;
+				}
+				Log(DjQueue);
 			}
-			Log(DjQueue);
 		}
-	}
+	});
+
+	GetValue("Subscribers", 0, function(results) {
+		if (results !== null){
+			var jsonResult = JSON.parse(results);
+			Subscribers = jsonResult;
+		}
 	});
 };
 

@@ -67,6 +67,7 @@ global.lameCount = 0;
 global.snagCount = 0;
 global.alreadyRolled = false;
 global.alreadyVoted = false;
+global.Subscribers = [];
 
 // DJing bot
 global.botDJing = false;
