@@ -215,7 +215,7 @@ global.ShouldBotDJ = function() {
 						bot.addDj();
 						bot.vote('up');
 						alreadyVoted = true;
-						bot.speak(stepUp);
+						bot.speak(stepUpText);
 						botDJing = true;
 						return;
 					}
@@ -223,7 +223,7 @@ global.ShouldBotDJ = function() {
 
 				if(data.room.metadata.djcount > 3) {
 					if(botDJing && !botIsPlayingSong) {
-						Speak(stepDown);
+						Speak(stepDownText);
 						setTimeout(function() {
 							bot.remDj();
 						}, 500)
