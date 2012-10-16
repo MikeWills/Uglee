@@ -331,7 +331,9 @@ global.OnUpdateVotes = function(data) {
 		var userid = votelog[i][0];
 		//Log("Update Vote: " + userid);
 		if(userid !== "") {
-			AllUsers[userid].lastActivity = new Date();
+			if (AllUsers[userid] !== undefined){
+				AllUsers[userid].lastActivity = new Date();
+			}
 		} else {
 			Log("Update Vote: " + userid);
 		}
