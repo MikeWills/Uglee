@@ -207,34 +207,36 @@ global.findAction = function(query, arr) {
 global.ShouldBotDJ = function() {
 	GetValue("autodj", 0, function(value) {
 		if(value === "true") {
-			bot.roomInfo(function(data) {
-				//if (data.room.metadata.djcount <= (data.room.metadata.max_djs - 2)) {
-				if(data.room.metadata.djcount <= 2) {
-					if(!botDJing) {
-						Log("Bot is DJing");
-						bot.addDj();
-						bot.vote('up');
-						alreadyVoted = true;
-						bot.speak(stepUpText);
-						botDJing = true;
-						return;
+			setTimeout(function() {
+				bot.roomInfo(function(data) {
+					//if (data.room.metadata.djcount <= (data.room.metadata.max_djs - 2)) {
+					if(data.room.metadata.djcount <= 2) {
+						if(!botDJing) {
+							Log("Bot is DJing");
+							bot.addDj();
+							bot.vote('up');
+							alreadyVoted = true;
+							bot.speak(stepUpText);
+							botDJing = true;
+							return;
+						}
 					}
-				}
 
-				if(data.room.metadata.djcount > 3) {
-					if(botDJing && !botIsPlayingSong) {
-						Speak(stepDownText);
-						setTimeout(function() {
-							bot.remDj();
-						}, 500)
-						botDJing = false;
-						return;
-					} else if(botOnTable && botIsPlayingSong) {
-						botStepDownAfterSong = true;
+					if(data.room.metadata.djcount > 3) {
+						if(botDJing && !botIsPlayingSong) {
+							Speak(stepDownText);
+							setTimeout(function() {
+								bot.remDj();
+							}, 500)
+							botDJing = false;
+							return;
+						} else if(botOnTable && botIsPlayingSong) {
+							botStepDownAfterSong = true;
+						}
 					}
-				}
 
-			});
+				});
+			}, 5000);
 		}
 	});
 }
