@@ -81,7 +81,7 @@ global.OnRoomChanged = function(data) {
 							} else {
 								var djInfo = {
 									userid: djs[i],
-									name: AllUsers[djs[x]].name,
+									name: AllUsers[djs[i]].name,
 									remainingPlays: totalPlays,
 									afkCount: 0,
 									waitDjs: 0
