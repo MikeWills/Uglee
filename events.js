@@ -79,14 +79,25 @@ global.OnRoomChanged = function(data) {
 							if(djs[x] == dj.userid) {
 								Djs[i] = dj;
 							} else {
-								var djInfo = {
-									userid: djs[i],
-									name: AllUsers[djs[i]].name,
-									remainingPlays: totalPlays,
-									afkCount: 0,
-									waitDjs: 0
+								if(AllUsers[djs[x]] !== undefined) {
+									var djInfo = {
+										userid: djs[x],
+										name: AllUsers[djs[x]].name,
+										remainingPlays: totalPlays,
+										afkCount: 0,
+										waitDjs: 0
+									}
+									Djs[djs[i]] = djInfo;
+								} else {
+									var djInfo = {
+										userid: djs[x],
+										name: "",
+										remainingPlays: totalPlays,
+										afkCount: 0,
+										waitDjs: 0
+									}
+									Djs[djs[i]] = djInfo;
 								}
-								Djs[djs[i]] = djInfo;
 							}
 							x++;
 						}
@@ -116,7 +127,7 @@ global.OnRoomChanged = function(data) {
 				}
 				SetValue('Djs', JSON.stringify(Djs));
 			});
-		}, 2000);
+		}, 5000);
 
 		currentDj = data.room.metadata.current_dj;
 
@@ -331,7 +342,7 @@ global.OnUpdateVotes = function(data) {
 		var userid = votelog[i][0];
 		//Log("Update Vote: " + userid);
 		if(userid !== "") {
-			if (AllUsers[userid] !== undefined){
+			if(AllUsers[userid] !== undefined) {
 				AllUsers[userid].lastActivity = new Date();
 			}
 		} else {
