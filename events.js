@@ -431,10 +431,10 @@ global.OnRemDJ = function(data) {
 	if(data.user[0].userid === botUserId) {
 		botDJing = false;
 		Log("Bot no longer DJing");
-		if(data.modid !== undefined) {
+		/*if(data.modid !== undefined) {
 			Log("Forcibly Removed");
 			SetValue("autodj", "false");
-		}
+		}*/
 	}
 
 	// If the bot is moderating the room, save the DJ info in case they steped down early
