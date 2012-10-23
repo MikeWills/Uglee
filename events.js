@@ -298,7 +298,7 @@ global.OnNewSong = function(data) {
 
 	lastDj = currentDj;
 	currentDj = data.room.metadata.current_dj;
-	if(currentDj !== botUserId && Djs[currentDj] !== undefined) {
+	if(Djs[currentDj] !== undefined) {
 		Djs[currentDj].remainingPlays--;
 		SetValue('Djs', JSON.stringify(Djs));
 	}
