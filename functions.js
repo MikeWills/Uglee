@@ -383,6 +383,7 @@ global.NextDjOnQueue = function() {
 					return;
 				}
 
+				Log("queueRefreshIntervalId: " + queueRefreshIntervalId);
 				if(queueRefreshIntervalId === null) {
 					GetValue("nextDjQueueTimeout", 0, function(nextDjQueueTimeout) {
 						var text = "It is now @" + DjQueue[nextDj].name + "'s turn to DJ! You have " + nextDjQueueTimeout + " seconds to step up.";

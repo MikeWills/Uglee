@@ -163,7 +163,6 @@ global.OnRegistered = function(data) {
 
 		// Check if User is banned
 		client.query('SELECT userid, banned_by, DATE_FORMAT(timestamp, \'%c/%e/%y\') as timestamp' + ' FROM BANNED WHERE userid LIKE \'' + user.userid + '\'', function cb(error, results, fields) {
-			Log("Ban Results: " + JSON.stringify(results));
 			if(results != null && results.length > 0) {
 				bot.boot(user.userid, 'You were banned from this room by ' + results[0]['banned_by'] + ' on ' + results[0]['timestamp']);
 			}
@@ -441,6 +440,7 @@ global.OnRemDJ = function(data) {
 	var user = data.user[0];
 	delete Djs[user.userid];
 	SetValue('Djs', JSON.stringify(Djs));
+	AddToQueue(data.user[0].userid);
 
 	// Check if the bot should DJ.
 	ShouldBotDJ();
