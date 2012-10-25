@@ -343,7 +343,12 @@ global.NewDjFromQueue = function(data) {
 			if(DjQueue.length > 0 && (nextDj !== null || nextDj === undefined)) {
 				if(data.user[0].userid != nextDj) {
 					bot.remDj(data.user[0].userid);
-					text = "Sorry @" + AllUsers[data.user[0].userid].name + ", it's @" + AllUsers[nextDj].name + " turn. You need to wait your turn.";
+					if (AllUsers[nextDj] !== undefined) {
+						text = "Sorry @" + AllUsers[data.user[0].userid].name + ", it's @" + AllUsers[nextDj].name + " turn. You need to wait your turn.";
+					} else {
+						text = "Sorry @" + AllUsers[data.user[0].userid].name + ", it's not your turn. You need to wait your turn.";
+
+					}
 					bot.speak(text);
 				} else {
 					delete DjQueue[data.user[0].userid];
@@ -433,6 +438,7 @@ global.CheckForNextDjFromQueue = function() {
 				waitingOnNextDj = false;
 
 				SetValue('DjQueue', JSON.stringify(DjQueue));
+				Log("DJ Queue: " + JSON.stringify(DjQueue));
 				clearInterval(queueRefreshIntervalId);
 				queueRefreshIntervalRunning = false;
 				NextDjOnQueue();
