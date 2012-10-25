@@ -270,8 +270,8 @@ global.AddToQueue = function(userid) {
 						"id": userid,
 						"name": AllUsers[userid].name,
 						"isAfk": false,
-						"akfCount": 0,
-						"akfTime": null
+						"afkCount": 0,
+						"afkTime": null
 					};
 					DjQueue.length++;
 
@@ -465,7 +465,7 @@ global.QueueStatus = function() {
 					}
 				} else {
 					var now = new Date();
-					var afkTime = new Date(queuedDj.akfTime);
+					var afkTime = new Date(queuedDj.afkTime);
 					var afkFor = dateDiff(now, afkTime, 'min');
 					Log(afkFor);
 					if(queuedDj.isAfk && afkFor >= 5) {
