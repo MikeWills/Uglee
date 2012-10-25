@@ -383,8 +383,9 @@ global.NextDjOnQueue = function() {
 					return;
 				}
 
-				Log("queueRefreshIntervalId: " + queueRefreshIntervalId);
-				if(queueRefreshIntervalId === null) {
+				//Log("queueRefreshIntervalId: " + queueRefreshIntervalId);
+				if(!queueRefreshIntervalRunning) {
+					Log("Ask for DJ");
 					GetValue("nextDjQueueTimeout", 0, function(nextDjQueueTimeout) {
 						var text = "It is now @" + DjQueue[nextDj].name + "'s turn to DJ! You have " + nextDjQueueTimeout + " seconds to step up.";
 						waitingOnNextDj = true;
@@ -393,6 +394,7 @@ global.NextDjOnQueue = function() {
 						nextDjTime = new Date();
 						queueRefreshIntervalId = setInterval(CheckForNextDjFromQueue, 5000);
 					});
+					queueRefreshIntervalRunning = true;
 				}
 			} else {
 				bot.speak("The queue is empty. Anyone can DJ at this time!");
@@ -428,6 +430,7 @@ global.CheckForNextDjFromQueue = function() {
 
 				SetValue('DjQueue', JSON.stringify(DjQueue));
 				clearInterval(queueRefreshIntervalId);
+				queueRefreshIntervalRunning = false;
 				NextDjOnQueue();
 			}
 		});

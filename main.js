@@ -56,6 +56,7 @@ global.DjQueue = {
 global.nextDj = null;
 global.nextDjTime = null;
 global.queueRefreshIntervalId = null;
+global.queueRefreshIntervalRunning = false;
 global.missedQueue = [];
 global.qPosn = 0;
 global.waitingOnNextDj = false;
@@ -89,13 +90,13 @@ global.currentsong = {
 };
 
 // This is a catch-all
-process.on("uncaughtException", function(data) {
+/*process.on("uncaughtException", function(data) {
 	Log(color("**ERROR** Process error ", "red") + data);
 	setTimeout(function() {
 		Log("Shutting down (forever should restart)")
 		process.exit(0);
 	}, 150000); // 2.5 minutes
-});
+});*/
 
 // Start up bot
 try {
