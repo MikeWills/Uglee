@@ -278,6 +278,9 @@ global.AddToQueue = function(userid) {
 					text = "@" + DjQueue[userid].name + ", you have been added to the queue. There is a total of " + DjQueue.length + " now.";
 					bot.speak(text);
 					SetValue('DjQueue', JSON.stringify(DjQueue));
+					if (nextDj === null){
+						nextDj = userid;
+					}
 				} else {
 					// TODO respond with place in line
 				}
@@ -348,6 +351,7 @@ global.NewDjFromQueue = function(data) {
 					SetValue('DjQueue', JSON.stringify(DjQueue));
 					waitingOnNextDj = false;
 					clearInterval(queueRefreshIntervalId);
+					queueRefreshIntervalRunning = false;
 					nextDj = null;
 				}
 			}

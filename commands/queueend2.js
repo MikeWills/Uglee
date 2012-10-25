@@ -8,6 +8,7 @@ exports.handler = function(data, userid, source) {
 			SetValue("enableQueue", "false");
 			Speak("We are no longer using a queue.");
 			DjQueue = { "length": 0};
+			nextDj = null;
 		}
 	});
 }
