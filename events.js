@@ -268,10 +268,15 @@ global.OnEndSong = function(data) {
 		botDJing = false;
 		botStepDownAfterSong = false;
 	}
+	clearInterval(songWarningIntervalId);
+	clearInterval(songBootIntervalId);
 };
 
 global.OnNewSong = function(data) {
-	Log(color("EVENT New Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + data.room.metadata.current_song.metadata.song);
+	var songLength = Number(data.room.metadata.current_song.metadata.length) / 60;
+	Log(color("EVENT New Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + data.room.metadata.current_song.metadata.song + 
+		" | Length: " + songLength + " minutes.");	
+	//Log(color("EVENT New Song: ", "blue") + JSON.stringify(data));
 	danceCount = 0;
 	lameCount = 0;
 	snagCount = 0;
@@ -318,6 +323,26 @@ global.OnNewSong = function(data) {
 			}
 		});
 	}
+
+	GetValue("monitorsonglength", 0, function(value) {
+		if(value === "true") {
+			GetValue("maxsonglength", 0, function(maxLength) {
+				if (songLength >= Number(maxLength)){
+					Speak("While we appreciate your song, we like to keep songs under " + maxLength + 
+						" minutes. You will be asked to skip after several minutes.");
+					GetValue("bootsonglength", 0, function(bootLength) {
+						var bootTimeout = Number(bootLength) * 60000;
+						songWarningIntervalId = setTimeout(function(){
+							Speak("Okay, that is enough. You have 60 seconds to skip before I do it for you.");
+						}, bootTimeout - 60000);
+						songBootIntervalId = setTimeout(function(){
+							Speak("Well, you can't listen can you? Times up!");
+						}, bootTimeout);
+					});
+				}
+			});
+		}
+	});
 };
 
 global.OnNoSong = function(data) {
@@ -460,7 +485,9 @@ global.OnSnagged = function(data) {
 	currentsong.snags++;
 
 	var userid = data.userid;
-	AllUsers[userid].lastActivity = new Date();
+	if(AllUsers[userid] !== undefined) {
+		AllUsers[userid].lastActivity = new Date();
+	}
 
 	// Add the song if there are 2 or more snags.
 	if(currentsong.snags === 2) {

@@ -90,6 +90,10 @@ global.currentsong = {
 	length: 0
 };
 
+//Other
+global.songWarningIntervalId = null;
+global.songBootIntervalId = null;
+
 // This is a catch-all
 /*process.on("uncaughtException", function(data) {
 	Log(color("**ERROR** Process error ", "red") + data);

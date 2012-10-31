@@ -185,7 +185,7 @@ global.PopulateSongData = function(data) {
 	currentsong.listeners = data.room.metadata.listeners;
 	currentsong.started = data.room.metadata.current_song.starttime;
 	currentsong.snags = 0;
-	currentsong.length = data.room.metadata.current_song.length;
+	currentsong.length = data.room.metadata.current_song.metadata.length;
 }
 
 /* 	==============
@@ -459,7 +459,6 @@ global.QueueStatus = function() {
 
 			for(var i in DjQueue) {
 				var queuedDj = DjQueue[i];
-				Log(queuedDj);
 				if(!queuedDj.isAfk) {
 					if(queuedDj.name !== undefined) {
 						djList += queuedDj.name + ", ";

@@ -178,7 +178,12 @@ global.SetUpRoom = function() {
 	// The max length of the song before the events (not enabled yet)
 	GetValue("maxsonglength", 0, function(value) {
 		if(value === null) {
-			SetValue("maxsonglength", "600");
+			SetValue("maxsonglength", "10");
+		}
+	});
+	GetValue("bootsonglength", 0, function(value) {
+		if (value === null){
+			SetValue("bootsonglength", "6");
 		}
 	});
 	// Connect the songs (CTS) (not enabled yet)
