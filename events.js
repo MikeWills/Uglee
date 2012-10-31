@@ -268,8 +268,8 @@ global.OnEndSong = function(data) {
 		botDJing = false;
 		botStepDownAfterSong = false;
 	}
-	clearInterval(songWarningIntervalId);
-	clearInterval(songBootIntervalId);
+	clearTimeout(songWarningIntervalId);
+	clearTimeout(songBootIntervalId);
 };
 
 global.OnNewSong = function(data) {
@@ -337,6 +337,7 @@ global.OnNewSong = function(data) {
 						}, bootTimeout - 60000);
 						songBootIntervalId = setTimeout(function(){
 							Speak("Well, you can't listen can you? Times up!");
+							bot.remDj(currentDj);
 						}, bootTimeout);
 					});
 				}
