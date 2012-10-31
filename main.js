@@ -86,7 +86,8 @@ global.currentsong = {
 	down: 0,
 	listeners: 0,
 	snags: 0,
-	id: null
+	id: null,
+	length: 0
 };
 
 // This is a catch-all

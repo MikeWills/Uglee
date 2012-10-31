@@ -185,6 +185,7 @@ global.PopulateSongData = function(data) {
 	currentsong.listeners = data.room.metadata.listeners;
 	currentsong.started = data.room.metadata.current_song.starttime;
 	currentsong.snags = 0;
+	currentsong.length = data.room.metadata.current_song.length;
 }
 
 /* 	==============
