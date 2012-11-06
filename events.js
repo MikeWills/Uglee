@@ -78,7 +78,7 @@ global.OnRoomChanged = function(data) {
 						Log(JSON.stringify(ttdjs));
 						for(var i = 0; i < ttdjs.length; i++) {
 							if(jsonResult[ttdjs[i]] !== undefined) {
-								Log("Cached DJ " + djs[i]);
+								Log("Cached DJ " + ttdjs[i]);
 								var djInfo = {
 									userid: ttdjs[i],
 									name: AllUsers[ttdjs[i]].name,
