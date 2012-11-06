@@ -67,65 +67,57 @@ global.OnRoomChanged = function(data) {
 
 		setTimeout(function() {
 			Log("Loading Djs");
-			var djs = data.room.metadata.djs;
+			var ttdjs = data.room.metadata.djs;
 
 			GetValue("Djs", 10, function(results) {
 				if(results !== null) {
 					if(results.length !== 0 && results !== " ") {
 						var jsonResult = JSON.parse(results);
-						var x = 0;
-						for(var i in jsonResult) {
-							var dj = jsonResult[i];
-							if(djs[x] == dj.userid) {
-								Djs[i] = dj;
-							} else {
-								if(AllUsers[djs[x]] !== undefined) {
-									var djInfo = {
-										userid: djs[x],
-										name: AllUsers[djs[x]].name,
-										remainingPlays: totalPlays,
-										afkCount: 0,
-										waitDjs: 0
-									}
-									Djs[djs[i]] = djInfo;
-								} else {
-									var djInfo = {
-										userid: djs[x],
-										name: "",
-										remainingPlays: totalPlays,
-										afkCount: 0,
-										waitDjs: 0
-									}
-									Djs[djs[i]] = djInfo;
+						Log("=== Before ===");
+						Log(JSON.stringify(jsonResult));
+						Log(JSON.stringify(ttdjs));
+						for(var i = 0; i < ttdjs.length; i++) {
+							if(jsonResult[ttdjs[i]] !== undefined) {
+								Log("Cached DJ " + djs[i]);
+								var djInfo = {
+									userid: ttdjs[i],
+									name: AllUsers[ttdjs[i]].name,
+									remainingPlays: jsonResult[ttdjs[i]].remainingPlays,
+									afkCount: jsonResult[ttdjs[i]].afkCount,
+									waitDjs: jsonResult[ttdjs[i]].waitDjs
 								}
+								Djs[ttdjs[i]] = djInfo;
+							} else {
+								Log("Not cached DJ " + ttdjs[i]);
+								var djInfo = {
+									userid: ttdjs[i],
+									name: AllUsers[ttdjs[i]].name,
+									remainingPlays: totalPlays,
+									afkCount: 0,
+									waitDjs: 0
+								}
+								Djs[ttdjs[i]] = djInfo;
 							}
-							x++;
-						}
-					} else {
-						for(var i = 0; i < djs.length; i++) {
-							var djInfo = {
-								userid: djs[i],
-								name: AllUsers[djs[i]].name,
-								remainingPlays: totalPlays,
-								afkCount: 0,
-								waitDjs: 0
-							}
-							Djs[djs[i]] = djInfo;
 						}
 					}
 				} else {
-					for(var i = 0; i < djs.length; i++) {
+					Log("No DJs cached");
+					for(var i = 0; i < ttdjs.length; i++) {
 						var djInfo = {
-							userid: djs[i],
-							name: AllUsers[djs[i]].name,
+							userid: ttdjs[i],
+							name: AllUsers[ttdjs[i]].name,
 							remainingPlays: totalPlays,
 							afkCount: 0,
 							waitDjs: 0
 						}
-						Djs[djs[i]] = djInfo;
+						Djs[ttdjs[i]] = djInfo;
 					}
 				}
-				SetValue('Djs', JSON.stringify(Djs));
+				setTimeout(function() {
+					SetValue('Djs', JSON.stringify(Djs));
+					Log("=== After ===");
+					Log(JSON.stringify(Djs));
+				}, 5000);
 			});
 		}, 5000);
 
@@ -232,7 +224,9 @@ global.OnDeregistered = function(data) {
 global.OnSpeak = function(data) {
 	//Log(blue + "EVENT Speak: " + reset + JSON.stringify(data));
 	Command("speak", data);
-	AllUsers[data.userid].lastActivity = new Date();
+	if(AllUsers[data.userid] !== undefined) {
+		AllUsers[data.userid].lastActivity = new Date();
+	}
 };
 
 global.OnEndSong = function(data) {
@@ -274,8 +268,7 @@ global.OnEndSong = function(data) {
 
 global.OnNewSong = function(data) {
 	var songLength = Number(data.room.metadata.current_song.metadata.length) / 60;
-	Log(color("EVENT New Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + data.room.metadata.current_song.metadata.song + 
-		" | Length: " + songLength + " minutes.");	
+	Log(color("EVENT New Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + data.room.metadata.current_song.metadata.song + " | Length: " + songLength + " minutes.");
 	//Log(color("EVENT New Song: ", "blue") + JSON.stringify(data));
 	danceCount = 0;
 	lameCount = 0;
@@ -327,15 +320,14 @@ global.OnNewSong = function(data) {
 	GetValue("monitorsonglength", 0, function(value) {
 		if(value === "true") {
 			GetValue("maxsonglength", 0, function(maxLength) {
-				if (songLength >= Number(maxLength)){
-					Speak("While we appreciate your song, we like to keep songs under " + maxLength + 
-						" minutes. You will be asked to skip after several minutes.");
+				if(songLength >= Number(maxLength)) {
+					Speak("While we appreciate your song, we like to keep songs under " + maxLength + " minutes. You will be asked to skip after several minutes.");
 					GetValue("bootsonglength", 0, function(bootLength) {
 						var bootTimeout = Number(bootLength) * 60000;
-						songWarningIntervalId = setTimeout(function(){
+						songWarningIntervalId = setTimeout(function() {
 							Speak("Okay, that is enough. You have 60 seconds to skip before I do it for you.");
 						}, bootTimeout - 60000);
-						songBootIntervalId = setTimeout(function(){
+						songBootIntervalId = setTimeout(function() {
 							Speak("Well, you can't listen can you? Times up!");
 							bot.remDj(currentDj);
 						}, bootTimeout);
