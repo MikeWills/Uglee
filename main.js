@@ -69,6 +69,7 @@ global.snagCount = 0;
 global.alreadyRolled = false;
 global.alreadyVoted = false;
 global.Subscribers = [];
+global.reserveredFor = null;
 
 // DJing bot
 global.botDJing = false;
