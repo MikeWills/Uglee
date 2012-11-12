@@ -478,10 +478,14 @@ global.OnRemDJ = function(data) {
 
 global.OnNewModerator = function(data) {
 	Log(color("EVENT New Moderator: ", "blue") + JSON.stringify(data));
+
+	client.query('UPDATE ' + dbName + '.' + dbTablePrefix + 'User SET `isMod`=1 WHERE `roomid` = ? and `userid` = ?', [currentRoomId, data.userid]);
 };
 
 global.OnRemModerator = function(data) {
 	Log(color("EVENT Remove Moderator: ", "blue") + JSON.stringify(data));
+
+	client.query('UPDATE ' + dbName + '.' + dbTablePrefix + 'User SET `isMod`=0 WHERE `roomid` = ? and `userid` = ?', [currentRoomId, data.userid]);
 };
 
 global.OnSnagged = function(data) {
