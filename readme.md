@@ -8,7 +8,14 @@ Start the bot:
 
 Most of the configuration settings are stored in the database, so a database is required.
 
-Core Functions:
+Version Notes
+====
+Note when upgrading to this next release be sure to run the following SQL commands.
+
+    ALTER TABLE  `bots_User` ADD  `blah` BIT NOT NULL
+
+Core Functions
+====
 * The bot can AutoDJ
 * The bot can AutoBop if 40% of the room or more is bopping (or lames if 40% or more of the room lames).
 * You can ban users
