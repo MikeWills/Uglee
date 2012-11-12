@@ -12,7 +12,7 @@ Version Notes
 ====
 Note when upgrading to this next release be sure to run the following SQL commands.
 
-    ALTER TABLE  `bots_User` ADD  `blah` BIT NOT NULL
+    ALTER TABLE  `bots_User` ADD  `isMod` BIT NOT NULL
 
 Core Functions
 ====
