@@ -69,5 +69,6 @@ global.chat_responses =		[{ name: "whois", response1: "Me is a bot that is creat
 							{ name: "friday", response1: "If you play that fucking Rebecca Black song, I'll pluck your pubes out one at a time and force feed them to you.", response2: ""},
 							{ name: "dubstep", response1: "Dubstep isn't music and that shit not welcome here. DEATH TO ALL DUBSTEP! ", response2:"This is what dubstep is: http://youtu.be/z_SQO3vv3p8"},
 							{ name: "queue", response1: "There is no queue. Just be the fastest person to step up!", response2: "" },
+							{ name: "autobop", response1: "This autobop works! http://www.pinnacleofdestruction.net/tt/", response2: "" },
 							{ name: "suck it", response1: "8==:fist:==D:sweat_drops: :lips:", response2: "" }
 							];																
