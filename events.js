@@ -423,7 +423,11 @@ global.OnAddDJ = function(data) {
 	
 	if (reserveredFor !== null && reserveredFor !== user.userid){
 		bot.remDj(user.userid);
+		if (AllUsers[reserveredFor] !== undefined){
 		Speak("Sorry, this spot is reserved for " + AllUsers[reserveredFor].name + ".");
+		} else {
+		Speak("Sorry, this spot is reserved. They are most likely refreshing their page to fix a problem.");
+		}
 	}
 
 	if (reserveredFor !== null && reserveredFor === user.userid){
