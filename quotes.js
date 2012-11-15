@@ -1,6 +1,8 @@
 global.awesomeText = 		   ["I love it!", 
 					  			"This song is awesome!", 
 					  			"How'd you know I'd love this song?", 
+					  			"W00t!",
+					  			"Hell yah!",
 					  			"This fucking rocks!"];
 global.lameText = 			   ["Wow! I have heard banshee songs better than this.", 
 								"I want my money back! This song sucks."];
@@ -16,9 +18,13 @@ global.userLeaveQuickText =    ["Hey! {u} just took our beer! That jerk!",
 								"Good riddance! We didn't want you anyay {u}.", 
 								"Thanks for coming {u}!"];
 global.hitBot = 			   ["OMG! Okay I'll awesome. Whatta prick!",
+								"What?!?",
 								"OUCH! Fine... I'll awsome."];
 global.crankIt = 			   ["Already did!!",
 								"Shit I think I broke the knob off trying to hit 11!",
+								"The neighbors won't like this but....",
+								"Hell yah!",
+								"Wait, I think I hear the cops knocking...",
 								"I'm on 11!"];
 global.chat_responses =		[{ name: "whois", response1: "Me is a bot that is created by @PodcastMike. Me guts are at https://github.com/MikeWills/Uglee.", response2: "" },
 							{ name: "speak", response1: "GWAAAARRRRR!!!!!", response2: "" },
