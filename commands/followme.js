@@ -3,9 +3,11 @@ exports.hidden = true;
 exports.enabled = true;
 exports.matchStart = false;
 exports.handler = function(data, userid, source) {
-	if (userid === botAdmin) {
+	if (botAdmins.indexOf(userid) !== -1) {
+		Log("Is Admin");
 		bot.becomeFan(userid);
-		bot.stalk(botAdmin, function(stalkData) {
+		bot.stalk(userid, function(stalkData) {
+			Log("Stalking");
 			bot.roomDeregister();
 			bot.roomRegister(stalkData.roomId);
 		})
