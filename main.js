@@ -164,17 +164,36 @@ Log("Ready");
 // Check that TT is up every 5 minutes. This is so the bot can gracefully restart when the site comes back up.
 setInterval(function() {
 	var ttUp = false;
+	var botInRoom = false;
 	Log("Uptime Check");
 	try {
 		bot.listRooms({
 			skip: 0
 		}, function(data) {
 			ttUp = true;
-			//Log("Turntable.FM is up.");
+			Log("Turntable.FM is up.");
+			bot.roomInfo(false, function(data) {
+				var users = data.users;
+				for(var i = 0; i < users.length; i++) {
+					if(botUserId == users[i].userid) {
+						Log("TT Up and Bot in room");
+						ttUp = true;
+						botInRoom = true;
+					}
+				}
+				if(!botInRoom) {
+					Log("Bot not in room");
+				}
+			});
 		});
+		
 		setTimeout(function() {
-			if (ttUp === false) {
-				Log(color("**DOWN** Turntable.FM is down.", "red"));
+			if(botInRoom === false) {
+				bot.roomDeregister();
+				bot.roomRegister(botRoomId);
+			}
+			if(ttUp === false) {
+				Log("Turntable.FM is down.");
 				setTimeout(function() {
 					Log("Shutting down (forever should restart)")
 					process.exit(0);
