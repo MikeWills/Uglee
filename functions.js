@@ -24,16 +24,13 @@ global.Speak = function(text, userName, source, userid) {
 	if(source !== undefined) {
 		if(source === "pm") {
 			bot.pm(textOut, userid);
-			Log("PM");
 			return;
 		} else {
 			bot.speak(textOut);
-			Log("Speak");
 			return;
 		}
 	} else {
 		bot.speak(textOut);
-		Log("Speak");
 		return;
 	}
 };
@@ -46,11 +43,9 @@ global.TellUser = function(userid, text) {
 	try {
 		if(NoPM()) {
 			bot.speak(text);
-			Log("Speak");
 			return;
 		} else {
 			bot.pm(text, userid);
-			Log("PM");
 			return;
 		}
 	} catch(e) {
@@ -129,11 +124,9 @@ global.Command = function(source, data) {
 		if(commands[i].enabled) {
 			if(commands[i].matchStart && (data.text.toLowerCase().indexOf(commands[i].name) == 0)) {
 				commands[i].handler(data, userid, source);
-				Log("Command Ran");
 				break;
 			} else if(commands[i].name == data.text.toLowerCase()) {
 				commands[i].handler(data, userid, source);
-				Log("Command Ran");
 				break;
 			}
 		}
