@@ -82,11 +82,14 @@ global.IsMod = function(userid, callback) {
 		var moderators = data.room.metadata.moderator_id;
 		if(IsAdmin(userid)) {
 			callback(true);
+			return;
 		}
 		if(moderators.indexOf(userid) != -1) {
 			callback(true);
+			return;
 		} else {
 			callback(false);
+			return;
 		}
 	})
 }

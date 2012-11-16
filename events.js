@@ -226,7 +226,7 @@ global.OnDeregistered = function(data) {
 };
 
 global.OnSpeak = function(data) {
-	Log(color("EVENT Speak: ", "blue") + JSON.stringify(data));
+	//Log(color("EVENT Speak: ", "blue") + JSON.stringify(data));
 	Command("speak", data);
 	if(AllUsers[data.userid] !== undefined) {
 		AllUsers[data.userid].lastActivity = new Date();
