@@ -70,6 +70,9 @@ global.SpeakRandom = function(array, userName) {
 global.IsMod = function(userid, callback) {
 	bot.roomInfo(function(data) {
 		var moderators = data.room.metadata.moderator_id;
+		if (IsAdmin(userid)) {
+			callback(true);
+		}
 		if(moderators.indexOf(userid) != -1) {
 			callback(true);
 		} else {
