@@ -370,19 +370,19 @@ global.OnAddDJ = function(data) {
 
 	var user = data.user[0];
 	if(AllUsers[user.userid] !== undefined) {
-	AllUsers[user.userid].lastActivity = new Date();
+		AllUsers[user.userid].lastActivity = new Date();
 	}
-	
-	if (reserveredFor !== null && reserveredFor !== user.userid){
+
+	if(reserveredFor !== null && reserveredFor !== user.userid) {
 		bot.remDj(user.userid);
-		if (AllUsers[reserveredFor] !== undefined){
-		Speak("Sorry, this spot is reserved for " + AllUsers[reserveredFor].name + ".");
+		if(AllUsers[reserveredFor] !== undefined) {
+			Speak("Sorry, this spot is reserved for " + AllUsers[reserveredFor].name + ".");
 		} else {
-		Speak("Sorry, this spot is reserved. They are most likely refreshing their page to fix a problem.");
+			Speak("Sorry, this spot is reserved. They are most likely refreshing their page to fix a problem.");
 		}
 	}
 
-	if (reserveredFor !== null && reserveredFor === user.userid){
+	if(reserveredFor !== null && reserveredFor === user.userid) {
 		Speak("Your welcome " + AllUsers[reserveredFor].name);
 		reserveredFor = null;
 	}
