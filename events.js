@@ -173,6 +173,19 @@ global.OnRegistered = function(data) {
 			}
 		});
 
+		// If there is only the DJ, don't DJ.
+		bot.roomInfo(false, function(data){
+			if (data.room.metadata.listeners === 1){
+				SetValue("autodj", "false");
+				bot.remDj();
+				botDJing = false;
+			} else {
+				SetValue("autodj", "true");
+				bot.addDj();
+				botDJing = true;
+			}
+		});
+
 	} catch(e) {
 		Log(color("**ERROR** Room Changed ", "red") + e);
 	}
@@ -213,6 +226,15 @@ global.OnDeregistered = function(data) {
 					DjQueue.length--;
 					SetValue('DjQueue', JSON.stringify(DjQueue));
 				}
+			}
+		});
+
+		// If there is only the DJ, don't DJ.
+		bot.roomInfo(false, function(data){
+			if (data.room.metadata.listeners === 1){
+				SetValue("autodj", "false");
+				bot.remDj();
+				botDJing = false;
 			}
 		});
 
@@ -339,10 +361,7 @@ global.OnNewSong = function(data) {
 };
 
 global.OnNoSong = function(data) {
-	Log(color("EVENT No Song: ", "red") + JSON.stringify(data));
-	if(botDJing) {
-		bot.skip();
-	}
+	//Log(color("EVENT No Song: ", "red") + JSON.stringify(data));
 };
 
 global.OnUpdateVotes = function(data) {
