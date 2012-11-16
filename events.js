@@ -66,59 +66,7 @@ global.OnRoomChanged = function(data) {
 		}
 
 		setTimeout(function() {
-			Log("Loading Djs");
-			var ttdjs = data.room.metadata.djs;
-
-			GetValue("Djs", 10, function(results) {
-				if(results !== null) {
-					if(results.length !== 0 && results !== " ") {
-						var jsonResult = JSON.parse(results);
-						Log("=== Before ===");
-						Log(JSON.stringify(jsonResult));
-						Log(JSON.stringify(ttdjs));
-						for(var i = 0; i < ttdjs.length; i++) {
-							if(jsonResult[ttdjs[i]] !== undefined) {
-								Log("Cached DJ " + ttdjs[i]);
-								var djInfo = {
-									userid: ttdjs[i],
-									name: AllUsers[ttdjs[i]].name,
-									remainingPlays: jsonResult[ttdjs[i]].remainingPlays,
-									afkCount: jsonResult[ttdjs[i]].afkCount,
-									waitDjs: jsonResult[ttdjs[i]].waitDjs
-								}
-								Djs[ttdjs[i]] = djInfo;
-							} else {
-								Log("Not cached DJ " + ttdjs[i]);
-								var djInfo = {
-									userid: ttdjs[i],
-									name: AllUsers[ttdjs[i]].name,
-									remainingPlays: totalPlays,
-									afkCount: 0,
-									waitDjs: 0
-								}
-								Djs[ttdjs[i]] = djInfo;
-							}
-						}
-					}
-				} else {
-					Log("No DJs cached");
-					for(var i = 0; i < ttdjs.length; i++) {
-						var djInfo = {
-							userid: ttdjs[i],
-							name: AllUsers[ttdjs[i]].name,
-							remainingPlays: totalPlays,
-							afkCount: 0,
-							waitDjs: 0
-						}
-						Djs[ttdjs[i]] = djInfo;
-					}
-				}
-				setTimeout(function() {
-					SetValue('Djs', JSON.stringify(Djs));
-					Log("=== After ===");
-					Log(JSON.stringify(Djs));
-				}, 5000);
-			});
+			LoadDjs(data);
 		}, 5000);
 
 		currentDj = data.room.metadata.current_dj;
