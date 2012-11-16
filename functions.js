@@ -24,11 +24,17 @@ global.Speak = function(text, userName, source, userid) {
 	if(source !== undefined) {
 		if(source === "pm") {
 			bot.pm(textOut, userid);
+			Log("PM");
+			return;
 		} else {
 			bot.speak(textOut);
+			Log("Speak");
+			return;
 		}
 	} else {
 		bot.speak(textOut);
+		Log("Speak");
+		return;
 	}
 };
 
@@ -40,8 +46,12 @@ global.TellUser = function(userid, text) {
 	try {
 		if(NoPM()) {
 			bot.speak(text);
+			Log("Speak");
+			return;
 		} else {
 			bot.pm(text, userid);
+			Log("PM");
+			return;
 		}
 	} catch(e) {
 		Log(color("**ERROR** TellUser() ", "red") + e);
@@ -70,7 +80,7 @@ global.SpeakRandom = function(array, userName) {
 global.IsMod = function(userid, callback) {
 	bot.roomInfo(function(data) {
 		var moderators = data.room.metadata.moderator_id;
-		if (IsAdmin(userid)) {
+		if(IsAdmin(userid)) {
 			callback(true);
 		}
 		if(moderators.indexOf(userid) != -1) {
@@ -116,9 +126,11 @@ global.Command = function(source, data) {
 		if(commands[i].enabled) {
 			if(commands[i].matchStart && (data.text.toLowerCase().indexOf(commands[i].name) == 0)) {
 				commands[i].handler(data, userid, source);
+				Log("Command Ran");
 				break;
 			} else if(commands[i].name == data.text.toLowerCase()) {
 				commands[i].handler(data, userid, source);
+				Log("Command Ran");
 				break;
 			}
 		}
@@ -213,32 +225,36 @@ global.ShouldBotDJ = function() {
 		if(value === "true") {
 			setTimeout(function() {
 				bot.roomInfo(function(data) {
-					//if (data.room.metadata.djcount <= (data.room.metadata.max_djs - 2)) {
-					if(data.room.metadata.djcount <= 2) {
-						if(!botDJing) {
-							Log("Bot is DJing");
-							bot.addDj();
-							bot.vote('up');
-							alreadyVoted = true;
-							bot.speak(stepUpText);
-							botDJing = true;
-							return;
+					if(data.room.metadata.listeners !== 1) {
+						//if (data.room.metadata.djcount <= (data.room.metadata.max_djs - 2)) {
+						if(data.room.metadata.djcount <= 2) {
+							if(!botDJing) {
+								Log("Bot is DJing");
+								bot.addDj();
+								bot.vote('up');
+								alreadyVoted = true;
+								bot.speak(stepUpText);
+								botDJing = true;
+								return;
+							}
 						}
-					}
 
-					if(data.room.metadata.djcount > 3) {
-						if(botDJing && !botIsPlayingSong) {
-							Speak(stepDownText);
-							setTimeout(function() {
-								bot.remDj();
-							}, 500)
-							botDJing = false;
-							return;
-						} else if(botOnTable && botIsPlayingSong) {
-							botStepDownAfterSong = true;
+						if(data.room.metadata.djcount > 3) {
+							if(botDJing && !botIsPlayingSong) {
+								Speak(stepDownText);
+								setTimeout(function() {
+									bot.remDj();
+								}, 500)
+								botDJing = false;
+								return;
+							} else if(botOnTable && botIsPlayingSong) {
+								botStepDownAfterSong = true;
+							}
 						}
+					} else {
+						bot.remDj();
+						botDJing = false;
 					}
-
 				});
 			}, 5000);
 		}
@@ -282,7 +298,7 @@ global.AddToQueue = function(userid) {
 					text = "@" + DjQueue[userid].name + ", you have been added to the queue. There is a total of " + DjQueue.length + " now.";
 					bot.speak(text);
 					SetValue('DjQueue', JSON.stringify(DjQueue));
-					if (nextDj === null){
+					if(nextDj === null) {
 						nextDj = userid;
 					}
 				} else {
@@ -347,7 +363,7 @@ global.NewDjFromQueue = function(data) {
 			if(DjQueue.length > 0 && (nextDj !== null || nextDj === undefined)) {
 				if(data.user[0].userid != nextDj) {
 					bot.remDj(data.user[0].userid);
-					if (AllUsers[nextDj] !== undefined) {
+					if(AllUsers[nextDj] !== undefined) {
 						text = "Sorry @" + AllUsers[data.user[0].userid].name + ", it's @" + AllUsers[nextDj].name + " turn. You need to wait your turn.";
 					} else {
 						text = "Sorry @" + AllUsers[data.user[0].userid].name + ", it's not your turn. You need to wait your turn.";
@@ -490,29 +506,29 @@ global.QueueStatus = function() {
 };
 
 global.dateDiff = function(a, b, format) {
-    var milliseconds = a - b;
-    var minutes = milliseconds / 60000;
-    var days = milliseconds / 86400000;
-    var hours = milliseconds / 3600000;
-    var weeks = milliseconds / 604800000;
-    var months = milliseconds / 2628000000;
-    var years = milliseconds / 31557600000;
-    if (format == "min") {
-        return Math.round(minutes);
-    }
-    if (format == "h") {
-        return Math.round(hours);
-    }
-    if (format == "d") {
-        return Math.round(days);
-    }
-    if (format == "w") {
-        return Math.round(weeks);
-    }
-    if (format == "m") {
-        return Math.round(months);
-    }
-    if (format == "y") {
-        return Math.round(years);
-    }
+	var milliseconds = a - b;
+	var minutes = milliseconds / 60000;
+	var days = milliseconds / 86400000;
+	var hours = milliseconds / 3600000;
+	var weeks = milliseconds / 604800000;
+	var months = milliseconds / 2628000000;
+	var years = milliseconds / 31557600000;
+	if(format == "min") {
+		return Math.round(minutes);
+	}
+	if(format == "h") {
+		return Math.round(hours);
+	}
+	if(format == "d") {
+		return Math.round(days);
+	}
+	if(format == "w") {
+		return Math.round(weeks);
+	}
+	if(format == "m") {
+		return Math.round(months);
+	}
+	if(format == "y") {
+		return Math.round(years);
+	}
 };

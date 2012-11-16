@@ -173,18 +173,7 @@ global.OnRegistered = function(data) {
 			}
 		});
 
-		// If there is only the DJ, don't DJ.
-		bot.roomInfo(false, function(data){
-			if (data.room.metadata.listeners === 1){
-				SetValue("autodj", "false");
-				bot.remDj();
-				botDJing = false;
-			} else {
-				SetValue("autodj", "true");
-				bot.addDj();
-				botDJing = true;
-			}
-		});
+		ShouldBotDJ();
 
 	} catch(e) {
 		Log(color("**ERROR** Room Changed ", "red") + e);
@@ -229,14 +218,7 @@ global.OnDeregistered = function(data) {
 			}
 		});
 
-		// If there is only the DJ, don't DJ.
-		bot.roomInfo(false, function(data){
-			if (data.room.metadata.listeners === 1){
-				SetValue("autodj", "false");
-				bot.remDj();
-				botDJing = false;
-			}
-		});
+		ShouldBotDJ();
 
 	} catch(e) {
 		Log(color("**ERROR** Room Changed ", "red") + e);
@@ -244,7 +226,7 @@ global.OnDeregistered = function(data) {
 };
 
 global.OnSpeak = function(data) {
-	//Log(blue + "EVENT Speak: " + reset + JSON.stringify(data));
+	Log(color("EVENT Speak: ", "blue") + JSON.stringify(data));
 	Command("speak", data);
 	if(AllUsers[data.userid] !== undefined) {
 		AllUsers[data.userid].lastActivity = new Date();
