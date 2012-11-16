@@ -1,5 +1,5 @@
 var botWasBooted = false;
-var totalPlays = 0;
+global.totalPlays = 0;
 
 global.OnReady = function(data) {
 	Log(color("EVENT Ready", "blue"));
