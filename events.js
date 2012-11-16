@@ -77,7 +77,7 @@ global.OnRoomChanged = function(data) {
 		}, 5000);
 
 	} catch(e) {
-		Log(color("**ERROR** Room Changed ", "red") + e);
+		Log(color("**ERROR** Room Changed ", "red") + e, "error");
 	}
 };
 
@@ -124,7 +124,7 @@ global.OnRegistered = function(data) {
 		ShouldBotDJ();
 
 	} catch(e) {
-		Log(color("**ERROR** Room Changed ", "red") + e);
+		Log(color("**ERROR** Room Changed ", "red") + e, "error");
 	}
 };
 
@@ -169,7 +169,7 @@ global.OnDeregistered = function(data) {
 		ShouldBotDJ();
 
 	} catch(e) {
-		Log(color("**ERROR** Room Changed ", "red") + e);
+		Log(color("**ERROR** Room Changed ", "red") + e, "error");
 	}
 };
 

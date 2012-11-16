@@ -1,10 +1,14 @@
 /* 	==============
 	Log - Log the information to the console
 	============== */
-global.Log = function(data) {
+global.Log = function(data, type) {
 	if(logtoconsole) {
 		var now = new Date();
 		//console.log(botName, ">>>", new Date().setTimezone("CST").toISOString(), " | ", data);
+		console.log(botName, ">>>", new Date().toISOString(), " | ", data);
+	}
+	if (type !== undefined && type === "error" && !logtoconsole){
+		var now = new Date();
 		console.log(botName, ">>>", new Date().toISOString(), " | ", data);
 	}
 };
@@ -49,7 +53,7 @@ global.TellUser = function(userid, text) {
 			return;
 		}
 	} catch(e) {
-		Log(color("**ERROR** TellUser() ", "red") + e);
+		Log(color("**ERROR** TellUser() ", "red") + e, "error");
 	}
 };
 
@@ -176,7 +180,6 @@ global.DidUserLeaveQuickly = function(userid) {
 	var now = new Date();
 	var loggedIn = AllUsers[userid].loggedIn;
 	var timeOn = now = loggedIn;
-	Log("Logged in time: " + timeOn);
 	if(now - AllUsers[userid].lastActivity < 30000) {
 		SpeakRandom(userLeaveQuickText);
 	}
@@ -225,7 +228,6 @@ global.ShouldBotDJ = function() {
 						//if (data.room.metadata.djcount <= (data.room.metadata.max_djs - 2)) {
 						if(data.room.metadata.djcount <= 2) {
 							if(!botDJing) {
-								Log("Bot is DJing");
 								bot.addDj();
 								bot.vote('up');
 								alreadyVoted = true;

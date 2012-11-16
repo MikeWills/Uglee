@@ -19,7 +19,7 @@ try {
 	global.mysql = require('mysql');
 } catch (e) {
 	Log(e);
-	Log('It is likely that you do not have the mysql node module installed.' + '\nUse the command \'npm install mysql\' to install.');
+	Log('It is likely that you do not have the mysql node module installed.' + '\nUse the command \'npm install mysql\' to install.', "error");
 	process.exit(0);
 }
 
@@ -33,7 +33,7 @@ try {
 	SetUpDatabase();
 } catch (e) {
 	Log(e);
-	Log('Make sure that a mysql server instance is running and that the ' + 'username and password information in config.js are correct.');
+	Log('Make sure that a mysql server instance is running and that the ' + 'username and password information in config.js are correct.', "error");
 	process.exit(0);
 }
 
@@ -96,20 +96,20 @@ global.songWarningIntervalId = null;
 global.songBootIntervalId = null;
 
 // This is a catch-all
-/*process.on("uncaughtException", function(data) {
-	Log(color("**ERROR** Process error ", "red") + data);
+process.on("uncaughtException", function(data) {
+	Log(color("**ERROR** Process error ", "red") + data, "error");
 	setTimeout(function() {
-		Log("Shutting down (forever should restart)")
+		Log("Shutting down (forever should restart)", "error")
 		process.exit(0);
 	}, 150000); // 2.5 minutes
-});*/
+});
 
 // Start up bot
 try {
 	global.bot = new Bot(botAuthId, botUserId, botRoomId);
 } catch (e) {
 	setTimeout(function() {
-		Log("Shutting down (forever should restart)")
+		Log("Shutting down (forever should restart)", "error")
 		process.exit(0);
 	}, 150000); // 2.5 minutes
 }
@@ -130,7 +130,7 @@ try {
 		}
 	}
 } catch (e) {
-	Log(color("**ERROR** Load Commands", "red") + e);
+	Log(color("**ERROR** Load Commands", "red") + e, "error");
 }
 Log("Done");
 
@@ -193,18 +193,18 @@ setInterval(function() {
 				bot.roomRegister(botRoomId);
 			}
 			if(ttUp === false) {
-				Log("Turntable.FM is down.");
+				Log("Turntable.FM is down.", "error");
 				setTimeout(function() {
-					Log("Shutting down (forever should restart)")
+					Log("Shutting down (forever should restart)", "error")
 					process.exit(0);
 				}, 150000); // 2.5 minutes
 			}
 		}, 60000); // 1 minute
 	} catch (e) {
-		Log(color("**DOWN** Turntable.FM is down.", "red"));
-		Log(color("** ERROR TT_UP_CHECK ** ", "red") + e);
+		Log(color("**DOWN** Turntable.FM is down.", "red"), "error");
+		Log(color("** ERROR TT_UP_CHECK ** ", "red") + e, "error");
 		setTimeout(function() {
-			Log("Shutting down (forever should restart)")
+			Log("Shutting down (forever should restart)", "error")
 			process.exit(0);
 		}, 150000); // 2.5 minutes
 	}
