@@ -24,6 +24,7 @@ global.crankIt = 			   ["Already did!!",
 								"Shit I think I broke the knob off trying to hit 11!",
 								"The neighbors won't like this but....",
 								"Hell yah!",
+								"Pumping up the jam!".
 								"Wait, I think I hear the cops knocking...",
 								"I'm on 11!"];
 global.chat_responses =		[{ name: "whois", response1: "Me is a bot that is created by @PodcastMike. Me guts are at https://github.com/MikeWills/Uglee.", response2: "" },
