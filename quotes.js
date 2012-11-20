@@ -1,6 +1,8 @@
 global.awesomeText = 		   ["I love it!", 
 					  			"This song is awesome!", 
 					  			"How'd you know I'd love this song?", 
+					  			"Raise the roof!",
+					  			"The roof, the roof is on fire!",
 					  			"W00t!",
 					  			"Hell yah!",
 					  			"This fucking rocks!"];
@@ -19,12 +21,14 @@ global.userLeaveQuickText =    ["Hey! {u} just took our beer! That jerk!",
 								"Thanks for coming {u}!"];
 global.hitBot = 			   ["OMG! Okay I'll awesome. Whatta prick!",
 								"What?!?",
+								"What the hell? I am simply voicing my opinion! *cough*jerk*cough*",
 								"OUCH! Fine... I'll awsome."];
 global.crankIt = 			   ["Already did!!",
 								"Shit I think I broke the knob off trying to hit 11!",
 								"The neighbors won't like this but....",
 								"Hell yah!",
 								"Pumping up the jam!",
+					  			"The roof, the roof is on fire!",
 								"Wait, I think I hear the cops knocking...",
 								"I'm on 11!"];
 global.chat_responses =		[{ name: "whois", response1: "Me is a bot that is created by @PodcastMike. Me guts are at https://github.com/MikeWills/Uglee.", response2: "" },
