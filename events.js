@@ -89,6 +89,10 @@ global.OnRegistered = function(data) {
 			currentsong.listeners++;
 		}
 
+		if (data.user[0].userid === '4dfb57154fe7d061dd013a44'){
+			bot.pm("Hello master, how may I be of service?");
+		}
+
 		//Add new user(s) to cache
 		var users = data.user;
 		for(var i in users) {
