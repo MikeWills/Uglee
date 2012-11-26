@@ -95,7 +95,7 @@ global.OnRegistered = function(data) {
 
 		GetValue("welcomeMsg", 0, function(value){
 			if (value === "true"){
-				Speak(welcomeText, AllUsers[data.user[0].userid]);
+				Speak(welcomeText, AllUsers[data.user[0].userid].name);
 			}
 		});
 
