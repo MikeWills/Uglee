@@ -246,4 +246,10 @@ global.SetUpRoom = function() {
 			SetValue("maxPlays", "3");
 		}
 	});
+	// Max # of songs allowed per time DJing
+	GetValue("welcomeMsg", 0, function(value) {
+		if(value === null) {
+			SetValue("welcomeMsg", "false");
+		}
+	});
 };

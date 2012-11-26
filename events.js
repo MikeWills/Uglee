@@ -93,6 +93,12 @@ global.OnRegistered = function(data) {
 			bot.pm("Hello master, how may I be of service?");
 		}
 
+		GetValue("welcomeMsg", 0, function(value){
+			if (value === "true"){
+				Speak(welcomeText);
+			}
+		});
+
 		//Add new user(s) to cache
 		var users = data.user;
 		for(var i in users) {
