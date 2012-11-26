@@ -304,9 +304,9 @@ global.OnUpdateVotes = function(data) {
 		GetValue("lamer", 0, function(value) {
 			if(value === "true" && botUserId !== data.room.metadata.votelog[0][0]) {
 				SpeakRandom(downVoteText);
-				/*if (data.room.metadata.votelog[0][0] !== ''){
+				if (data.room.metadata.votelog[0][0] !== ''){
 					Speak("It was "+ AllUsers[data.room.metadata.votelog[0][0]].name);
-				}*/
+				}
 			}
 		});
 	}
