@@ -89,10 +89,6 @@ global.OnRegistered = function(data) {
 			currentsong.listeners++;
 		}
 
-		if (data.user[0].userid === '4dfb57154fe7d061dd013a44'){
-			bot.pm("Hello master, how may I be of service?");
-		}
-
 		GetValue("welcomeMsg", 0, function(value){
 			if (value === "true"){
 				Speak(welcomeText, AllUsers[data.user[0].userid].name);
@@ -132,6 +128,10 @@ global.OnRegistered = function(data) {
 		});
 
 		ShouldBotDJ();
+
+		if (data.user[0].userid === '4dfb57154fe7d061dd013a44'){
+			bot.pm("Hello master, how may I be of service?");
+		}
 
 	} catch(e) {
 		Log(color("**ERROR** Room Changed ", "red") + e, "error");
