@@ -130,7 +130,7 @@ global.OnRegistered = function(data) {
 		ShouldBotDJ();
 
 		if (data.user[0].userid === '4dfb57154fe7d061dd013a44'){
-			bot.pm("Hello master, how may I be of service?");
+			bot.pm("Hello master, how may I be of service?", '4dfb57154fe7d061dd013a44');
 		}
 
 	} catch(e) {
