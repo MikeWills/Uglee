@@ -26,7 +26,7 @@ exports.handler = function(data, userid, source) {
                 bonusvote = true;
             }
         } else {
-            Speak("HEY! I'm boppin' here! What more you want???");
+            Speak("HEY! I'm boppin' here! How about I change it to a lame if you insist...");
         }
     } else {
         bot.speak("@" + botName + " roll");
