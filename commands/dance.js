@@ -12,5 +12,7 @@ exports.handler = function(data, userid, source) {
 				alreadyVoted = true;
 			}
 		}
+	} else {
+		Speak("HEY! I'm boppin' here! What more you want???");
 	}
 }
