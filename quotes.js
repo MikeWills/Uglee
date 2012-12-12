@@ -46,6 +46,7 @@ global.chat_responses =		[{ name: "whois", response1: "Me is a bot that is creat
 							{ name: "tequilla", response1: "/me hands @{u} a shot of 1800 Select Silver.", response2: "Here you go Master @{u}. Real men (and women) don't need limes and salt." },
 							{ name: "taquila", response1: "/me hands @{u} a shot of 1800 Select Silver.", response2: "Here you go Master @{u}. Real men (and women) don't need limes and salt." },
 							{ name: "taquilla", response1: "/me hands @{u} a shot of 1800 Select Silver.", response2: "Here you go Master @{u}. Real men (and women) don't need limes and salt." },
+							{ name: "fluffy drink", response1: "Thanks to @martyjr722's whining, I have some gay-ass fluffy drinks.", response2: "/me gives {u} a fluffy drink."},
 							{ name: "gin", response1: "/me hands @{u} a Hendricks with soda and lemon.", response2: "Here you go Master @{u}." },
 							{ name: "wine", response1: "What are you some fucking pussy elf?", response2: "" },
 							{ name: "coke", response1: "/me hands @{u} a cold one.", response2: "Here you go Master @{u}." },
