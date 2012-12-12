@@ -37,7 +37,7 @@ global.chat_responses =		[{ name: "whois", response1: "Me is a bot that is creat
 							{ name: "ping", response1: "pong", response2: ""},
 							{ name: "bye", response1: "Finally that jerk is leaving.", response2: "" },
 							{ name: "hammer", response1: "The hammer is my penis.", response2: "" },
-							{ name: "menu", response1: "Here is my drink menu: whiskey | brandy | tequilla | gin | coke | dew | coffee | water.",
+							{ name: "menu", response1: "Here is my drink menu: whiskey | brandy | tequilla | gin | coke | dew | coffee | water | fluffy drink.",
 									response2: "Here is my food menu: pizza | cake | taquitos"},
 							{ name: "beer", response1: "/me hands @{u} a cold one.", response2: "Here you go Master @{u}." },
 							{ name: "whiskey", response1: "/me hands @{u} a Crown Royal on the rocks.", response2: "Here you go Master @{u}." },
