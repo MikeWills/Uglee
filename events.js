@@ -91,7 +91,9 @@ global.OnRegistered = function(data) {
 
 		GetValue("welcomeMsg", 0, function(value){
 			if (value === "true"){
-				Speak(welcomeText, AllUsers[data.user[0].userid].name);
+				var d = new Date();
+				var dayOfWeek = d.getDay();
+				Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name);
 			}
 		});
 

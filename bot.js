@@ -21,6 +21,13 @@ global.stepUpText = "Imma gonna help you out here.";
 global.stepDownText = "Looks like me no longer needed.";
 global.summonText = "Can you want to join us in All Music Mix (tt.fm/all_music_mix)?";
 global.welcomeText = "Welcome to the room @{u}! Be sure to familiarize yourself with the !rules.";
+global.welcomeDaily =  ["Welcome to the room @{u}! Be sure to familiarize yourself with the !rules.",  // Sunday
+ 						"Welcome to the room @{u}! Be sure to familiarize yourself with the !rules.",  // Monday
+ 						"Welcome to the room @{u}! Be sure to familiarize yourself with the !rules.",  // Tuesday
+ 						"Welcome to the room @{u}! Be sure to familiarize yourself with the !rules.",  // Wednesday
+ 						"Welcome to the room @{u}! Be sure to familiarize yourself with the !rules.",  // Thursday
+ 						"Welcome to the room @{u}! Be sure to familiarize yourself with the !rules.",  // Friday
+ 						"Welcome to the room @{u}! Be sure to familiarize yourself with the !rules."]; // Saturday
 global.ruleText = "[1] No more dubstep. [2] I will tell you how many songs you can play for each set (1-4) [3] Please wait the number DJ(s) I tell you between sets (I will suspend the wait if seats stay open). [4] While DJing hit awesome for the other DJs to show your support. [5] Be nice.";
 global.startupText = "Oi! Ten thousand cycles will give you such a crick in the neck.";
 
