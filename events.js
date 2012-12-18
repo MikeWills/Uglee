@@ -39,7 +39,7 @@ global.OnRoomChanged = function(data) {
 			Speak("You're despicable!");
 			botWasBooted = false;
 		} else {
-			Speak("Oi! Ten thousand cycles will give you such a crick in the neck.");
+			Speak(startupText);
 		}
 
 		if(currentRoomId !== data.room.roomid) {

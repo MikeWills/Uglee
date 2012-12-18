@@ -11,7 +11,7 @@ require("datejs");
 global.Database = require("./database.js");
 global.Events = require("./events.js");
 global.Functions = require("./functions.js");
-global.Quotes = require("./quotes.js");
+//global.Quotes = require("./quotes.js");
 global.currentRoomId = botRoomId;
 
 // Setup mySQL
