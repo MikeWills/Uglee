@@ -89,13 +89,15 @@ global.OnRegistered = function(data) {
 			currentsong.listeners++;
 		}
 
-		GetValue("welcomeMsg", 0, function(value){
-			if (value === "true"){
-				var d = new Date();
-				var dayOfWeek = d.getDay();
-				Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name);
-			}
-		});
+		setTimeout(function() {
+			GetValue("welcomeMsg", 0, function(value) {
+				if(value === "true") {
+					var d = new Date();
+					var dayOfWeek = d.getDay();
+					Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name);
+				}
+			});
+		}, 5000);
 
 		//Add new user(s) to cache
 		var users = data.user;
@@ -131,7 +133,7 @@ global.OnRegistered = function(data) {
 
 		ShouldBotDJ();
 
-		if (data.user[0].userid === '4dfb57154fe7d061dd013a44'){
+		if(data.user[0].userid === '4dfb57154fe7d061dd013a44') {
 			bot.pm("Hello master, how may I be of service?", '4dfb57154fe7d061dd013a44');
 		}
 
@@ -312,8 +314,8 @@ global.OnUpdateVotes = function(data) {
 		GetValue("lamer", 0, function(value) {
 			if(value === "true" && botUserId !== data.room.metadata.votelog[0][0]) {
 				SpeakRandom(downVoteText);
-				if (data.room.metadata.votelog[0][0] !== ''){
-					Speak("It was "+ AllUsers[data.room.metadata.votelog[0][0]].name);
+				if(data.room.metadata.votelog[0][0] !== '') {
+					Speak("It was " + AllUsers[data.room.metadata.votelog[0][0]].name);
 				}
 			}
 		});
