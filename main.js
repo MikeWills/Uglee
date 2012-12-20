@@ -25,7 +25,7 @@ try {
 
 //Connects to mysql server
 try {
-	global.client = mysql.createClient({
+	global.client = mysql.createConnection({
 		"host": dbHost,
 		"user": dbLogin,
 		"password": dbPassword

@@ -100,7 +100,7 @@ global.SetUpDatabase = function() {
 	// Song table
 	client.query('CREATE TABLE ' + dbName + '.' + dbTablePrefix + 'Song(`roomid` VARCHAR( 255 ) NOT NULL, id INT(11) AUTO_INCREMENT PRIMARY KEY,' + ' artist VARCHAR(255),' + ' song VARCHAR(255),' + ' djid VARCHAR(255),' + ' up INT(3),' + ' down INT(3),' + ' listeners INT(3),' + ' started DATETIME,' + ' snags INT(3),' + ' bonus INT(3))', function(error) {
 		//Handle an error if it's not a table already exists error
-		if(error && error.number != 1050) {
+		if(error && error.code != 'ER_TABLE_EXISTS_ERROR') {
 			throw(error);
 		}
 	});
@@ -108,14 +108,14 @@ global.SetUpDatabase = function() {
 	// User table
 	client.query('CREATE TABLE ' + dbName + '.' + dbTablePrefix + 'User(`roomid` VARCHAR( 255 ) NOT NULL, userid VARCHAR(255), ' + 'username VARCHAR(255), ' + 'lastseen DATETIME, isMod BIT(1),' + 'PRIMARY KEY (userid, username))', function(error) {
 		//Handle an error if it's not a table already exists error
-		if(error && error.number != 1050) {
+		if(error && error.code != 'ER_TABLE_EXISTS_ERROR') {
 			throw(error);
 		}
 	});
 
 	// Banned users
 	client.query('CREATE TABLE IF NOT EXISTS ' + dbName + '.BANNED (' + 'id INT(11) AUTO_INCREMENT PRIMARY KEY, ' + 'userid VARCHAR(255), ' + 'banned_by VARCHAR(255), ' + 'timestamp DATETIME)', function(error) {
-		if(error && error.number != 1050) {
+		if(error && error.code != 'ER_TABLE_EXISTS_ERROR') {
 			throw error;
 		}
 	});
@@ -124,7 +124,7 @@ global.SetUpDatabase = function() {
 	// Settings table
 	client.query("CREATE TABLE IF NOT EXISTS " + dbName + '.' + dbTablePrefix + "Settings (`roomid` VARCHAR( 255 ) NOT NULL, `key` varchar(50) NOT NULL," + " `value` varchar(4096) NOT NULL, " + "`DateStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP " + ")", function(error) {
 		//Handle an error if it's not a table already exists error
-		if(error && error.number != 1050) {
+		if(error && error.code != 'ER_TABLE_EXISTS_ERROR') {
 			throw(error);
 		}
 	});

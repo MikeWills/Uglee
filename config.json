@@ -1,0 +1,27 @@
+{"botinfo":
+	{"auth":"auth+live+8d4b5f9ee0afa96191bf39bbb1f4784249ea10d7",
+	"userid":"4f43dff8590ca268c10005e9",
+	"laptoptype":"chrome"},
+"roomid":"4ea390ac14169c0cc3caa078",
+"admins":
+	{"mainadmin":"4dfb57154fe7d061dd013a44",
+	"admins": ["4dfb57154fe7d061dd013a44", "4f458788590ca220fc0029fd", "4e13aa77a3f75114c6069dbc", "4e525ccaa3f751044b236e63", "4e807e494fe7d052e90e502a", "4eb7420b4fe7d020bb001832", "4e053a70a3f75175fe07520d", "4e51b297a3f7510445213206", "4e80c367a3f7511653108580"] },
+"database":
+	{"usedb":true,
+	"dbname":"turntable_uglee", 
+	"tablenames": 
+		{"song": "SONGLIST", 
+		"chat": "CHATLOG", 
+		"user": "USERS",
+		"cache": "CACHE"},
+	"login":{
+		"user":"uglee",
+		"password":"jhqzDreLvjF4JzmN"}},
+"botName": "Uglee",
+"consolelog":false,
+"autobop": false,
+"autodj":false,
+"enableQueue": false,
+"nextDjQueueTimeout": 30,
+"newsongcomments":true,
+"monitorsonglength":true, "maxsonglength":480}
