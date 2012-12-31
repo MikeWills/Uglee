@@ -9,26 +9,26 @@ exports.handler = function(data, userid, source) {
             if(!alreadyRolled) {
                 alreadyRolled = true;
                 if(roll > 4) {
-                    bot.speak(data.name + ', you rolled a ' + roll + ', Awesome!');
+                    Speak(data.name + ', you rolled a ' + roll + ', Awesome!', null, source, userid);
                     bot.vote('up');
                     alreadyVoted = true;
                 } else if(roll === 1) {
-                    bot.speak(data.name + ', you rolled a ' + roll + ', Lame!');
+                    Speak(data.name + ', you rolled a ' + roll + ', Lame!', null, source, userid);
                     bot.vote('up');
                     setTimeout(function() {
                         bot.vote('down');
                     }, 1000);
                     alreadyVoted = true;
                 } else {
-                    bot.speak(data.name + ', you rolled a ' + roll + ', bummer.');
+                    Speak(data.name + ', you rolled a ' + roll + ', bummer.', null, source, userid);
                     alreadyVoted = true;
                 }
                 bonusvote = true;
             }
         } else {
-            Speak("HEY! I'm boppin' here! How about I change it to a lame if you insist...");
+            Speak("HEY! I'm boppin' here! How about I change it to a lame if you insist...", null, source, userid);
         }
     } else {
-        bot.speak("@" + botName + " roll");
+        Speak("@" + botName + " roll", null, source, userid);
     }
 }
