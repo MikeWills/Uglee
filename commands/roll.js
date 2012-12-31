@@ -28,7 +28,5 @@ exports.handler = function(data, userid, source) {
         } else {
             Speak("HEY! I'm boppin' here! How about I change it to a lame if you insist...", null, source, userid);
         }
-    } else {
-        Speak("@" + botName + " roll", null, source, userid);
     }
 }
