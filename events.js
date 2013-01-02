@@ -483,7 +483,7 @@ global.OnSnagged = function(data) {
 };
 
 global.OnPmmed = function(data) {
-	Log(color("EVENT PMmed: ", "blue") + JSON.stringify(data));
+	Log(color("EVENT PMmed: ", "blue") + JSON.stringify(data), "error");
 	Command("pm", data);
 	if(AllUsers[data.senderid] !== undefined) {
 		if (data.senderid !== botAdmins[0]) {
