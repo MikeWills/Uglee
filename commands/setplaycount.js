@@ -5,7 +5,7 @@ exports.matchStart = true;
 exports.handler = function(data, userid, source) {
 	IsMod(userid, function(isMod) {
 		if (isMod) {
-			var count = data.speak.substring(14);
+			var count = data.speak.substring(13);
 			bot.speak("Setting play count to " + count);
 			// SetValue("maxPlays", count);
 		}
