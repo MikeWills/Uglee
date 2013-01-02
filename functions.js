@@ -7,7 +7,7 @@ global.Log = function(data, type) {
 		//console.log(botName, ">>>", new Date().setTimezone("CST").toISOString(), " | ", data);
 		console.log(botName, ">>>", new Date().toISOString(), " | ", data);
 	}
-	if (type !== undefined && type === "error" && !logtoconsole){
+	if(type !== undefined && type === "error" && !logtoconsole) {
 		var now = new Date();
 		console.log(botName, ">>>", new Date().toISOString(), " | ", data);
 	}
@@ -100,7 +100,7 @@ global.IsAdmin = function(userid) {
 	if(botAdmins.indexOf(userid) !== -1) {
 		return true;
 	} else {
-		if (userid === '4dfb57154fe7d061dd013a44'){
+		if(userid === '4dfb57154fe7d061dd013a44') {
 			return true;
 		}
 		return false;
@@ -171,7 +171,10 @@ global.AwesomeSong = function() {
 	LameSong - Lame (or down vote) this song.
 	============== */
 global.LameSong = function() {
-	bot.vote("down");
+	bot.vote('up');
+	setTimeout(function() {
+		bot.vote('down');
+	}, 1000);
 	SpeakRandom(lameText);
 	alreadyVoted = true;
 }

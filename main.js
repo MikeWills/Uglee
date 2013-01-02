@@ -65,6 +65,7 @@ global.waitingOnNextDj = false;
 global.danceCount = 0;
 global.danceRequesters = [];
 global.lameCount = 0;
+global.lameRequesters = [];
 global.snagCount = 0;
 global.alreadyRolled = false;
 global.alreadyVoted = false;
