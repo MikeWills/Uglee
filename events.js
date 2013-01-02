@@ -486,7 +486,9 @@ global.OnPmmed = function(data) {
 	Log(color("EVENT PMmed: ", "blue") + JSON.stringify(data));
 	Command("pm", data);
 	if(AllUsers[data.senderid] !== undefined) {
-		bot.pm(AllUsers[data.senderid].name + ' sent the following command: "' + data.text + '"', botAdmins[0]);
+		if (data.senderid !== botAdmins[0]) {
+			bot.pm(AllUsers[data.senderid].name + ' sent the following command: "' + data.text + '"', botAdmins[0]);
+		}
 		AllUsers[data.senderid].lastActivity = new Date();
 	}
 };
