@@ -8,14 +8,14 @@ global.botLaptop = "linux";
 global.botAdmins = ["4dfb57154fe7d061dd013a44", "4f458788590ca220fc0029fd"];
 
 // Database Details
-global.dbHost = "localhost";
+global.dbHost = "10.0.1.5";
 global.dbName = "tt_bots";
 global.dbTablePrefix = "bots_";
 global.dbLogin = "ttbot";
 global.dbPassword = "DMcZJSDNqCNDQ2ES";
 
 // Flags
-global.logtoconsole = false;
+global.logtoconsole = true;
 
 // Configure sayings
 global.stepUpText = "I'll show you what REAL music sounds like.";

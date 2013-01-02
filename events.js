@@ -92,12 +92,14 @@ global.OnRegistered = function(data) {
 		setTimeout(function() {
 			GetValue("welcomeMsg", 0, function(value) {
 				if(value === "true") {
-					var d = new Date();
-					var dayOfWeek = d.getDay();
-					Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name);
+					if (AllUsers[data.user[0].userid] !== undefined){
+						var d = new Date();
+						var dayOfWeek = d.getDay();
+						Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name);
+					}
 				}
 			});
-		}, 5000);
+		}, 2500);
 
 		//Add new user(s) to cache
 		var users = data.user;
