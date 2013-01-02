@@ -367,7 +367,7 @@ global.OnUpdateVotes = function(data) {
 };
 
 global.OnBootedUser = function(data) {
-	Log(color("EVENT Booted User: ", "blue") + JSON.stringify(data));
+	Log(color("EVENT Booted User: ", "blue") + JSON.stringify(data), "error");
 	if(data.userid === botUserId) {
 		botWasBooted = true;
 		bot.roomDeregister();
@@ -449,13 +449,13 @@ global.OnRemDJ = function(data) {
 };
 
 global.OnNewModerator = function(data) {
-	Log(color("EVENT New Moderator: ", "blue") + JSON.stringify(data));
+	Log(color("EVENT New Moderator: ", "blue") + JSON.stringify(data), "error");
 
 	client.query('UPDATE ' + dbName + '.' + dbTablePrefix + 'User SET `isMod`=1 WHERE `roomid` = ? and `userid` = ?', [currentRoomId, data.userid]);
 };
 
 global.OnRemModerator = function(data) {
-	Log(color("EVENT Remove Moderator: ", "blue") + JSON.stringify(data));
+	Log(color("EVENT Remove Moderator: ", "blue") + JSON.stringify(data), "error");
 
 	client.query('UPDATE ' + dbName + '.' + dbTablePrefix + 'User SET `isMod`=0 WHERE `roomid` = ? and `userid` = ?', [currentRoomId, data.userid]);
 };
@@ -494,7 +494,7 @@ global.OnPmmed = function(data) {
 };
 
 global.OnError = function(data) {
-	Log(color("EVENT **ERROR**: ", "red") + JSON.stringify(data));
+	Log(color("EVENT **ERROR**: ", "red") + JSON.stringify(data), "error");
 };
 
 global.OnTcpConnect = function(socket) {
