@@ -451,6 +451,18 @@ global.OnRemDJ = function(data) {
 global.OnNewModerator = function(data) {
 	Log(color("EVENT New Moderator: ", "blue") + JSON.stringify(data), "error");
 
+	var text = "Current mods online are: ";
+
+	bot.roomInfo(function(data) {
+		var mods = data.room.metadata.moderator_id;
+		for(var i = 0; i < mods.length; i++){
+			if (AllUsers[mods[i]] !== undefined){
+				text += AllUsers[mods[i]].name;
+			}
+		}
+		setTimeout(function(){ Log(color("Mods online: ", "red") + text, "error"); }, 2000);
+	});
+
 	client.query('UPDATE ' + dbName + '.' + dbTablePrefix + 'User SET `isMod`=1 WHERE `roomid` = ? and `userid` = ?', [currentRoomId, data.userid]);
 };
 
