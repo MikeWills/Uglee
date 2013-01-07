@@ -457,7 +457,7 @@ global.OnNewModerator = function(data) {
 		var mods = data.room.metadata.moderator_id;
 		for(var i = 0; i < mods.length; i++){
 			if (AllUsers[mods[i]] !== undefined){
-				text += AllUsers[mods[i]].name;
+				text += AllUsers[mods[i]].name + ", ";
 			}
 		}
 		setTimeout(function(){ Log(color("Mods online: ", "red") + text, "error"); }, 2000);
