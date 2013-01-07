@@ -471,7 +471,23 @@ global.OnNewModerator = function(data) {
 };
 
 global.OnRemModerator = function(data) {
-	Log(color("EVENT Remove Moderator: ", "blue") + JSON.stringify(data), "error");
+	if (AllUsers[data.userid] !== undefined) {
+		Log(color("EVENT Remove Moderator: ", "blue") + AllUsers[data.userid].name + " (" + data.userid + ") is no longer a moderator.", "error");
+	} else {
+		Log(color("EVENT Remove Moderator: ", "blue") + data.userid + " is no longer a moderator.", "error");
+	}
+
+	var text = "Current mods online are: ";
+
+	bot.roomInfo(function(data) {
+		var mods = data.room.metadata.moderator_id;
+		for(var i = 0; i < mods.length; i++){
+			if (AllUsers[mods[i]] !== undefined){
+				text += AllUsers[mods[i]].name + ", ";
+			}
+		}
+		setTimeout(function(){ Log(color("Mods online: ", "red") + text, "error"); }, 2000);
+	});
 
 	client.query('UPDATE ' + dbName + '.' + dbTablePrefix + 'User SET `isMod`=0 WHERE `roomid` = ? and `userid` = ?', [currentRoomId, data.userid]);
 };
