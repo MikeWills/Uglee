@@ -449,7 +449,11 @@ global.OnRemDJ = function(data) {
 };
 
 global.OnNewModerator = function(data) {
-	Log(color("EVENT New Moderator: ", "blue") + JSON.stringify(data), "error");
+	if (AllUsers[data.userid] !== undefined) {
+		Log(color("EVENT New Moderator: ", "blue") + AllUsers[data.userid].name + " (" + data.userid + ") is now a moderator.", "error");
+	} else {
+		Log(color("EVENT New Moderator: ", "blue") + data.userid + " is now a moderator.", "error");
+	}
 
 	var text = "Current mods online are: ";
 
