@@ -329,7 +329,7 @@ global.OnUpdateVotes = function(data) {
 		//Log("Update Vote: " + userid);
 		if(userid !== "") {
 			if(AllUsers[userid] !== undefined) {
-				AllUsers[userid].lastActivity = new Date();
+				//AllUsers[userid].lastActivity = new Date();
 			}
 		} else {
 			Log("Update Vote: " + userid);
