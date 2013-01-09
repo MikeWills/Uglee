@@ -8,7 +8,7 @@ exports.handler = function(data, userid, source) {
     	'Song  WHERE `roomid` = ? AND started > DATE_SUB(NOW(), INTERVAL ' + '1 DAY) GROUP BY djid) a INNER JOIN (SELECT * FROM (SELECT * FROM ' + 
     	dbName + '.' + dbTablePrefix + 'User ORDER BY lastseen DESC) as test GROUP BY userid) b ON a.djid = b.userid' + 
     	' ORDER BY upvotes DESC LIMIT 3', [currentRoomId], function select(error, results, fields) {
-        var response = 'DJs with the most points in the last 24 hours: ';
+        var response = 'DJs with the most points in the last 24 hours: Pun Masta Mike: 1,000, ';
         for (i in results) {
             response += results[i]['username'] + ': ' + results[i]['upvotes'] + ' awesomes.  ';
         }
