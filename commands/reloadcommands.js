@@ -11,15 +11,17 @@ exports.handler = function(data, userid, source) {
                 try {
                     var filenames = fs.readdirSync('./commands');
                     for(i in filenames) {
-                        var command = require('./' + filenames[i]);
-                        newCommands.push({
-                            name: command.name,
-                            handler: command.handler,
-                            hidden: command.hidden,
-                            enabled: command.enabled,
-                            matchStart: command.matchStart
-                        });
-                        j++;
+                        if(filenames[i] !== ".DS_Store") {
+                            var command = require('./' + filenames[i]);
+                            newCommands.push({
+                                name: command.name,
+                                handler: command.handler,
+                                hidden: command.hidden,
+                                enabled: command.enabled,
+                                matchStart: command.matchStart
+                            });
+                            j++;
+                        }
                     }
                 } catch(e) {
                     TellUser(userid, 'Command reload failed: ' + e);
