@@ -3,8 +3,15 @@ global.botAuthId = "auth+live+#######";
 global.botUserId = "######";
 global.botRoomId = "######";
 global.botName = "botName";
-global.botLaptop = "linux";
+global.botLaptop = "mac";
 global.botAdmins = ["#####", "######"]; // This can be 1 or more people
+
+global.botWebsite = "";
+global.botTwitter = "";
+global.botFacebook = "";
+global.botAbout = "";
+global.botTopartists = "";
+global.botHangout = "";
 
 // Database Details
 global.dbHost = "localhost";
