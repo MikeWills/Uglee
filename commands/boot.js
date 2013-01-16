@@ -9,9 +9,9 @@ exports.handler = function(data, userid, source) {
             var givenname = data.text.substring(6);
             client.query('SELECT userid FROM (SELECT * FROM ' + dbName + '.' + dbTablePrefix + 'User WHERE username LIKE ?) a ORDER BY lastseen DESC', [givenname], function select(error, results, fields) {
                 if (results != null && results.length > 0) {
-                    Log(color("EVENT BOOT: ", "red") + givenname + ' (UID ' + results[0]['userid'] + ') has been booted by ' + data.name + '.');
+                    Log(color("EVENT BOOT: ", "red") + givenname + ' (UID ' + results[0]['userid'] + ') has been booted by ' + data.name + '.', "error");
                     bot.speak(givenname + ' (UID ' + results[0]['userid'] + ') has been booted by ' + data.name + '.');
-                    bot.boot(userid, 'When you can be good, you can come back.');
+                    bot.boot(results[0]['userid'], 'When you can be good, you can come back.');
                 }
             });
         }
