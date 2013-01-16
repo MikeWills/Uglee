@@ -71,6 +71,7 @@ global.alreadyRolled = false;
 global.alreadyVoted = false;
 global.Subscribers = [];
 global.reserveredFor = null;
+global.reservedRemovedDjs = {};
 
 // DJing bot
 global.botDJing = false;

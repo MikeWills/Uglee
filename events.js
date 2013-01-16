@@ -396,6 +396,8 @@ global.OnAddDJ = function(data) {
 		} else {
 			Speak("Sorry, this spot is reserved. They are most likely refreshing their page to fix a problem.");
 		}
+		//if ()
+		//reservedRemovedDjs[user.userid] = ;
 	}
 
 	if(reserveredFor !== null && reserveredFor === user.userid) {
