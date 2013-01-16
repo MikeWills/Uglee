@@ -1,4 +1,4 @@
-exports.name = '/followme';
+exports.name = '/botname';
 exports.hidden = true;
 exports.enabled = true;
 exports.matchStart = false;
