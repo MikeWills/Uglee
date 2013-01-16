@@ -9,7 +9,7 @@ exports.handler = function(data, userid, source) {
 		IsMod(userid, function(isMod) {
 			if (isMod) {
 				bot.remModerator("");
-				Speak("Those mosds are removed.", "", source, userid);
+				Speak("Those mods are removed.", "", source, userid);
 			}
 		});
 	}
