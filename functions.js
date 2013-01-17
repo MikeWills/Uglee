@@ -156,6 +156,13 @@ global.Command = function(source, data) {
 			}
 		}
 	}
+
+	result = data.text.match(/\/tableflip/);
+	if(result) {
+		setTimeout(function() {
+			Speak("/tablefix");
+		}, 2000);
+	}
 }
 
 /* 	==============
