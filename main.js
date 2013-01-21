@@ -212,6 +212,11 @@ setInterval(function() {
 	}
 }, 600000); // 10 minutes
 
+// The bot will speak every so often to make sure it isn't idle.
+setInterval(function(){
+	SpeakRandom(idleQuotes, "");
+}, 20*60*1000)
+
 // Look for users that are idle and boot them
 GetValue('bootOnIdle', 0, function(retVal) {
 	if (retVal === "true") {
