@@ -48,6 +48,8 @@ global.Djs = {};
 global.PastDjs = {};
 global.lastDJ = "";
 global.currentDj = "";
+global.votedDjs = [ ];
+global.firstSong = true;
 
 // Queue Data
 global.DjQueue = {

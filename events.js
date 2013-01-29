@@ -92,7 +92,7 @@ global.OnRegistered = function(data) {
 		setTimeout(function() {
 			GetValue("welcomeMsg", 0, function(value) {
 				if(value === "true") {
-					if (AllUsers[data.user[0].userid] !== undefined){
+					if(AllUsers[data.user[0].userid] !== undefined) {
 						var d = new Date();
 						var dayOfWeek = d.getDay();
 						Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name, "pm", data.user[0].userid);
@@ -285,6 +285,34 @@ global.OnNewSong = function(data) {
 		});
 	}
 
+	if (!firstSong) {
+		for (var i in Djs) {
+			Log("DJ " + i);
+			Log("Voted DJs " + votedDjs);
+			Log("Last Dj" + lastDj);
+			if (lastDj !== i && lastDj !== botUserId) {
+				Log("In 'If'");
+				if (votedDjs.indexOf(i) === -1) {
+					Log("Is dj");
+					Djs[i].afkCount++;
+					if (Djs[i].afkCount >= afkPlayCount) {
+						Log("remove");
+						bot.remDj(i);
+						Speak(msgAFKBoot, AllUsers[i].name, i);
+					} else if (Djs[i].afkCount >= 1) {
+						Log("Warn");
+						Speak(msgAFKWarn, AllUsers[i].name, i);
+					}
+				} else {
+					Djs[i].afkCount = 0;
+				}
+			}
+		}
+	}
+
+	firstSong = false;
+	votedDjs = [ ];
+
 	GetValue("monitorsonglength", 0, function(value) {
 		if(value === "true") {
 			GetValue("maxsonglength", 0, function(maxLength) {
@@ -333,6 +361,12 @@ global.OnUpdateVotes = function(data) {
 			}
 		} else {
 			Log("Update Vote: " + userid);
+		}
+
+		if(votedDjs.indexOf(userid) === -1 && votelog[i][1] == 'up') {
+			votedDjs.push(userid);
+			Log("Voted DJs: " + votedDjs);
+			// handle lames
 		}
 	}
 
@@ -451,7 +485,7 @@ global.OnRemDJ = function(data) {
 };
 
 global.OnNewModerator = function(data) {
-	if (AllUsers[data.userid] !== undefined) {
+	if(AllUsers[data.userid] !== undefined) {
 		Log(color("EVENT New Moderator: ", "blue") + AllUsers[data.userid].name + " (" + data.userid + ") is now a moderator.", "error");
 	} else {
 		Log(color("EVENT New Moderator: ", "blue") + data.userid + " is now a moderator.", "error");
@@ -461,19 +495,21 @@ global.OnNewModerator = function(data) {
 
 	bot.roomInfo(function(data) {
 		var mods = data.room.metadata.moderator_id;
-		for(var i = 0; i < mods.length; i++){
-			if (AllUsers[mods[i]] !== undefined){
+		for(var i = 0; i < mods.length; i++) {
+			if(AllUsers[mods[i]] !== undefined) {
 				text += AllUsers[mods[i]].name + ", ";
 			}
 		}
-		setTimeout(function(){ Log(color("Mods online: ", "red") + text, "error"); }, 2000);
+		setTimeout(function() {
+			Log(color("Mods online: ", "red") + text, "error");
+		}, 2000);
 	});
 
 	client.query('UPDATE ' + dbName + '.' + dbTablePrefix + 'User SET `isMod`=1 WHERE `roomid` = ? and `userid` = ?', [currentRoomId, data.userid]);
 };
 
 global.OnRemModerator = function(data) {
-	if (AllUsers[data.userid] !== undefined) {
+	if(AllUsers[data.userid] !== undefined) {
 		Log(color("EVENT Remove Moderator: ", "blue") + AllUsers[data.userid].name + " (" + data.userid + ") is no longer a moderator.", "error");
 	} else {
 		Log(color("EVENT Remove Moderator: ", "blue") + data.userid + " is no longer a moderator.", "error");
@@ -483,12 +519,14 @@ global.OnRemModerator = function(data) {
 
 	bot.roomInfo(function(data) {
 		var mods = data.room.metadata.moderator_id;
-		for(var i = 0; i < mods.length; i++){
-			if (AllUsers[mods[i]] !== undefined){
+		for(var i = 0; i < mods.length; i++) {
+			if(AllUsers[mods[i]] !== undefined) {
 				text += AllUsers[mods[i]].name + ", ";
 			}
 		}
-		setTimeout(function(){ Log(color("Mods online: ", "red") + text, "error"); }, 2000);
+		setTimeout(function() {
+			Log(color("Mods online: ", "red") + text, "error");
+		}, 2000);
 	});
 
 	client.query('UPDATE ' + dbName + '.' + dbTablePrefix + 'User SET `isMod`=0 WHERE `roomid` = ? and `userid` = ?', [currentRoomId, data.userid]);
@@ -520,7 +558,7 @@ global.OnPmmed = function(data) {
 	Log(color("EVENT PMmed: ", "blue") + JSON.stringify(data), "error");
 	Command("pm", data);
 	if(AllUsers[data.senderid] !== undefined) {
-		if (data.senderid !== botAdmins[0]) {
+		if(data.senderid !== botAdmins[0]) {
 			bot.pm(AllUsers[data.senderid].name + ' sent the following command: "' + data.text + '"', botAdmins[0]);
 		}
 		AllUsers[data.senderid].lastActivity = new Date();
