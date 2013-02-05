@@ -11,13 +11,14 @@ require("datejs");
 global.Database = require("./database.js");
 global.Events = require("./events.js");
 global.Functions = require("./functions.js");
+global.LastFmNode = require('lastfm').LastFmNode;
 //global.Quotes = require("./quotes.js");
 global.currentRoomId = botRoomId;
 
 // Setup mySQL
 try {
 	global.mysql = require('mysql');
-} catch (e) {
+} catch(e) {
 	Log(e);
 	Log('It is likely that you do not have the mysql node module installed.' + '\nUse the command \'npm install mysql\' to install.', "error");
 	process.exit(0);
@@ -31,29 +32,33 @@ try {
 		"password": dbPassword
 	});
 	SetUpDatabase();
-} catch (e) {
+} catch(e) {
 	Log(e);
 	Log('Make sure that a mysql server instance is running and that the ' + 'username and password information in config.js are correct.', "error");
 	process.exit(0);
 }
+
+global.lastfm = new LastFmNode({
+	api_key: lastfmApiKey,
+	secret: lastfmApiSecret
+});
 
 Log("Initializing");
 
 // Initialize global variables
 global.AllUsers = {}; // A list of all users in the room
 global.commands = new Array(); // Array of command handlers
-
 // DJ Data
 global.Djs = {};
 global.PastDjs = {};
 global.lastDJ = "";
 global.currentDj = "";
-global.votedDjs = [ ];
+global.votedDjs = [];
 global.firstSong = true;
 
 // Queue Data
 global.DjQueue = {
-    "length": 0
+	"length": 0
 };
 global.nextDj = null;
 global.nextDjTime = null;
@@ -111,7 +116,7 @@ global.songBootIntervalId = null;
 // Start up bot
 try {
 	global.bot = new Bot(botAuthId, botUserId, botRoomId);
-} catch (e) {
+} catch(e) {
 	setTimeout(function() {
 		Log("Shutting down (forever should restart)", "error")
 		process.exit(0);
@@ -121,8 +126,8 @@ try {
 // Load commands
 try {
 	var filenames = fs.readdirSync('./commands');
-	for (i in filenames) {
-		if (filenames[i] !== ".DS_Store") {
+	for(i in filenames) {
+		if(filenames[i] !== ".DS_Store") {
 			var command = require('./commands/' + filenames[i]);
 			commands.push({
 				name: command.name,
@@ -133,7 +138,7 @@ try {
 			});
 		}
 	}
-} catch (e) {
+} catch(e) {
 	Log(color("**ERROR** Load Commands", "red") + e, "error");
 }
 Log("Done");
@@ -190,7 +195,7 @@ setInterval(function() {
 				}
 			});
 		});
-		
+
 		setTimeout(function() {
 			if(botInRoom === false) {
 				bot.roomDeregister();
@@ -204,7 +209,7 @@ setInterval(function() {
 				}, 150000); // 2.5 minutes
 			}
 		}, 60000); // 1 minute
-	} catch (e) {
+	} catch(e) {
 		Log(color("**DOWN** Turntable.FM is down.", "red"), "error");
 		Log(color("** ERROR TT_UP_CHECK ** ", "red") + e, "error");
 		setTimeout(function() {
@@ -213,23 +218,21 @@ setInterval(function() {
 		}, 150000); // 2.5 minutes
 	}
 }, 600000); // 10 minutes
-
 // The bot will speak every so often to make sure it isn't idle.
 //setInterval(function(){
 //	SpeakRandom(idleQuotes, "");
 //}, 20*60*1000)
-
 // Look for users that are idle and boot them
 GetValue('bootOnIdle', 0, function(retVal) {
-	if (retVal === "true") {
+	if(retVal === "true") {
 		setInterval(function() {
 			GetValue("idleTime", 0, function(val) {
-				for (var z in AllUsers) {
+				for(var z in AllUsers) {
 					var startDate = new Date();
 					var idleTime = Math.round((startDate - AllUsers[z].lastActivity) / 3600000); // in hours
 					//var idleTime = Math.round((startDate - AllUsers[z].lastActivity) / 60000); // for testing minutes
 					//Log(AllUsers[z].name + ": " + idleTime);
-					if (idleTime >= val) {
+					if(idleTime >= val) {
 						Log("Bot booted " + AllUsers[z].name);
 						//bot.bootUser(z, "You have been booted for being idle."); // Uncomment this to activate
 					}
