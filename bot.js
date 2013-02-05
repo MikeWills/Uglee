@@ -20,6 +20,9 @@ global.dbTablePrefix = "bots_";
 global.dbLogin = "username";
 global.dbPassword = "password";
 
+global.lastfmApiKey = "";
+global.lastfmApiSecret = "";
+
 // Flags
 global.logtoconsole = true;
 
