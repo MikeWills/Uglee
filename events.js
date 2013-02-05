@@ -289,14 +289,15 @@ global.OnNewSong = function(data) {
 		for (var i in Djs) {
 			Log("DJ " + i);
 			Log("Voted DJs " + votedDjs);
-			Log("Last Dj" + lastDj);
+			Log("Last Dj " + lastDj);
+			Log("Processing DJ " + i);
 			if (lastDj !== i && lastDj !== botUserId) {
 				Log("In 'If'");
 				if (votedDjs.indexOf(i) === -1) {
 					Log("Is dj");
 					Djs[i].afkCount++;
 					if (Djs[i].afkCount >= afkPlayCount) {
-						Log("remove");
+						Log("Remove");
 						bot.remDj(i);
 						Speak(msgAFKBoot, AllUsers[i].name, i);
 					} else if (Djs[i].afkCount >= 1) {
