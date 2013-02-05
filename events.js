@@ -285,7 +285,7 @@ global.OnNewSong = function(data) {
 		});
 	}
 
-	if (!firstSong) {
+	/*if (!firstSong) {
 		for (var i in Djs) {
 			Log("DJ " + i);
 			Log("Voted DJs " + votedDjs);
@@ -309,7 +309,7 @@ global.OnNewSong = function(data) {
 				}
 			}
 		}
-	}
+	}*/
 
 	firstSong = false;
 	votedDjs = [ ];
