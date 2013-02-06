@@ -55,6 +55,7 @@ global.lastDJ = "";
 global.currentDj = "";
 global.votedDjs = [];
 global.firstSong = true;
+Log("First song: " + firstSong);
 
 // Queue Data
 global.DjQueue = {

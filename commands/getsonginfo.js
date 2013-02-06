@@ -11,7 +11,7 @@ exports.handler = function(data, userid, source) {
     if(components.length === 2) {
       getLastFmData(components[0], components[1], function(text) {
         Speak(text, '', source, userid)
-      });
+      }); 
     } else {
       getLastFmData(currentsong.artist, currentsong.song, function(text) {
         Speak(text, '', source, userid)

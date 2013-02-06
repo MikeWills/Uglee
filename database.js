@@ -252,4 +252,16 @@ global.SetUpRoom = function() {
 			SetValue("welcomeMsg", "false");
 		}
 	});
+	// The bot should be monitoring for AFK djs.
+	GetValue("monitorAfk", 0, function(value) {
+		if(value === null) {
+			SetValue("monitorAfk", "false");
+		}
+	});
+	// How many songs before the bot boots
+	GetValue("afkMissedSongs", 0, function(value) {
+		if(value === null) {
+			SetValue("afkMissedSongs", "2");
+		}
+	});
 };

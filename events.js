@@ -285,34 +285,43 @@ global.OnNewSong = function(data) {
 		});
 	}
 
-	/*if (!firstSong) {
-		for (var i in Djs) {
-			Log("DJ " + i);
-			Log("Voted DJs " + votedDjs);
-			Log("Last Dj " + lastDj);
-			Log("Processing DJ " + i);
-			if (lastDj !== i && lastDj !== botUserId) {
-				Log("In 'If'");
-				if (votedDjs.indexOf(i) === -1) {
-					Log("Is dj");
-					Djs[i].afkCount++;
-					if (Djs[i].afkCount >= afkPlayCount) {
-						Log("Remove");
-						bot.remDj(i);
-						Speak(msgAFKBoot, AllUsers[i].name, i);
-					} else if (Djs[i].afkCount >= 1) {
-						Log("Warn");
-						Speak(msgAFKWarn, AllUsers[i].name, i);
+	var OldVotedDjs = votedDjs;
+	GetValue("monitorAfk", 0, function(value) {
+		if(value === "true") {
+			GetValue("afkMissedSongs", 0, function(afkPlayCount) {
+				Log("afkPlayCount: " + afkPlayCount);
+				Log("First song: " + firstSong);
+				if(!firstSong) {
+					for(var i in Djs) {
+						Log("DJ " + i);
+						Log("Voted DJs " + OldVotedDjs);
+						Log("Last Dj " + lastDj);
+						Log("Processing DJ " + i);
+						if(lastDj !== i && lastDj !== botUserId) {
+							Log("In 'If'");
+							if(OldVotedDjs.indexOf(i) === -1) {
+								Log("Is dj");
+								Djs[i].afkCount++;
+								if(Djs[i].afkCount >= afkPlayCount) {
+									Log("Remove");
+									bot.remDj(i);
+									Speak(msgAFKBoot, AllUsers[i].name, i);
+								} else if(Djs[i].afkCount >= 1) {
+									Log("Warn");
+									Speak(msgAFKWarn, AllUsers[i].name, i);
+								}
+							} else {
+								Djs[i].afkCount = 0;
+							}
+						}
 					}
-				} else {
-					Djs[i].afkCount = 0;
 				}
-			}
+				votedDjs = [];
+				firstSong = false;
+				Log("First song: " + firstSong);
+			});
 		}
-	}*/
-
-	firstSong = false;
-	votedDjs = [ ];
+	});
 
 	GetValue("monitorsonglength", 0, function(value) {
 		if(value === "true") {
@@ -355,18 +364,9 @@ global.OnUpdateVotes = function(data) {
 	var votelog = data.room.metadata.votelog;
 	for(var i = 0; i < votelog.length; i++) {
 		var userid = votelog[i][0];
-		//Log("Update Vote: " + userid);
-		if(userid !== "") {
-			if(AllUsers[userid] !== undefined) {
-				//AllUsers[userid].lastActivity = new Date();
-			}
-		} else {
-			Log("Update Vote: " + userid);
-		}
-
-		if(votedDjs.indexOf(userid) === -1 && votelog[i][1] == 'up') {
+		Log("Update Vote: " + userid);
+		if(votelog[i][1] == 'up') {
 			votedDjs.push(userid);
-			Log("Voted DJs: " + votedDjs);
 			// handle lames
 		}
 	}
