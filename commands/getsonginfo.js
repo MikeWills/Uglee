@@ -6,7 +6,7 @@ exports.handler = function(data, userid, source) {
   if(lastfmApiKey != null) {
     var query = data.text.substring(10);
     Log("Query: " + query);
-    var components = query.split('-');
+    var components = query.split(' - ');
     Log("Components: " + components);
     if(components.length === 2) {
       getLastFmData(components[0], components[1], function(text) {
