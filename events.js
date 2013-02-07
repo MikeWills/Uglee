@@ -376,6 +376,11 @@ global.OnUpdateVotes = function(data) {
 		if(votelog[i][1] == 'up') {
 			votedDjs.push(userid);
 			// handle lames
+		} else {
+			if (votedDjs.indexOf(userid) !== -1){
+				var x = votedDjs.indexOf(userid);
+				votedDjs.splice(x, 1);
+			}
 		}
 	}
 
