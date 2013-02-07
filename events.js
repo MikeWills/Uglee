@@ -1,5 +1,6 @@
 var botWasBooted = false;
 global.totalPlays = 0;
+var bootedNextDJ = false;
 
 global.OnReady = function(data) {
 	Log(color("EVENT Ready", "blue"));
@@ -304,6 +305,10 @@ global.OnNewSong = function(data) {
 								Djs[i].afkCount++;
 								if(Djs[i].afkCount >= afkPlayCount) {
 									Log("Remove");
+									if(i === currentDj) {
+										bootedNextDJ = true;
+										firstSong = true; // this is so everyone else isn't booted when the dj is booted
+									}
 									bot.remDj(i);
 									Speak(msgAFKBoot, AllUsers[i].name, i);
 								} else if(Djs[i].afkCount >= 1) {
@@ -317,7 +322,10 @@ global.OnNewSong = function(data) {
 					}
 				}
 				votedDjs = [];
-				firstSong = false;
+				if(!bootedNextDJ) {
+					firstSong = false;
+				}
+				bootedNextDJ = false;
 				Log("First song: " + firstSong);
 			});
 		}
