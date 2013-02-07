@@ -21,35 +21,45 @@ exports.handler = function(data, userid, source) {
 }
 
 function getLastFmData(artist, song, callback) {
+  var text = "";
   var request = lastfm.request("track.getInfo", {
     artist: artist,
     track: song,
     handlers: {
       success: function(data) {
         console.log("Success: " + JSON.stringify(data));
-        var text = data.track.name + ' by ' + data.track.artist.name;
+        text = data.track.name + ' by ' + data.track.artist.name;
+        var album = "";
+        var mbid = "";
         if(data.track.album !== undefined) {
           text += ' was on the "' + data.track.album.title + '" album. ';
+          album = data.track.album.title;
+          mbid = data.track.album.mbid;
         }
-        var request2 = lastfm.request("album.getInfo", {
-          artist: artist,
-          album: data.track.album.title,
-          mbid: data.track.album.mbid,
-          handlers: {
-            success: function(albumData) {
-              console.log("Success: " + JSON.stringify(albumData));
-              if(albumData.album.releasedate !== undefined && albumData.album.releasedate !== " ") {
-                text += 'It was released on ' + Date.parse(albumData.album.releasedate).toString("d") + '.';
+        if(album !== "" || mbid !== "") {
+          var request2 = lastfm.request("album.getInfo", {
+            artist: artist,
+            album: album,
+            mbid: mbid,
+            handlers: {
+              success: function(albumData) {
+                console.log("Success: " + JSON.stringify(albumData));
+                if(albumData.album.releasedate !== undefined && albumData.album.releasedate !== "    ") {
+                  text += 'It was released on ' + Date.parse(albumData.album.releasedate).toString("d") + '.';
+                }
+                text += ' More information can be found at ' + data.track.url;
+                callback(text);
+              },
+              error: function(albumError) {
+                console.log("Error: " + albumError.message);
+                callback(text);
               }
-              text += ' More information can be found at ' + data.track.url;
-              callback(text);
-            },
-            error: function(albumError) {
-              console.log("Error: " + albumError.message);
-              callback(text);
             }
-          }
-        });
+          });
+        } else {
+          text += ' More information can be found at ' + data.track.url;
+          callback(text);
+        }
       },
       error: function(error) {
         console.log("Error: " + error.message);
