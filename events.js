@@ -96,7 +96,7 @@ global.OnRegistered = function(data) {
 					if(AllUsers[data.user[0].userid] !== undefined) {
 						var d = new Date();
 						var dayOfWeek = d.getDay();
-						Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name, "pm", data.user[0].userid);
+						Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name, "", data.user[0].userid);
 					}
 				}
 			});
