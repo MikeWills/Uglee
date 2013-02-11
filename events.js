@@ -282,8 +282,6 @@ global.OnNewSong = function(data) {
 		Log("Playing song right now.");
 	}
 
-	lastDj = currentDj;
-	currentDj = data.room.metadata.current_dj;
 	if(Djs[currentDj] !== undefined) {
 		Djs[currentDj].remainingPlays--;
 		SetValue('Djs', JSON.stringify(Djs));
