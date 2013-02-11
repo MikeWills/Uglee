@@ -467,9 +467,9 @@ global.OnAddDJ = function(data) {
 	NewDjFromQueue(data);
 
 	var user = data.user[0];
-	if(AllUsers[user.userid] !== undefined) {
+	/*if(AllUsers[user.userid] !== undefined) {
 		AllUsers[user.userid].lastActivity = new Date();
-	}
+	}*/
 
 	if(reserveredFor !== null && reserveredFor !== user.userid) {
 		bot.remDj(user.userid);
