@@ -378,7 +378,7 @@ global.OnNewSong = function(data) {
     //START THE 10 SEC TIMER
     takedownTimer = setTimeout( function() {
       takedownTimer = null;
-      bot.remDj(lastdj); // Remove Saved DJ from last newsong call
+      //bot.remDj(lastdj); // Remove Saved DJ from last newsong call
       bot.pm(AllUsers[lastdj].name+" "+lastdj+" SONG WAS STUCK and they got REMOVED :-(",botAdmins[0]);
     }, 15 * 1000); // Current DJ has 10 seconds to skip before they are removed
   }, (length + 15) * 1000); // Timer expires 10 seconds after the end of the song, if not cleared by a newsong  
