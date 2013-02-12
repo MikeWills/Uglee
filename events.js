@@ -251,21 +251,38 @@ global.OnNewSong = function(data) {
 	// Populate new song data in currentsong
 	PopulateSongData(data);
 
-	// If watch dog has been previously set, 
-	// clear since we've made it to the next song
-	if(curSongWatchdog != null) {
-		clearTimeout(curSongWatchdog);
-		curSongWatchdog = null;
-	}
+	GetValue("monitorHungSong", 0, function(value) {
+		if(value === "true") {
+			// If watch dog has been previously set, 
+			// clear since we've made it to the next song
+			if(curSongWatchdog != null) {
+				clearTimeout(curSongWatchdog);
+				curSongWatchdog = null;
+			}
 
-	// If takedown Timer has been set, 
-	// clear since we've made it to the next song
-	if(takedownTimer != null) {
-		clearTimeout(takedownTimer);
-		takedownTimer = null;
-		bot.speak("@" + AllUsers[lastdj].name + ", Thanks buddy ;-)");
-		bot.pm(AllUsers[lastdj].name + " " + lastdj + " SONG WAS STUCK and they SKIPPED :-) ", botAdmins[0]);
-	}
+			// If takedown Timer has been set, 
+			// clear since we've made it to the next song
+			if(takedownTimer != null) {
+				clearTimeout(takedownTimer);
+				takedownTimer = null;
+				bot.speak("@" + AllUsers[lastdj].name + ", Thanks buddy ;-)");
+				bot.pm(AllUsers[lastdj].name + " " + lastdj + " SONG WAS STUCK and they SKIPPED :-) ", botAdmins[0]);
+			}
+
+			// Set a new watchdog timer for the current song.
+			curSongWatchdog = setTimeout(function() {
+				curSongWatchdog = null;
+				bot.speak("@" + AllUsers[lastdj].name + ", you have 15 seconds to skip your stuck song before you are removed");
+				//START THE 10 SEC TIMER
+				takedownTimer = setTimeout(function() {
+					takedownTimer = null;
+					bot.remDj(lastdj); // Remove Saved DJ from last newsong call
+					bot.pm(AllUsers[lastdj].name + " " + lastdj + " SONG WAS STUCK and they got REMOVED :-(", botAdmins[0]);
+				}, 15 * 1000); // Current DJ has 10 seconds to skip before they are removed
+			}, (length + 15) * 1000); // Timer expires 10 seconds after the end of the song, if not cleared by a newsong  
+		}
+	});
+
 	// If the bot is DJing, randomize when it bops
 	if(botDJing) {
 		var rand = Math.ceil(Math.random() * 20);
@@ -368,18 +385,6 @@ global.OnNewSong = function(data) {
 			});
 		}
 	});
-
-	// Set a new watchdog timer for the current song.
-	curSongWatchdog = setTimeout(function() {
-		curSongWatchdog = null;
-		bot.speak("@" + AllUsers[lastdj].name + ", you have 15 seconds to skip your stuck song before you are removed");
-		//START THE 10 SEC TIMER
-		takedownTimer = setTimeout(function() {
-			takedownTimer = null;
-			bot.remDj(lastdj); // Remove Saved DJ from last newsong call
-			bot.pm(AllUsers[lastdj].name + " " + lastdj + " SONG WAS STUCK and they got REMOVED :-(", botAdmins[0]);
-		}, 15 * 1000); // Current DJ has 10 seconds to skip before they are removed
-	}, (length + 15) * 1000); // Timer expires 10 seconds after the end of the song, if not cleared by a newsong  
 };
 
 global.OnNoSong = function(data) {

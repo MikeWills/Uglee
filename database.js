@@ -264,4 +264,10 @@ global.SetUpRoom = function() {
 			SetValue("afkMissedSongs", "2");
 		}
 	});
+	// Have the boot monitor for hung songs.
+	GetValue("monitorHungSong", 0, function(value) {
+		if(value === null) {
+			SetValue("monitorHungSong", "false");
+		}
+	});
 };
