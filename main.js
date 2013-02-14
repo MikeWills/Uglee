@@ -52,6 +52,7 @@ global.commands = new Array(); // Array of command handlers
 global.Djs = {};
 global.PastDjs = {};
 global.lastDJ = "";
+global.lastDjName = "";
 global.currentDj = "";
 global.votedDjs = [];
 global.firstSong = true;

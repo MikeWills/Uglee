@@ -15,9 +15,9 @@ exports.handler = function(data, userid, source) {
         }
         Speak(response, "", source, userid);
 
-        if (source !== "pm"){
+        /*if (source !== "pm"){
             Speak("Don't brag in public! PM me privately instead!");
-        }
+        }*/
     });
 
 }

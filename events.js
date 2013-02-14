@@ -241,6 +241,7 @@ global.OnNewSong = function(data) {
 	var songLength = Number(data.room.metadata.current_song.metadata.length) / 60;
 	var length = data.room.metadata.current_song.metadata.length;
 	lastDj = currentDj;
+	lastDjName = AllUsers[lastDj].name;
 	currentDj = data.room.metadata.current_dj;
 	Log(color("EVENT New Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + data.room.metadata.current_song.metadata.song + " | Length: " + songLength + " minutes.");
 	//Log(color("EVENT New Song: ", "blue") + JSON.stringify(data));
@@ -272,12 +273,12 @@ global.OnNewSong = function(data) {
 			// Set a new watchdog timer for the current song.
 			curSongWatchdog = setTimeout(function() {
 				curSongWatchdog = null;
-				bot.speak("@" + AllUsers[lastDj].name + ", you have 15 seconds to skip your stuck song before you are removed");
+				bot.speak("@" + lastDjName + ", you have 15 seconds to skip your stuck song before you are removed");
 				//START THE 10 SEC TIMER
 				takedownTimer = setTimeout(function() {
 					takedownTimer = null;
 					bot.remDj(lastDj); // Remove Saved DJ from last newsong call
-					bot.pm(AllUsers[lastDj].name + " " + lastDj + " SONG WAS STUCK and they got REMOVED :-(", botAdmins[0]);
+					bot.pm(lastDjName + " (" + lastDj + ") SONG WAS STUCK and they got REMOVED :-(", botAdmins[0]);
 				}, 15 * 1000); // Current DJ has 10 seconds to skip before they are removed
 			}, (length + 15) * 1000); // Timer expires 10 seconds after the end of the song, if not cleared by a newsong  
 		}
