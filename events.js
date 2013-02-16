@@ -241,7 +241,7 @@ global.OnNewSong = function(data) {
 	var songLength = Number(data.room.metadata.current_song.metadata.length) / 60;
 	var length = data.room.metadata.current_song.metadata.length;
 	lastDj = currentDj;
-	lastDjName = AllUsers[lastDj].name;
+	lastDjName = AllUsers[currentDj].name;
 	currentDj = data.room.metadata.current_dj;
 	Log(color("EVENT New Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + data.room.metadata.current_song.metadata.song + " | Length: " + songLength + " minutes.");
 	//Log(color("EVENT New Song: ", "blue") + JSON.stringify(data));
