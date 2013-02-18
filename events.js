@@ -241,12 +241,12 @@ global.OnNewSong = function(data) {
 	var songLength = Number(data.room.metadata.current_song.metadata.length) / 60;
 	var length = data.room.metadata.current_song.metadata.length;
 	lastDj = currentDj;
+	currentDj = data.room.metadata.current_dj;
 	if (AllUsers[currentDj] !== undefined) {
 		lastDjName = AllUsers[currentDj].name;
 	} else {
 		lastDjName = "";
 	}
-	currentDj = data.room.metadata.current_dj;
 	Log(color("EVENT New Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + data.room.metadata.current_song.metadata.song + " | Length: " + songLength + " minutes.");
 	//Log(color("EVENT New Song: ", "blue") + JSON.stringify(data));
 	danceCount = 0;
@@ -275,11 +275,11 @@ global.OnNewSong = function(data) {
 			// Set a new watchdog timer for the current song.
 			curSongWatchdog = setTimeout(function() {
 				curSongWatchdog = null;
-				Speak("@{u}, you have 15 seconds to skip your stuck song before you are removed", lastDjName, "", lastDj);
+				Speak("@{u}, you have 15 seconds to skip your stuck song before you are removed", lastDjName, "", currentDj);
 				//START THE 10 SEC TIMER
 				takedownTimer = setTimeout(function() {
 					takedownTimer = null;
-					bot.remDj(lastDj); // Remove Saved DJ from last newsong call
+					bot.remDj(currentDj); // Remove Saved DJ from last newsong call
 				}, 15 * 1000); // Current DJ has 10 seconds to skip before they are removed
 			}, (length + 15) * 1000); // Timer expires 10 seconds after the end of the song, if not cleared by a newsong  
 		}
