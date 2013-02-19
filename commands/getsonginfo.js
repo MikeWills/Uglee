@@ -27,7 +27,7 @@ function getLastFmData(artist, song, callback) {
     track: song,
     handlers: {
       success: function(data) {
-        console.log("Success: " + JSON.stringify(data));
+        //console.log("Success: " + JSON.stringify(data));
         text = data.track.name + ' by ' + data.track.artist.name;
         var album = "";
         var mbid = "";
@@ -43,7 +43,7 @@ function getLastFmData(artist, song, callback) {
             mbid: mbid,
             handlers: {
               success: function(albumData) {
-                console.log("Success: " + JSON.stringify(albumData));
+                //console.log("Success: " + JSON.stringify(albumData));
                 if(albumData.album.releasedate !== undefined && albumData.album.releasedate !== "    ") {
                   text += 'It was released on ' + Date.parse(albumData.album.releasedate).toString("d") + '.';
                 }

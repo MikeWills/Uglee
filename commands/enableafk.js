@@ -7,7 +7,6 @@ exports.handler = function(data, userid, source) {
 		IsMod(userid, function(isMod) {
 			if(isMod) {
 				firstSong = true;
-				Log("First song: " + firstSong);
 				SetValue("monitorAfk", "true");
 				Speak("AFK enabled", "", source, userid);
 			}

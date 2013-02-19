@@ -327,21 +327,13 @@ global.OnNewSong = function(data) {
 	GetValue("monitorAfk", 0, function(value) {
 		if(value === "true") {
 			GetValue("afkMissedSongs", 0, function(afkPlayCount) {
-				Log("afkPlayCount: " + afkPlayCount);
-				Log("First song: " + firstSong);
 				if(!firstSong) {
 					for(var i in Djs) {
-						Log("DJ " + i);
-						Log("Voted DJs " + OldVotedDjs);
-						Log("Last Dj " + lastDj);
-						Log("Processing DJ " + i);
 						if(lastDj !== i && lastDj !== botUserId) {
-							Log("In 'If'");
 							if(OldVotedDjs.indexOf(i) === -1) {
-								Log("Is dj");
 								Djs[i].afkCount++;
 								if(Djs[i].afkCount >= afkPlayCount) {
-									Log("Remove");
+									Log("Remove " + AllUsers[i].name + "(" + i + ")");
 									if(i === currentDj) {
 										bootedNextDJ = true;
 										firstSong = true; // this is so everyone else isn't booted when the dj is booted
@@ -349,7 +341,7 @@ global.OnNewSong = function(data) {
 									bot.remDj(i);
 									Speak(msgAFKBoot, AllUsers[i].name, i);
 								} else if(Djs[i].afkCount >= 1) {
-									Log("Warn");
+									Log("Warn " + AllUsers[i].name + "(" + i + ")");
 									Speak(msgAFKWarn, AllUsers[i].name, i);
 								}
 							} else {
@@ -363,7 +355,6 @@ global.OnNewSong = function(data) {
 					firstSong = false;
 				}
 				bootedNextDJ = false;
-				Log("First song: " + firstSong);
 			});
 		}
 	});
