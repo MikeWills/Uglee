@@ -423,10 +423,10 @@ global.OnUpdateVotes = function(data) {
 			var percentLame = 0;
 
 			if(data.room.metadata.upvotes !== 0) {
-				percentAwesome = (data.room.metadata.upvotes / data.room.metadata.listeners) * 100;
+				percentAwesome = (data.room.metadata.upvotes / (data.room.metadata.listeners - 1)) * 100;
 			}
 			if(data.room.metadata.downvotes !== 0) {
-				percentLame = (data.room.metadata.downvotes / data.room.metadata.listeners) * 100;
+				percentLame = (data.room.metadata.downvotes / (data.room.metadata.listeners - 1)) * 100;
 			}
 
 			if((percentAwesome - percentLame) >= 50) {
