@@ -429,12 +429,12 @@ global.OnUpdateVotes = function(data) {
 				percentLame = (data.room.metadata.downvotes / data.room.metadata.listeners) * 100;
 			}
 
-			if((percentAwesome - percentLame) > 40) {
+			if((percentAwesome - percentLame) >= 50) {
 				bot.vote('up');
 				alreadyVoted = true;
 			}
 
-			if((percentLame - percentAwesome) > 40) {
+			if((percentLame - percentAwesome) >= 50) {
 				bot.vote('down');
 				alreadyVoted = true;
 			}
