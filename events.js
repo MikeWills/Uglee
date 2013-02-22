@@ -363,14 +363,14 @@ global.OnNewSong = function(data) {
 		if(value === "true") {
 			GetValue("maxsonglength", 0, function(maxLength) {
 				if(songLength >= Number(maxLength)) {
-					Speak("While we appreciate your song, we like to keep songs under " + maxLength + " minutes. You will be asked to skip after several minutes.");
+					Speak("@{u} While we appreciate your song, we like to keep songs under " + maxLength + " minutes. You will be asked to skip after several minutes.", AllUsers[currentDj]);
 					GetValue("bootsonglength", 0, function(bootLength) {
 						var bootTimeout = Number(bootLength) * 60000;
 						songWarningIntervalId = setTimeout(function() {
-							Speak("Okay, that is enough. You have 60 seconds to skip before I do it for you.");
+							Speak("@{u} Okay, that is enough. You have 60 seconds to skip before I do it for you.", AllUsers[currentDj]);
 						}, bootTimeout - 60000);
 						songBootIntervalId = setTimeout(function() {
-							Speak("Well, you can't listen can you? Times up!");
+							Speak("@{u} Well, you can't listen can you? Times up!", AllUsers[currentDj]);
 							bot.remDj(currentDj);
 						}, bootTimeout);
 					});
