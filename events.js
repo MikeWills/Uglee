@@ -422,7 +422,7 @@ global.OnUpdateVotes = function(data) {
 			var percentAwesome = 0;
 			var percentLame = 0;
 
-<<<<<<< HEAD
+
 			if(data.room.metadata.upvotes !== 0) {
 				percentAwesome = (data.room.metadata.upvotes / (data.room.metadata.listeners - 1)) * 100;
 			}
@@ -431,25 +431,11 @@ global.OnUpdateVotes = function(data) {
 			}
 
 			if((percentAwesome - percentLame) >= 50) {
-=======
-			if (data.room.metadata.upvotes !== 0) {
-				percentAwesome = (data.room.metadata.upvotes / data.room.metadata.listeners) * 100;
-			}
-			if (data.room.metadata.downvotes !== 0) {
-				percentLame = (data.room.metadata.downvotes / data.room.metadata.listeners) * 100;
-			}
-
-			if ((percentAwesome - percentLame) > 40) {
->>>>>>> A DJ hopping up on a reserved spot will now be booted.
 				bot.vote('up');
 				alreadyVoted = true;
 			}
 
-<<<<<<< HEAD
 			if((percentLame - percentAwesome) >= 50) {
-=======
-			if ((percentLame - percentAwesome) > 40) {
->>>>>>> A DJ hopping up on a reserved spot will now be booted.
 				bot.vote('down');
 				alreadyVoted = true;
 			}
