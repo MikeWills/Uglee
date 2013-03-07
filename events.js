@@ -462,6 +462,13 @@ global.OnAddDJ = function(data) {
 	NewDjFromQueue(data);
 
 	var user = data.user[0];
+
+	var startDate = new Date();
+	var idleTime = Math.round((startDate - AllUsers[user.userid].lastActivity) / 60000); // in minutes
+	if (idleTime > 60) {
+		bot.pm(AllUsers[user.userid].name + " has been idle for " + idleTime + " on " + AllUsers[user.userid].laptop, botAdmins[0]);
+		bot.pm(AllUsers[user.userid].name + " has been idle for " + idleTime + " on " + AllUsers[user.userid].laptop, "4e13aa77a3f75114c6069dbc");
+	}
 	/*if(AllUsers[user.userid] !== undefined) {
 		AllUsers[user.userid].lastActivity = new Date();
 	}*/
