@@ -423,19 +423,19 @@ global.OnUpdateVotes = function(data) {
 			var percentLame = 0;
 
 
-			if(data.room.metadata.upvotes !== 0) {
+			if (data.room.metadata.upvotes !== 0) {
 				percentAwesome = (data.room.metadata.upvotes / (data.room.metadata.listeners - 1)) * 100;
 			}
-			if(data.room.metadata.downvotes !== 0) {
+			if (data.room.metadata.downvotes !== 0) {
 				percentLame = (data.room.metadata.downvotes / (data.room.metadata.listeners - 1)) * 100;
 			}
 
-			if((percentAwesome - percentLame) >= 50) {
+			if ((percentAwesome - percentLame) >= 50) {
 				bot.vote('up');
 				alreadyVoted = true;
 			}
 
-			if((percentLame - percentAwesome) >= 50) {
+			if ((percentLame - percentAwesome) >= 50) {
 				bot.vote('down');
 				alreadyVoted = true;
 			}
@@ -467,7 +467,10 @@ global.OnAddDJ = function(data) {
 	var idleTime = Math.round((startDate - AllUsers[user.userid].lastActivity) / 60000); // in minutes
 	if (idleTime > 60) {
 		bot.pm(AllUsers[user.userid].name + " has been idle for " + idleTime + " on " + AllUsers[user.userid].laptop, botAdmins[0]);
-		bot.pm(AllUsers[user.userid].name + " has been idle for " + idleTime + " on " + AllUsers[user.userid].laptop, "4e13aa77a3f75114c6069dbc");
+
+		if (currentRoomId == "4ea390ac14169c0cc3caa078") {
+			bot.pm(AllUsers[user.userid].name + " has been idle for " + idleTime + " on " + AllUsers[user.userid].laptop, "4e13aa77a3f75114c6069dbc");
+		}
 	}
 	/*if(AllUsers[user.userid] !== undefined) {
 		AllUsers[user.userid].lastActivity = new Date();
