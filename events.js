@@ -469,7 +469,8 @@ global.OnAddDJ = function(data) {
 		bot.pm(AllUsers[user.userid].name + " has been idle for " + idleTime + " on " + AllUsers[user.userid].laptop, botAdmins[0]);
 
 		if (currentRoomId == "4ea390ac14169c0cc3caa078") {
-			bot.pm(AllUsers[user.userid].name + " has been idle for " + idleTime + " on " + AllUsers[user.userid].laptop, "4e13aa77a3f75114c6069dbc");
+			bot.pm(AllUsers[user.userid].name + " has been idle for " + idleTime + " on " + AllUsers[user.userid].laptop, "4e13aa77a3f75114c6069dbc"); // mikeb
+			bot.pm(AllUsers[user.userid].name + " has been idle for " + idleTime + " on " + AllUsers[user.userid].laptop, "4e525ccaa3f751044b236e63"); // mee_shell
 		}
 	}
 	/*if(AllUsers[user.userid] !== undefined) {
