@@ -3,7 +3,7 @@ exports.hidden = true;
 exports.enabled = true;
 exports.matchStart = false;
 exports.handler = function(data, userid, source) {
-  if (currentRoom === "4ea390ac14169c0cc3caa078"){
+  if (currentRoomId  === "4ea390ac14169c0cc3caa078"){
   IsMod(userid, function(isMod) {
 		if(isMod) {
 
