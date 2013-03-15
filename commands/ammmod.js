@@ -9,7 +9,7 @@ exports.handler = function(data, userid, source) {
 
       var setVal = "";
 
-      if (data.text.substring(8) == "on"){
+      if (data.text.substring(7) == "on"){
         setVal = "true";
   		  Speak("I am now moderating this room!")
       } else if (data.text.substring(8) == "off"){
