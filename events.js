@@ -324,6 +324,7 @@ global.OnNewSong = function(data) {
 	}
 
 	var OldVotedDjs = votedDjs;
+	votedDjs = [];
 	GetValue("monitorAfk", 0, function(value) {
 		if (value === "true") {
 			GetValue("afkMissedSongs", 0, function(afkPlayCount) {
@@ -350,7 +351,7 @@ global.OnNewSong = function(data) {
 						}
 					}
 				}
-				votedDjs = [];
+				//votedDjs = [];
 				if (!bootedNextDJ) {
 					firstSong = false;
 				}

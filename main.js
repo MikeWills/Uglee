@@ -107,13 +107,13 @@ global.songWarningIntervalId = null;
 global.songBootIntervalId = null;
 
 // This is a catch-all
-/*process.on("uncaughtException", function(data) {
+process.on("uncaughtException", function(data) {
 	Log(color("**ERROR** Process error ", "red") + data, "error");
-	/*setTimeout(function() {
+	setTimeout(function() {
 		Log("Shutting down (forever should restart)", "error")
-		process.exit(0);
+		//process.exit(0);
 	}, 150000); // 2.5 minutes
-});*/
+});
 
 // Start up bot
 try {
@@ -207,7 +207,7 @@ setInterval(function() {
 				Log("Turntable.FM is down.", "error");
 				setTimeout(function() {
 					Log("Shutting down (forever should restart)", "error")
-					process.exit(0);
+					//process.exit(0);
 				}, 150000); // 2.5 minutes
 			}
 		}, 60000); // 1 minute
@@ -216,14 +216,11 @@ setInterval(function() {
 		Log(color("** ERROR TT_UP_CHECK ** ", "red") + e, "error");
 		setTimeout(function() {
 			Log("Shutting down (forever should restart)", "error")
-			process.exit(0);
+			//process.exit(0);
 		}, 150000); // 2.5 minutes
 	}
 }, 600000); // 10 minutes
-// The bot will speak every so often to make sure it isn't idle.
-//setInterval(function(){
-//	SpeakRandom(idleQuotes, "");
-//}, 20*60*1000)
+
 // Look for users that are idle and boot them
 GetValue('bootOnIdle', 0, function(retVal) {
 	if(retVal === "true") {

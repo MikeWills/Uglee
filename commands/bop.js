@@ -3,7 +3,7 @@ exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = false;
 exports.handler = function(data, userid, source) {
-	var text = "";
+	var text = " ";
 	for (var i in Djs) {
 		if (i !== currentDj) {
 			if (votedDjs.indexOf(i) == -1){
