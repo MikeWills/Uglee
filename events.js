@@ -400,7 +400,6 @@ global.OnUpdateVotes = function(data) {
 	var votelog = data.room.metadata.votelog;
 	for (var i = 0; i < votelog.length; i++) {
 		var userid = votelog[i][0];
-		Log("Update Vote: " + userid);
 		if (votelog[i][1] == 'up') {
 			votedDjs.push(userid);
 			// handle lames
