@@ -123,6 +123,15 @@ global.OnRegistered = function(data) {
 			}
 		});
 
+		// Check if User has an alert
+		client.query('SELECT `userid`,`byName`,`reason` FROM `ALERT` WHERE `userid` LIKE \'' + user.userid + '\'', function cb(error, results, fields) {
+			if (results != null && results.length > 0) {
+				Log("ALERT on user " + AllUsers[user.userid].name + " (" + user.userid + ")");
+				PmAllOnlineMods("ALERT: " + AllUsers[user.userid].name + " has just entered and should be watched. Reason: '" + 
+					results[0]['reason'] + "' (by " + results[0]['byName'] + ")");
+			}
+		});
+
 		// Mark the user as back in the room
 		GetValue("enableQueue", 0, function(queueEnabled) {
 			if (queueEnabled === "true") {

@@ -73,6 +73,17 @@ global.SpeakRandom = function(array, userName) {
 	Speak(textOut);
 }
 
+global.PmAllOnlineMods = function(text){
+	bot.roomInfo(function(data) {
+		var moderators = data.room.metadata.moderator_id;
+		for (var i = 0; i < moderators.length; i++){
+			if (AllUsers[moderators[i]] !== undefined){
+				bot.pm(text, moderators[i]);
+			}
+		}
+	});
+}
+
 /* 	==============
 	IsMod - Checks if the user is a moderator
 	============== */
