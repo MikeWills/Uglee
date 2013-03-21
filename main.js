@@ -18,7 +18,7 @@ global.currentRoomId = botRoomId;
 // Setup mySQL
 try {
 	global.mysql = require('mysql');
-} catch(e) {
+} catch (e) {
 	Log(e);
 	Log('It is likely that you do not have the mysql node module installed.' + '\nUse the command \'npm install mysql\' to install.', "error");
 	process.exit(0);
@@ -32,7 +32,7 @@ try {
 		"password": dbPassword
 	});
 	SetUpDatabase();
-} catch(e) {
+} catch (e) {
 	Log(e);
 	Log('Make sure that a mysql server instance is running and that the ' + 'username and password information in config.js are correct.', "error");
 	process.exit(0);
@@ -48,6 +48,7 @@ Log("Initializing");
 // Initialize global variables
 global.AllUsers = {}; // A list of all users in the room
 global.commands = new Array(); // Array of command handlers
+global.Settings = {};
 // DJ Data
 global.Djs = {};
 global.PastDjs = {};
@@ -118,7 +119,7 @@ process.on("uncaughtException", function(data) {
 // Start up bot
 try {
 	global.bot = new Bot(botAuthId, botUserId, botRoomId);
-} catch(e) {
+} catch (e) {
 	setTimeout(function() {
 		Log("Shutting down (forever should restart)", "error")
 		process.exit(0);
@@ -128,8 +129,8 @@ try {
 // Load commands
 try {
 	var filenames = fs.readdirSync('./commands');
-	for(i in filenames) {
-		if(filenames[i] !== ".DS_Store") {
+	for (i in filenames) {
+		if (filenames[i] !== ".DS_Store") {
 			var command = require('./commands/' + filenames[i]);
 			commands.push({
 				name: command.name,
@@ -140,7 +141,7 @@ try {
 			});
 		}
 	}
-} catch(e) {
+} catch (e) {
 	Log(color("**ERROR** Load Commands", "red") + e, "error");
 }
 Log("Done");
@@ -185,25 +186,25 @@ setInterval(function() {
 			Log("Turntable.FM is up.");
 			bot.roomInfo(false, function(data) {
 				var users = data.users;
-				for(var i = 0; i < users.length; i++) {
-					if(botUserId == users[i].userid) {
+				for (var i = 0; i < users.length; i++) {
+					if (botUserId == users[i].userid) {
 						Log("TT Up and Bot in room");
 						ttUp = true;
 						botInRoom = true;
 					}
 				}
-				if(!botInRoom) {
+				if (!botInRoom) {
 					Log("Bot not in room");
 				}
 			});
 		});
 
 		setTimeout(function() {
-			if(botInRoom === false) {
+			if (botInRoom === false) {
 				bot.roomDeregister();
 				bot.roomRegister(botRoomId);
 			}
-			if(ttUp === false) {
+			if (ttUp === false) {
 				Log("Turntable.FM is down.", "error");
 				setTimeout(function() {
 					Log("Shutting down (forever should restart)", "error")
@@ -211,7 +212,7 @@ setInterval(function() {
 				}, 150000); // 2.5 minutes
 			}
 		}, 60000); // 1 minute
-	} catch(e) {
+	} catch (e) {
 		Log(color("**DOWN** Turntable.FM is down.", "red"), "error");
 		Log(color("** ERROR TT_UP_CHECK ** ", "red") + e, "error");
 		setTimeout(function() {
@@ -223,15 +224,15 @@ setInterval(function() {
 
 // Look for users that are idle and boot them
 GetValue('bootOnIdle', 0, function(retVal) {
-	if(retVal === "true") {
+	if (retVal === "true") {
 		setInterval(function() {
 			GetValue("idleTime", 0, function(val) {
-				for(var z in AllUsers) {
+				for (var z in AllUsers) {
 					var startDate = new Date();
 					var idleTime = Math.round((startDate - AllUsers[z].lastActivity) / 3600000); // in hours
 					//var idleTime = Math.round((startDate - AllUsers[z].lastActivity) / 60000); // for testing minutes
 					//Log(AllUsers[z].name + ": " + idleTime);
-					if(idleTime >= val) {
+					if (idleTime >= val) {
 						Log("Bot booted " + AllUsers[z].name);
 						//bot.bootUser(z, "You have been booted for being idle."); // Uncomment this to activate
 					}

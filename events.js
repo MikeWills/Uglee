@@ -38,6 +38,7 @@ global.OnReady = function(data) {
 global.OnRoomChanged = function(data) {
 	try {
 		Log(color("EVENT Room Changed to " + data.room.name, "blue"));
+
 		if (botWasBooted) {
 			Speak("You're despicable!");
 			botWasBooted = false;
@@ -48,9 +49,10 @@ global.OnRoomChanged = function(data) {
 		if (currentRoomId !== data.room.roomid) {
 			currentRoomId = data.room.roomid;
 			SetUpRoom();
+			SetValue("roomName", data.room.name);
 		}
 
-		SetValue("roomName", data.room.name);
+		LoadRoomSettings(data.room.roomid);
 
 		if (data.room.metadata.current_song != null) {
 			PopulateSongData(data);
@@ -70,7 +72,7 @@ global.OnRoomChanged = function(data) {
 
 		setTimeout(function() {
 			LoadDjs(data);
-		}, 5000);
+		}, 2500);
 
 		currentDj = data.room.metadata.current_dj;
 
@@ -86,22 +88,20 @@ global.OnRoomChanged = function(data) {
 
 global.OnRegistered = function(data) {
 	try {
-		Log(color("EVENT Registered: ", "blue") + data.user[0].name + " - " + data.user[0].userid);
+		Log(color("EVENT Registered: ", "blue") + data.user[0].name + " (" + data.user[0].userid + ")");
 
 		if (currentsong != null) {
 			currentsong.listeners++;
 		}
 
 		setTimeout(function() {
-			GetValue("welcomeMsg", 0, function(value) {
-				if (value === "true") {
-					if (AllUsers[data.user[0].userid] !== undefined) {
-						var d = new Date();
-						var dayOfWeek = d.getDay();
-						Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name, "pm", data.user[0].userid);
-					}
+			if (Settings["welcomeMsg"].value === "true") {
+				if (AllUsers[data.user[0].userid] !== undefined) {
+					var d = new Date();
+					var dayOfWeek = d.getDay();
+					Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name, "pm", data.user[0].userid);
 				}
-			});
+			}
 		}, 2500);
 
 		//Add new user(s) to cache
@@ -127,23 +127,20 @@ global.OnRegistered = function(data) {
 		client.query('SELECT `userid`,`byName`,`reason` FROM `ALERT` WHERE `userid` LIKE \'' + user.userid + '\'', function cb(error, results, fields) {
 			if (results != null && results.length > 0) {
 				Log("ALERT on user " + AllUsers[user.userid].name + " (" + user.userid + ")");
-				PmAllOnlineMods("ALERT: " + AllUsers[user.userid].name + " has just entered and should be watched. Reason: '" + 
-					results[0]['reason'] + "' (by " + results[0]['byName'] + ")");
+				PmAllOnlineMods("ALERT: " + AllUsers[user.userid].name + " has just entered and should be watched. Reason: '" + results[0]['reason'] + "' (by " + results[0]['byName'] + ")");
 			}
 		});
 
 		// Mark the user as back in the room
-		GetValue("enableQueue", 0, function(queueEnabled) {
-			if (queueEnabled === "true") {
-				if (DjQueue[data.user[0].userid] !== undefined) {
-					DjQueue[data.user[0].userid].isAfk = false;
-					DjQueue[data.user[0].userid].akfTime = null;
-					DjQueue.length++;
-					SetValue('DjQueue', JSON.stringify(DjQueue));
-				}
-				bot.pm("Greetings @" + data.user[0].name + ". If you would like to DJ, please type 'q+' to get added to the queue.", data.user[0].userid);
+		if (Settings["enableQueue"].value === "true") {
+			if (DjQueue[data.user[0].userid] !== undefined) {
+				DjQueue[data.user[0].userid].isAfk = false;
+				DjQueue[data.user[0].userid].akfTime = null;
+				DjQueue.length++;
+				SetValue('DjQueue', JSON.stringify(DjQueue));
 			}
-		});
+			bot.pm("Greetings @" + data.user[0].name + ". If you would like to DJ, please type 'q+' to get added to the queue.", data.user[0].userid);
+		}
 
 		ShouldBotDJ();
 
@@ -158,7 +155,7 @@ global.OnRegistered = function(data) {
 
 global.OnDeregistered = function(data) {
 	try {
-		Log(color("EVENT Deregistered: ", "blue") + data.user[0].name + " - " + data.user[0].userid);
+		Log(color("EVENT Deregistered: ", "blue") + data.user[0].name + " (" + data.user[0].userid + ")");
 
 		if (currentsong != null) {
 			currentsong.listeners--;
@@ -183,16 +180,14 @@ global.OnDeregistered = function(data) {
 		}
 
 		// Mark the user as AFK (or out of the room in this case)
-		GetValue("enableQueue", 0, function(queueEnabled) {
-			if (queueEnabled === "true") {
-				if (DjQueue[data.user[0].userid] !== undefined) {
-					DjQueue[data.user[0].userid].isAfk = true;
-					DjQueue[data.user[0].userid].akfTime = new Date();
-					DjQueue.length--;
-					SetValue('DjQueue', JSON.stringify(DjQueue));
-				}
+		if (Settings["enableQueue"].value === "true") {
+			if (DjQueue[data.user[0].userid] !== undefined) {
+				DjQueue[data.user[0].userid].isAfk = true;
+				DjQueue[data.user[0].userid].akfTime = new Date();
+				DjQueue.length--;
+				SetValue('DjQueue', JSON.stringify(DjQueue));
 			}
-		});
+		}
 
 		ShouldBotDJ();
 
@@ -221,11 +216,10 @@ global.OnEndSong = function(data) {
 
 	// Post song results
 	var endsongresponse = currentsong.song + ' stats: :+1: ' + currentsong.up + ' :-1: ' + currentsong.down + ' <3 ' + currentsong.snags;
-	GetValue("songstats", 0, function(value) {
-		if (value === "true") {
-			Speak(endsongresponse);
-		}
-	});
+
+	if (Settings["songstats"].value === "true") {
+		Speak(endsongresponse);
+	}
 
 	// Make sure bot is aware that it is playing a song.
 	if (data.room.metadata.current_dj === botUserId) {
@@ -265,34 +259,32 @@ global.OnNewSong = function(data) {
 	// Populate new song data in currentsong
 	PopulateSongData(data);
 
-	GetValue("monitorHungSong", 0, function(value) {
-		if (value === "true") {
-			// If watch dog has been previously set, 
-			// clear since we've made it to the next song
-			if (curSongWatchdog != null) {
-				clearTimeout(curSongWatchdog);
-				curSongWatchdog = null;
-			}
-
-			// If takedown Timer has been set, 
-			// clear since we've made it to the next song
-			if (takedownTimer != null) {
-				clearTimeout(takedownTimer);
-				takedownTimer = null;
-			}
-
-			// Set a new watchdog timer for the current song.
-			curSongWatchdog = setTimeout(function() {
-				curSongWatchdog = null;
-				Speak("@{u}, you have 15 seconds to skip your stuck song before you are removed", lastDjName, "", currentDj);
-				//START THE 10 SEC TIMER
-				takedownTimer = setTimeout(function() {
-					takedownTimer = null;
-					bot.remDj(currentDj); // Remove Saved DJ from last newsong call
-				}, 15 * 1000); // Current DJ has 10 seconds to skip before they are removed
-			}, (length + 15) * 1000); // Timer expires 10 seconds after the end of the song, if not cleared by a newsong  
+	if (Settings["monitorHungSong"].value === "true") {
+		// If watch dog has been previously set, 
+		// clear since we've made it to the next song
+		if (curSongWatchdog != null) {
+			clearTimeout(curSongWatchdog);
+			curSongWatchdog = null;
 		}
-	});
+
+		// If takedown Timer has been set, 
+		// clear since we've made it to the next song
+		if (takedownTimer != null) {
+			clearTimeout(takedownTimer);
+			takedownTimer = null;
+		}
+
+		// Set a new watchdog timer for the current song.
+		curSongWatchdog = setTimeout(function() {
+			curSongWatchdog = null;
+			Speak("@{u}, you have 15 seconds to skip your stuck song before you are removed", lastDjName, "", currentDj);
+			//START THE 10 SEC TIMER
+			takedownTimer = setTimeout(function() {
+				takedownTimer = null;
+				bot.remDj(currentDj); // Remove Saved DJ from last newsong call
+			}, 15 * 1000); // Current DJ has 10 seconds to skip before they are removed
+		}, (length + 15) * 1000); // Timer expires 10 seconds after the end of the song, if not cleared by a newsong  
+	}
 
 	// If the bot is DJing, randomize when it bops
 	if (botDJing) {
@@ -316,78 +308,68 @@ global.OnNewSong = function(data) {
 	}
 
 	if (lastDj !== undefined) {
-		GetValue("isModerating", 0, function(isModerating) {
-			if (isModerating === "true") {
-				if (Djs[lastDj] !== undefined && Djs[lastDj].remainingPlays === 0) {
-					Log("Remove DJ " + AllUsers[lastDj].name + "after reaching max plays.");
-					bot.remDj(lastDj);
-					Speak("Thanks for the awesome songs @" + AllUsers[lastDj].name + "!");
-					SetValue('Djs', JSON.stringify(Djs));
-				}
-				setTimeout(function() {
-					SpeakPlayCount();
-				}, 2000);
-
+		if (Settings["isModerating"].value === "true") {
+			if (Djs[lastDj] !== undefined && Djs[lastDj].remainingPlays === 0) {
+				Log("Remove DJ " + AllUsers[lastDj].name + "after reaching max plays.");
+				bot.remDj(lastDj);
+				Speak("Thanks for the awesome songs @" + AllUsers[lastDj].name + "!");
+				SetValue('Djs', JSON.stringify(Djs));
 			}
-		});
+			setTimeout(function() {
+				SpeakPlayCount();
+			}, 2000);
+
+		}
 	}
 
 	var OldVotedDjs = votedDjs;
 	votedDjs = [];
-	GetValue("monitorAfk", 0, function(value) {
-		if (value === "true") {
-			GetValue("afkMissedSongs", 0, function(afkPlayCount) {
-				if (!firstSong) {
-					for (var i in Djs) {
-						if (lastDj !== i && lastDj !== botUserId) {
-							if (OldVotedDjs.indexOf(i) === -1) {
-								Djs[i].afkCount++;
-								if (Djs[i].afkCount >= afkPlayCount) {
-									Log("Remove " + AllUsers[i].name + "(" + i + ")");
-									if (i === currentDj) {
-										bootedNextDJ = true;
-										firstSong = true; // this is so everyone else isn't booted when the dj is booted
-									}
-									bot.remDj(i);
-									Speak(msgAFKBoot, AllUsers[i].name, i);
-								} else if (Djs[i].afkCount >= 1) {
-									Log("Warn " + AllUsers[i].name + "(" + i + ")");
-									Speak(msgAFKWarn, AllUsers[i].name, i);
-								}
-							} else {
-								Djs[i].afkCount = 0;
+	if (Settings["monitorAfk"].value === "true") {
+		var afkPlayCount = Settings["afkMissedSongs"].value;
+		if (!firstSong) {
+			for (var i in Djs) {
+				if (lastDj !== i && lastDj !== botUserId) {
+					if (OldVotedDjs.indexOf(i) === -1) {
+						Djs[i].afkCount++;
+						if (Djs[i].afkCount >= afkPlayCount) {
+							Log("Remove " + AllUsers[i].name + "(" + i + ")");
+							if (i === currentDj) {
+								bootedNextDJ = true;
+								firstSong = true; // this is so everyone else isn't booted when the dj is booted
 							}
+							bot.remDj(i);
+							Speak(msgAFKBoot, AllUsers[i].name, i);
+						} else if (Djs[i].afkCount >= 1) {
+							Log("Warn " + AllUsers[i].name + "(" + i + ")");
+							Speak(msgAFKWarn, AllUsers[i].name, i);
 						}
+					} else {
+						Djs[i].afkCount = 0;
 					}
 				}
-				//votedDjs = [];
-				if (!bootedNextDJ) {
-					firstSong = false;
-				}
-				bootedNextDJ = false;
-			});
+			}
 		}
-	});
+		//votedDjs = [];
+		if (!bootedNextDJ) {
+			firstSong = false;
+		}
+		bootedNextDJ = false;
+	}
 
-	GetValue("monitorsonglength", 0, function(value) {
-		if (value === "true") {
-			GetValue("maxsonglength", 0, function(maxLength) {
-				if (songLength >= Number(maxLength)) {
-					Speak("@{u} While we appreciate your song, we like to keep songs under " + maxLength + " minutes. You will be asked to skip after several minutes.", AllUsers[currentDj].name);
-					GetValue("bootsonglength", 0, function(bootLength) {
-						var bootTimeout = Number(bootLength) * 60000;
-						songWarningIntervalId = setTimeout(function() {
-							Speak("@{u} Okay, that is enough. You have 60 seconds to skip before I do it for you.", AllUsers[currentDj].name);
-						}, bootTimeout - 60000);
-						songBootIntervalId = setTimeout(function() {
-							Speak("@{u} Well, you can't listen can you? Times up!", AllUsers[currentDj].name);
-							bot.remDj(currentDj);
-						}, bootTimeout);
-					});
-				}
-			});
+	if (Settings["monitorsonglength"].value === "true") {
+		var maxLength = Settings["maxsonglength"].value;
+		if (songLength >= Number(maxLength)) {
+			Speak("@{u} While we appreciate your song, we like to keep songs under " + maxLength + " minutes. You will be asked to skip after several minutes.", AllUsers[currentDj].name);
+			var bootTimeout = Number(Settings["bootsonglength"].value) * 60000;
+			songWarningIntervalId = setTimeout(function() {
+				Speak("@{u} Okay, that is enough. You have 60 seconds to skip before I do it for you.", AllUsers[currentDj].name);
+			}, bootTimeout - 60000);
+			songBootIntervalId = setTimeout(function() {
+				Speak("@{u} Well, you can't listen can you? Times up!", AllUsers[currentDj].name);
+				bot.remDj(currentDj);
+			}, bootTimeout);
 		}
-	});
+	}
 };
 
 global.OnNoSong = function(data) {
@@ -397,14 +379,12 @@ global.OnNoSong = function(data) {
 global.OnUpdateVotes = function(data) {
 	//Log(blue + "EVENT Update Votes: " + reset + JSON.stringify(data));
 	if (data.room.metadata.votelog[0][1] == "down") {
-		GetValue("lamer", 0, function(value) {
-			if (value === "true" && botUserId !== data.room.metadata.votelog[0][0]) {
-				SpeakRandom(downVoteText);
-				if (data.room.metadata.votelog[0][0] !== '') {
-					Speak("It was " + AllUsers[data.room.metadata.votelog[0][0]].name);
-				}
+		if (Settings["lamer"].value === "true" && botUserId !== data.room.metadata.votelog[0][0]) {
+			SpeakRandom(downVoteText);
+			if (data.room.metadata.votelog[0][0] !== '') {
+				Speak("It was " + AllUsers[data.room.metadata.votelog[0][0]].name);
 			}
-		});
+		}
 	}
 
 	var votelog = data.room.metadata.votelog;
@@ -426,8 +406,8 @@ global.OnUpdateVotes = function(data) {
 	currentsong.listeners = data.room.metadata.listeners;
 
 	/* If autobop is enabled, determine if the bot should autobop or not based on votes */
-	GetValue("autobop", 0, function(value) {
-		if (value === "true") {
+	try {
+		if (Settings["autobop"].value === "true") {
 			var percentAwesome = 0;
 			var percentLame = 0;
 
@@ -449,11 +429,16 @@ global.OnUpdateVotes = function(data) {
 				alreadyVoted = true;
 			}
 		}
-	});
+	} catch (e) {}
+
 };
 
 global.OnBootedUser = function(data) {
-	Log(color("EVENT Booted User: ", "blue") + JSON.stringify(data), "error");
+	if (AllUsers[data.userid] !== undefined) {
+		Log(color("EVENT Booted User: ", "blue") + AllUsers[data.modid].name + " (" + data.modid + ") booted " + data.userid + " for " + data.reason, "error");
+	} else {
+		Log(color("EVENT Booted User: ", "blue") + data.modid + " booted " + data.userid + " for " + data.reason, "error");
+	}
 	if (data.userid === botUserId) {
 		botWasBooted = true;
 		bot.roomDeregister();
@@ -466,7 +451,7 @@ global.OnUpdateUser = function(data) {
 };
 
 global.OnAddDJ = function(data) {
-	Log(color("EVENT Add DJ: ", "blue") + data.user[0].name);
+	Log(color("EVENT Add DJ: ", "blue") + data.user[0].name + " (" + data.user[0].userid + ")");
 
 	NewDjFromQueue(data);
 
@@ -514,16 +499,14 @@ global.OnAddDJ = function(data) {
 		reservedRemovedDjs = {};
 	}
 
-	GetValue("maxPlays", 0, function(max) {
-		var djInfo = {
-			userid: user.userid,
-			name: AllUsers[user.userid].name,
-			remainingPlays: Number(max),
-			afkCount: 0,
-			waitDjs: 0
-		}
-		Djs[user.userid] = djInfo;
-	});
+	var djInfo = {
+		userid: user.userid,
+		name: AllUsers[user.userid].name,
+		remainingPlays: Number(Settings["maxPlays"].value),
+		afkCount: 0,
+		waitDjs: 0
+	}
+	Djs[user.userid] = djInfo;
 	SetValue('Djs', JSON.stringify(Djs));
 
 	// Check if the bot should DJ.
@@ -531,7 +514,7 @@ global.OnAddDJ = function(data) {
 };
 
 global.OnRemDJ = function(data) {
-	Log(color("EVENT Remove DJ: ", "blue") + data.user[0].name);
+	Log(color("EVENT Remove DJ: ", "blue") + data.user[0].name + " (" + data.user[0].userid + ")");
 
 	waitingOnNextDj = false;
 
@@ -608,7 +591,7 @@ global.OnRemModerator = function(data) {
 };
 
 global.OnSnagged = function(data) {
-	Log(color("EVENT Snagged: ", "blue") + JSON.stringify(data));
+	//Log(color("EVENT Snagged: ", "blue") + JSON.stringify(data));
 	//Increase song snag count
 	currentsong.snags++;
 
@@ -630,14 +613,15 @@ global.OnSnagged = function(data) {
 };
 
 global.OnPmmed = function(data) {
-	Log(color("EVENT PMmed: ", "blue") + JSON.stringify(data), "error");
-	Command("pm", data);
 	if (AllUsers[data.senderid] !== undefined) {
+		Log(color("EVENT PMmed: ", "blue") + AllUsers[data.senderid].name + ' (' + data.senderid + ') PMed: "' + data.text + '"', "error");
 		if (data.senderid !== botAdmins[0]) {
 			bot.pm(AllUsers[data.senderid].name + ' sent the following command: "' + data.text + '"', botAdmins[0]);
 		}
 		AllUsers[data.senderid].lastActivity = new Date();
 	}
+
+	Command("pm", data);
 };
 
 global.OnError = function(data) {
