@@ -145,7 +145,7 @@ global.SetUpDatabase = function() {
 
 	// Alert table
 	client.query("CREATE TABLE IF NOT EXISTS " + dbName + ".ALERT (`Id` int(11) NOT NULL AUTO_INCREMENT, `userid` varchar(255) NOT NULL, `byUserid` varchar(255) NOT NULL," +
-		" `byName` varchar(255) NOT NULL, `reason` varchar(255) NOT NULL, `dateTimeStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, `isOption` bit(1) NOT NULL PRIMARY KEY (`Id`))", function(error) {
+		" `byName` varchar(255) NOT NULL, `reason` varchar(255) NOT NULL, `dateTimeStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, `isOption` bit(1) NOT NULL)", function(error) {
 		//Handle an error if it's not a table already exists error
 		if (error && error.code != 'ER_TABLE_EXISTS_ERROR') {
 			throw (error);
