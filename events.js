@@ -103,7 +103,7 @@ global.OnRegistered = function(data) {
 		}
 
 		setTimeout(function() {
-			if (Settings["welcomeMsg"].value === "true") {
+			if (Settings["welcomeMsg"] !== undefined && Settings["welcomeMsg"].value === "true") {
 				if (AllUsers[data.user[0].userid] !== undefined) {
 					var d = new Date();
 					var dayOfWeek = d.getDay();
@@ -139,7 +139,8 @@ global.OnRegistered = function(data) {
 		});
 
 		// Mark the user as back in the room
-		if (Settings["enableQueue"].value === "true") {
+		// TODO BUG
+		if (Settings["enableQueue"] !== undefined && Settings["enableQueue"].value === "true") {
 			if (DjQueue[data.user[0].userid] !== undefined) {
 				DjQueue[data.user[0].userid].isAfk = false;
 				DjQueue[data.user[0].userid].akfTime = null;
@@ -156,7 +157,7 @@ global.OnRegistered = function(data) {
 		}
 
 	} catch (e) {
-		Log(color("**ERROR** Room Changed ", "red") + e, "error");
+		Log(color("**ERROR** OnRegistered ", "red") + e, "error");
 	}
 };
 
@@ -199,7 +200,7 @@ global.OnDeregistered = function(data) {
 		ShouldBotDJ();
 
 	} catch (e) {
-		Log(color("**ERROR** Room Changed ", "red") + e, "error");
+		Log(color("**ERROR** OnDeregistered ", "red") + e, "error");
 	}
 };
 
