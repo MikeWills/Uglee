@@ -94,6 +94,14 @@ global.OnRegistered = function(data) {
 			currentsong.listeners++;
 		}
 
+		//Add new user(s) to cache
+		var users = data.user;
+		for (var i in users) {
+			var user = users[i];
+			user.lastActivity = user.loggedIn = new Date();
+			AllUsers[user.userid] = user;
+		}
+
 		setTimeout(function() {
 			if (Settings["welcomeMsg"].value === "true") {
 				if (AllUsers[data.user[0].userid] !== undefined) {
@@ -104,13 +112,12 @@ global.OnRegistered = function(data) {
 			}
 		}, 2500);
 
-		//Add new user(s) to cache
-		var users = data.user;
-		for (var i in users) {
-			var user = users[i];
-			user.lastActivity = user.loggedIn = new Date();
-			AllUsers[user.userid] = user;
-		}
+		setTimeout(function() {
+			if (users[0].registered === undefined){
+				// Greet n00b
+				Speak(welcomeVisitorText, users[0].name);
+			}
+		}, 2500);
 
 		if (data.user[0].name !== null) {
 			client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'User(roomid, userid, username, lastseen)' + 'VALUES (?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [currentRoomId, data.user[0].userid, data.user[0].name]);
