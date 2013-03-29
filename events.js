@@ -464,15 +464,6 @@ global.OnAddDJ = function(data) {
 
 	var user = data.user[0];
 
-	NewDjFromQueue(data);
-
-	if (Settings["isModerating"].value === "true") {
-		if (PastDjs[user.userid] !== undefined && (PastDjs[user.userid].djWait !== 0 && PastDjs[user.userid].remainingPlays === 0)){
-			bot.remDj(user.userid);
-			Speak("@{u}, please wait " + PastDjs[user.userid].djWait + " more DJs before stepping back up.", AllUsers[user.userid].name);
-		}
-	}
-
 	var startDate = new Date();
 	var idleTime = Math.round((startDate - AllUsers[user.userid].lastActivity) / 60000); // in minutes
 	if (idleTime > 60) {
@@ -515,6 +506,9 @@ global.OnAddDJ = function(data) {
 		reservedRemovedDjs = {};
 	}
 
+	// Are they in the queue? If queue is active.
+	NewDjFromQueue(data);
+
 	var djInfo = {
 		userid: user.userid,
 		name: AllUsers[user.userid].name,
@@ -522,20 +516,56 @@ global.OnAddDJ = function(data) {
 		afkCount: 0,
 		waitDjs: 0
 	}
-	Djs[user.userid] = djInfo;
-	SetValue('Djs', JSON.stringify(Djs));
 
+	// Check if they still have to wait to DJ
 	if (Settings["isModerating"].value === "true") {
-		for (var i in PastDjs){
-			PastDjs[i].waitDjs--;
-			if (PastDjs[i].waitDjs === 0){
-				delete PastDjs[i];
-				if (AllUsers[i] !== undefined) {
-					Speak("@{u}, you can DJ again at any time.", AllUsers[i].name, "", i);
+		if (PastDjs[user.userid] !== undefined && (PastDjs[user.userid].waitDjs !== 0 && PastDjs[user.userid].remainingPlays === 0)) {
+			bot.remDj(user.userid);
+			Speak("@{u}, please wait " + PastDjs[user.userid].waitDjs + " more DJs before stepping back up.", AllUsers[user.userid].name);
+
+			if (reservedRemovedDjs[user.userid] === undefined) {
+				var removedDj = {
+					userid: user.userid,
+					numBoots: 1
+				}
+				reservedRemovedDjs[user.userid] = removedDj;
+			} else {
+				reservedRemovedDjs[user.userid].numBoots++;
+				if (reservedRemovedDjs[user.userid].numBoots >= 3) {
+					bot.boot(user.userid, 'Please wait until it is your turn next time.');
 				}
 			}
+		} else {
+			// If they had songs left copy back to the DJ array
+			if (PastDjs[user.userid] !== undefined) {
+				Djs[user.userid] = PastDjs[user.userid];
+				Speak("@{u}, you have " + Djs[user.userid].remainingPlays + " plays remaining in your set.", AllUsers[user.userid].name);
+				delete PastDjs[user.userid];
+			} else { // New DJ
+				Djs[user.userid] = djInfo;
+				Speak("@{u}, you have " + Djs[user.userid].remainingPlays + " plays in your set.", AllUsers[user.userid].name);
+			}
+
+			SetValue('Djs', JSON.stringify(Djs));
+
+			// Drop the waiting count by 1 for everyone else.
+			for (var i in PastDjs) {
+				PastDjs[i].waitDjs--;
+				if (PastDjs[i].waitDjs === 0) {
+					delete PastDjs[i];
+					if (AllUsers[i] !== undefined) {
+						Speak("@{u}, you can DJ again at any time.", AllUsers[i].name, "", i);
+					}
+				}
+			}
+			Log("Past DJs: " + JSON.stringify(PastDjs));
 		}
-		Log("Past DJs: " + JSON.stringify(PastDjs));
+	}
+
+	// Still count even if the bot isn't moderating.
+	if (Settings["isModerating"].value !== "true") {
+		Djs[user.userid] = djInfo;
+		SetValue('Djs', JSON.stringify(Djs));
 	}
 
 	// Check if the bot should DJ.
@@ -560,9 +590,11 @@ global.OnRemDJ = function(data) {
 	// If the bot is moderating the room, save the DJ info in case they steped down early
 	var user = data.user[0];
 	if (Settings["isModerating"].value === "true") {
-		PastDjs[user.userid] = Djs[user.userid];
-		PastDjs[user.userid].waitDjs = Settings["djWait"].value;
-		SetValue('PastDjs', JSON.stringify(PastDjs));
+		if (PastDjs[user.userid] === undefined) {
+			PastDjs[user.userid] = Djs[user.userid];
+			PastDjs[user.userid].waitDjs = Settings["djWait"].value;
+			SetValue('PastDjs', JSON.stringify(PastDjs));
+		}
 		Log("Past DJs: " + JSON.stringify(PastDjs));
 	}
 

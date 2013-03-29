@@ -559,6 +559,11 @@ global.LoadDjs = function(data) {
 	Log("Loading Djs");
 	var ttdjs = data.room.metadata.djs;
 
+	GetValue("PastDjs", 10, function(results) {
+		PastDjs = JSON.parse(results);
+		Log("Past DJs: " + JSON.stringify(PastDjs));
+	});
+	
 	GetValue("Djs", 10, function(results) {
 		if (results !== null) {
 			if (results.length !== 0 && results !== " ") {
