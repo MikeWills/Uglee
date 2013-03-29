@@ -45,7 +45,7 @@ global.OnRoomChanged = function(data) {
 			Speak("You're despicable!");
 			botWasBooted = false;
 		} else {
-			Speak(startupText);
+			//Speak(startupText);
 		}
 
 		if (currentRoomId !== data.room.roomid) {
@@ -115,7 +115,7 @@ global.OnRegistered = function(data) {
 		}, 2500);
 
 		setTimeout(function() {
-			if (users[0].registered === undefined){
+			if (users[0].registered === undefined) {
 				// Greet n00b
 				Speak(welcomeVisitorText, users[0].name);
 			}
@@ -319,7 +319,7 @@ global.OnNewSong = function(data) {
 	if (lastDj !== undefined) {
 		if (Settings["isModerating"].value === "true") {
 			if (Djs[lastDj] !== undefined && Djs[lastDj].remainingPlays === 0) {
-				Log("Remove DJ " + AllUsers[lastDj].name + "after reaching max plays.");
+				Log("Remove DJ " + AllUsers[lastDj].name + " after reaching max plays.");
 				bot.remDj(lastDj);
 				Speak("Thanks for the awesome songs @" + AllUsers[lastDj].name + "!");
 				SetValue('Djs', JSON.stringify(Djs));
@@ -476,12 +476,10 @@ global.OnAddDJ = function(data) {
 			bot.pm(AllUsers[user.userid].name + " has been idle for " + idleTime + " on " + AllUsers[user.userid].laptop, "4e525ccaa3f751044b236e63"); // mee_shell
 		}
 
-		Log(AllUsers[user.userid].name + " (" + user.userid +") has been idle for " + idleTime, "error");
+		Log(AllUsers[user.userid].name + " (" + user.userid + ") has been idle for " + idleTime, "error");
 	}
-	/*if(AllUsers[user.userid] !== undefined) {
-		AllUsers[user.userid].lastActivity = new Date();
-	}*/
 
+	// For reserving a spot...
 	if (reserveredFor !== null && reserveredFor !== user.userid) {
 		bot.remDj(user.userid);
 		if (AllUsers[reserveredFor] !== undefined) {
@@ -520,6 +518,17 @@ global.OnAddDJ = function(data) {
 	Djs[user.userid] = djInfo;
 	SetValue('Djs', JSON.stringify(Djs));
 
+	if (Settings["isModerating"].value === "true") {
+		for (var i in PastDjs){
+			PastDjs[i].waitDjs--;
+			if (PastDjs[i].waitDjs === 0){
+				delete PastDjs[i];
+				Speak("@{u}, you can DJ again at any time.", AllUsers[i].name, "", i);
+			}
+		}
+		Log("Past DJs: " + JSON.stringify(PastDjs));
+	}
+
 	// Check if the bot should DJ.
 	ShouldBotDJ();
 };
@@ -537,19 +546,21 @@ global.OnRemDJ = function(data) {
 	if (data.user[0].userid === botUserId) {
 		botDJing = false;
 		Log("Bot no longer DJing");
-		/*if(data.modid !== undefined) {
-			Log("Forcibly Removed");
-			SetValue("autodj", "false");
-		}*/
 	}
 
 	// If the bot is moderating the room, save the DJ info in case they steped down early
 	var user = data.user[0];
-	PastDjs[user.userid] = Djs[user.userid];
-	PastDjs[user.userid].waitDjs = Settings["djWait"].value;
+	if (Settings["isModerating"].value === "true") {
+		PastDjs[user.userid] = Djs[user.userid];
+		PastDjs[user.userid].waitDjs = Settings["djWait"].value;
+		SetValue('PastDjs', JSON.stringify(PastDjs));
+		Log("Past DJs: " + JSON.stringify(PastDjs));
+	}
+
 	delete Djs[user.userid];
 	SetValue('Djs', JSON.stringify(Djs));
-	SetValue('PastDjs', JSON.stringify(PastDjs));
+
+	// Re-add the user to the queue if one is active
 	AddToQueue(data.user[0].userid);
 
 	// Check if the bot should DJ.
