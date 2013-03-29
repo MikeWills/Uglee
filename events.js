@@ -539,11 +539,11 @@ global.OnAddDJ = function(data) {
 			// If they had songs left copy back to the DJ array
 			if (PastDjs[user.userid] !== undefined) {
 				Djs[user.userid] = PastDjs[user.userid];
-				Speak("@{u}, you have " + Djs[user.userid].remainingPlays + " plays remaining in your set.", AllUsers[user.userid].name);
+				Speak("@{u}, you have " + Djs[user.userid].remainingPlays + " plays remaining in your set.", AllUsers[user.userid].name, "", user.userid);
 				delete PastDjs[user.userid];
 			} else { // New DJ
 				Djs[user.userid] = djInfo;
-				Speak("@{u}, you have " + Djs[user.userid].remainingPlays + " plays in your set.", AllUsers[user.userid].name);
+				Speak("@{u}, you have " + Djs[user.userid].remainingPlays + " plays in your set.", AllUsers[user.userid].name, "", user.userid);
 			}
 
 			SetValue('Djs', JSON.stringify(Djs));
