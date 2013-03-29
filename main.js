@@ -108,13 +108,13 @@ global.songWarningIntervalId = null;
 global.songBootIntervalId = null;
 
 // This is a catch-all
-process.on("uncaughtException", function(data) {
+/*process.on("uncaughtException", function(data) {
 	Log(color("**ERROR** Process error ", "red") + data, "error");
 	setTimeout(function() {
 		Log("Shutting down (forever should restart)", "error")
 		//process.exit(0);
 	}, 150000); // 2.5 minutes
-});
+});*/
 
 // Start up bot
 try {
