@@ -462,9 +462,16 @@ global.OnUpdateUser = function(data) {
 global.OnAddDJ = function(data) {
 	Log(color("EVENT Add DJ: ", "blue") + data.user[0].name + " (" + data.user[0].userid + ")");
 
+	var user = data.user[0];
+
 	NewDjFromQueue(data);
 
-	var user = data.user[0];
+	if (Settings["isModerating"].value === "true") {
+		if (PastDjs[user.userid] !== undefined && (PastDjs[user.userid].djWait !== 0 && PastDjs[user.userid].remainingPlays === 0)){
+			bot.remDj(user.userid);
+			Speak("@{u}, please wait " + PastDjs[user.userid].djWait + " more DJs before stepping back up.", AllUsers[user.userid].name);
+		}
+	}
 
 	var startDate = new Date();
 	var idleTime = Math.round((startDate - AllUsers[user.userid].lastActivity) / 60000); // in minutes
@@ -523,7 +530,9 @@ global.OnAddDJ = function(data) {
 			PastDjs[i].waitDjs--;
 			if (PastDjs[i].waitDjs === 0){
 				delete PastDjs[i];
-				Speak("@{u}, you can DJ again at any time.", AllUsers[i].name, "", i);
+				if (AllUsers[i] !== undefined) {
+					Speak("@{u}, you can DJ again at any time.", AllUsers[i].name, "", i);
+				}
 			}
 		}
 		Log("Past DJs: " + JSON.stringify(PastDjs));
