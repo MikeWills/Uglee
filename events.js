@@ -37,6 +37,7 @@ global.OnReady = function(data) {
 
 global.OnRoomChanged = function(data) {
 	try {
+		// EVENT Room Changed: {"errno":3,"err":"User banned","success":false,"msgid":2}
 		//Log(color("EVENT Room Changed to " + data.room.name, "blue"));
 		Log("EVENT Room Changed: " + JSON.stringify(data));
 
