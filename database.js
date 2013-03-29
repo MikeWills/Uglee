@@ -1,16 +1,19 @@
 /* 	============== 
 	SetCacheValue - Sets the value to the DB cache 
 	============== */
-global.SetValue = function(key, value) {
+global.SetValue = function(key, value, isOption) {
+	if (isOption === undefined) {
+		isOption = 0;
+	}
 	client.query("SELECT `value` FROM " + dbName + '.' + dbTablePrefix + "Settings WHERE `roomid` = ? AND `key` = ?", [currentRoomId, key], function select(error, results, fields) {
 		if (results !== undefined) {
 			if (results.length !== 0) {
 				client.query("UPDATE " + dbName + '.' + dbTablePrefix + "Settings SET `value` = ? WHERE `roomid` = ? AND `key` = ?", [value, currentRoomId, key]);
 			} else {
-				client.query("INSERT INTO " + dbName + '.' + dbTablePrefix + "Settings (`roomid`, `key`, `value`, `DateStamp`) VALUES (?, ?, ?, CURRENT_TIMESTAMP)", [currentRoomId, key, value]);
+				client.query("INSERT INTO " + dbName + '.' + dbTablePrefix + "Settings (`roomid`, `key`, `value`, `DateStamp`, `isOption`) VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?)", [currentRoomId, key, value, isOption]);
 			}
 		} else {
-			client.query("INSERT INTO " + dbName + '.' + dbTablePrefix + "Settings (`roomid`, `key`, `value`, `DateStamp`) VALUES (?, ?, ?, CURRENT_TIMESTAMP)", [currentRoomId, key, value]);
+			client.query("INSERT INTO " + dbName + '.' + dbTablePrefix + "Settings (`roomid`, `key`, `value`, `DateStamp`, `isOption`) VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?)", [currentRoomId, key, value, isOption]);
 		}
 		try {
 			if (Settings[key] !== undefined) {
