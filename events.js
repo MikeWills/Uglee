@@ -141,7 +141,6 @@ global.OnRegistered = function(data) {
 		});
 
 		// Mark the user as back in the room
-		// TODO BUG
 		if (Settings["enableQueue"] !== undefined && Settings["enableQueue"].value === "true") {
 			if (DjQueue[data.user[0].userid] !== undefined) {
 				DjQueue[data.user[0].userid].isAfk = false;
@@ -546,8 +545,11 @@ global.OnRemDJ = function(data) {
 
 	// If the bot is moderating the room, save the DJ info in case they steped down early
 	var user = data.user[0];
+	PastDjs[user.userid] = Djs[user.userid];
+	PastDjs[user.userid].waitDjs = Settings["djWait"].value;
 	delete Djs[user.userid];
 	SetValue('Djs', JSON.stringify(Djs));
+	SetValue('PastDjs', JSON.stringify(PastDjs));
 	AddToQueue(data.user[0].userid);
 
 	// Check if the bot should DJ.

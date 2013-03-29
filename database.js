@@ -293,4 +293,10 @@ global.SetUpRoom = function() {
 			SetValue("monitorHungSong", "false");
 		}
 	});
+	// Have the boot monitor for hung songs.
+	GetValue("djWait", 0, function(value) {
+		if (value === null) {
+			SetValue("djWait", "2");
+		}
+	});
 };
