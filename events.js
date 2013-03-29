@@ -38,6 +38,7 @@ global.OnReady = function(data) {
 global.OnRoomChanged = function(data) {
 	try {
 		Log(color("EVENT Room Changed to " + data.room.name, "blue"));
+		Log("EVENT Room Changed: " + JSON.stringify(data));
 
 		if (botWasBooted) {
 			Speak("You're despicable!");
