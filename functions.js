@@ -631,3 +631,7 @@ global.ClearDjWait = function() {
 		SetValue('PastDjs', JSON.stringify(PastDjs));
 	}
 };
+
+global.AprilFool = function(forwards){
+	return forwards.split('').reverse().join('');
+}
