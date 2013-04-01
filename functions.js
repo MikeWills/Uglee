@@ -25,6 +25,8 @@ global.Speak = function(text, userName, source, userid) {
 		textOut = text;
 	}
 
+	textOut = AprilFool(textOut);
+
 	if (source !== undefined) {
 		if (source === "pm") {
 			bot.pm(textOut, userid);
