@@ -469,8 +469,7 @@ global.OnAddDJ = function(data) {
 	bot.roomInfo(function(roomInfo){
 		if (roomInfo.room.metadata.max_djs === roomInfo.room.metadata.djcount){
 			Log("Cancel timer");
-			clearTimeout(idleDjSpotTimer);		
-			Log(idleDjSpotTimer);
+			clearTimeout(idleDjSpotTimer);
 		}
 	});
 
@@ -609,7 +608,6 @@ global.OnRemDJ = function(data) {
 		Log("Past DJs: " + JSON.stringify(PastDjs));
 
 		// This timer will reset the wait if no one steps up for 3 minutes.
-		Log(idleDjSpotTimer);
 		if (idleDjSpotTimer === null || idleDjSpotTimer._idleTimeout === -1) {
 			Log("Setting idle timer");
 			idleDjSpotTimer = setTimeout(function() {
@@ -617,7 +615,6 @@ global.OnRemDJ = function(data) {
 				Log("Idle timer ran");
 			}, 180000); // 3 minutes
 		}
-		Log(idleDjSpotTimer);
 	}
 
 	delete Djs[user.userid];
