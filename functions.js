@@ -560,7 +560,9 @@ global.LoadDjs = function(data) {
 	var ttdjs = data.room.metadata.djs;
 
 	GetValue("PastDjs", 10, function(results) {
-		PastDjs = JSON.parse(results);
+		if (results !== null){
+			PastDjs = JSON.parse(results);
+		}
 		Log("Past DJs: " + JSON.stringify(PastDjs));
 	});
 
