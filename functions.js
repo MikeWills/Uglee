@@ -628,5 +628,6 @@ global.ClearDjWait = function() {
 			Speak("@{u}, you can DJ again at any time.", AllUsers[i].name, "", i);
 		}
 		delete PastDjs[i];
+		SetValue('PastDjs', JSON.stringify(PastDjs));
 	}
 };

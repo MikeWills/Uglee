@@ -466,10 +466,11 @@ global.OnAddDJ = function(data) {
 	var user = data.user[0];
 
 	// If the spot is filled cancel the timer
-	bot.roomInfo(function(room){
-		if (room.metadata.max_djs === room.metadata.djcount){
+	bot.roomInfo(function(roomInfo){
+		if (roomInfo.room.metadata.max_djs === roomInfo.room.metadata.djcount){
 			Log("Cancel timer");
-			idleDjSpotTimer = null;
+			clearTimeout(idleDjSpotTimer);		
+			Log(idleDjSpotTimer);
 		}
 	});
 
@@ -562,6 +563,7 @@ global.OnAddDJ = function(data) {
 				PastDjs[i].waitDjs--;
 				if (PastDjs[i].waitDjs === 0) {
 					delete PastDjs[i];
+					SetValue('PastDjs', JSON.stringify(PastDjs));
 					if (AllUsers[i] !== undefined) {
 						Speak("@{u}, you can DJ again at any time.", AllUsers[i].name, "", i);
 					}
@@ -607,11 +609,15 @@ global.OnRemDJ = function(data) {
 		Log("Past DJs: " + JSON.stringify(PastDjs));
 
 		// This timer will reset the wait if no one steps up for 3 minutes.
-		if (idleDjSpotTimer === null) {
+		Log(idleDjSpotTimer);
+		if (idleDjSpotTimer === null || idleDjSpotTimer._idleTimeout === -1) {
+			Log("Setting idle timer");
 			idleDjSpotTimer = setTimeout(function() {
 				ClearDjWait();
-			}, (3 * 60000)); // 3 minutes
+				Log("Idle timer ran");
+			}, 180000); // 3 minutes
 		}
+		Log(idleDjSpotTimer);
 	}
 
 	delete Djs[user.userid];
