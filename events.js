@@ -3,6 +3,7 @@ global.totalPlays = 0;
 var bootedNextDJ = false;
 global.curSongWatchdog = null;
 global.takedownTimer = null;
+global.idleDjSpotTimer = null;
 
 global.OnReady = function(data) {
 	Log(color("EVENT Ready", "blue"));
@@ -464,6 +465,14 @@ global.OnAddDJ = function(data) {
 
 	var user = data.user[0];
 
+	// If the spot is filled cancel the timer
+	bot.roomInfo(function(room){
+		if (room.metadata.max_djs === room.metadata.djcount){
+			Log("Cancel timer");
+			idleDjSpotTimer = null;
+		}
+	});
+
 	var startDate = new Date();
 	var idleTime = Math.round((startDate - AllUsers[user.userid].lastActivity) / 60000); // in minutes
 	if (idleTime > 60) {
@@ -596,6 +605,13 @@ global.OnRemDJ = function(data) {
 			SetValue('PastDjs', JSON.stringify(PastDjs));
 		}
 		Log("Past DJs: " + JSON.stringify(PastDjs));
+
+		// This timer will reset the wait if no one steps up for 3 minutes.
+		if (idleDjSpotTimer === null) {
+			idleDjSpotTimer = setTimeout(function() {
+				ClearDjWait();
+			}, (3 * 60000)); // 3 minutes
+		}
 	}
 
 	delete Djs[user.userid];
