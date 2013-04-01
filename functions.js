@@ -255,7 +255,7 @@ global.ShouldBotDJ = function() {
 								bot.addDj();
 								bot.vote('up');
 								alreadyVoted = true;
-								bot.speak(stepUpText);
+								Speak(stepUpText);
 								botDJing = true;
 								return;
 							}
@@ -318,7 +318,7 @@ global.AddToQueue = function(userid) {
 					DjQueue.length++;
 
 					text = "@" + DjQueue[userid].name + ", you have been added to the queue. There is a total of " + DjQueue.length + " now.";
-					bot.speak(text);
+					Speak(text);
 					SetValue('DjQueue', JSON.stringify(DjQueue));
 					if (nextDj === null) {
 						nextDj = userid;
@@ -328,7 +328,7 @@ global.AddToQueue = function(userid) {
 				}
 			} else {
 				text = "@" + AllUsers[userid].name + ", seriously?!? Can't you wait until you're OFF the TABLE before adding yourself to the queue again? FAIL! ";
-				bot.speak(text);
+				Speak(text);
 			}
 		}
 	});
@@ -349,7 +349,7 @@ global.InsertInQueue = function(userid, position) {
 				if (DjQueue.indexOf(userid) == -1) {
 					DjQueue.splice((position - 1), 0, userid);
 					text = "@" + AllUsers[userid].name + ", you have been added to the queue. There is a total of " + DjQueue.length + " now.";
-					bot.speak(text);
+					Speak(text);
 					Log(DjQueue);
 					DjQueue.length++;
 					SetValue('DjQueue', JSON.stringify(DjQueue));
@@ -368,7 +368,7 @@ global.RemoveFromQueue = function(userid) {
 			if (DjQueue[userid] !== undefined) {
 				delete DjQueue[userid];
 				DjQueue.length--;
-				bot.speak("You have been removed from the queue @" + AllUsers[userid].name);
+				Speak("You have been removed from the queue @" + AllUsers[userid].name);
 				SetValue('DjQueue', JSON.stringify(DjQueue));
 			}
 		}
@@ -391,7 +391,7 @@ global.NewDjFromQueue = function(data) {
 						text = "Sorry @" + AllUsers[data.user[0].userid].name + ", it's not your turn. You need to wait your turn.";
 
 					}
-					bot.speak(text);
+					Speak(text);
 				} else {
 					delete DjQueue[data.user[0].userid];
 					DjQueue.length--;
@@ -430,7 +430,7 @@ global.NextDjOnQueue = function() {
 				}
 
 				if (nextDj === null) {
-					bot.speak("The queue is empty. All DJs in the queue are currently not here. Anyone can DJ at this time!");
+					Speak("The queue is empty. All DJs in the queue are currently not here. Anyone can DJ at this time!");
 					return;
 				}
 
@@ -440,7 +440,7 @@ global.NextDjOnQueue = function() {
 					GetValue("nextDjQueueTimeout", 0, function(nextDjQueueTimeout) {
 						var text = "It is now @" + DjQueue[nextDj].name + "'s turn to DJ! You have " + nextDjQueueTimeout + " seconds to step up.";
 						waitingOnNextDj = true;
-						bot.speak(text);
+						Speak(text);
 						bot.pm("It's your turn to DJ.", nextDj);
 						nextDjTime = new Date();
 						queueRefreshIntervalId = setInterval(CheckForNextDjFromQueue, 5000);
@@ -448,7 +448,7 @@ global.NextDjOnQueue = function() {
 					queueRefreshIntervalRunning = true;
 				}
 			} else {
-				bot.speak("The queue is empty. Anyone can DJ at this time!");
+				Speak("The queue is empty. Anyone can DJ at this time!");
 			}
 		}
 	});
@@ -470,11 +470,11 @@ global.CheckForNextDjFromQueue = function() {
 				DjQueue.length--;
 
 				if (pastDj.afkCount >= 2) {
-					bot.speak("Sorry @" + pastDj.name + ", you missed out! Whatta looser! You can add yourself back to the queue, but pay attention this time.");
+					Speak("Sorry @" + pastDj.name + ", you missed out! Whatta looser! You can add yourself back to the queue, but pay attention this time.");
 				} else {
 					DjQueue[nextDj] = pastDj;
 					DjQueue.length++;
-					bot.speak("Too late @" + pastDj.name + " you can try once more on the next opening.");
+					Speak("Too late @" + pastDj.name + " you can try once more on the next opening.");
 				}
 
 				waitingOnNextDj = false;
@@ -518,9 +518,9 @@ global.QueueStatus = function() {
 
 			if (djList !== "") {
 				var text = DjQueue.length + " DJ(s) in the queue. They are: " + djList;
-				bot.speak(text.substring(0, text.length - 2));
+				Speak(text.substring(0, text.length - 2));
 			} else {
-				bot.speak("Queue is empty!");
+				Speak("Queue is empty!");
 			}
 			SetValue('DjQueue', JSON.stringify(DjQueue));
 		}
