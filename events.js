@@ -528,7 +528,7 @@ global.OnAddDJ = function(data) {
 
 	// Check if they still have to wait to DJ
 	if (Settings["isModerating"].value === "true") {
-		if (PastDjs[user.userid].waitDjs === 0){
+		if (PastDjs[user.userid].waitDjs <= 0){
 			delete PastDjs[user.userid];
 		}
 		if (PastDjs[user.userid] !== undefined && 
