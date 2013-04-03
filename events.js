@@ -528,7 +528,11 @@ global.OnAddDJ = function(data) {
 
 	// Check if they still have to wait to DJ
 	if (Settings["isModerating"].value === "true") {
-		if (PastDjs[user.userid] !== undefined && (PastDjs[user.userid].waitDjs !== 0 && PastDjs[user.userid].remainingPlays === 0)) {
+		if (PastDjs[user.userid].waitDjs === 0){
+			delete PastDjs[user.userid];
+		}
+		if (PastDjs[user.userid] !== undefined && 
+		   (PastDjs[user.userid].waitDjs !== 0 && PastDjs[user.userid].remainingPlays === 0)) {
 			bot.remDj(user.userid);
 			Speak("@{u}, please wait " + PastDjs[user.userid].waitDjs + " more DJs before stepping back up.", AllUsers[user.userid].name);
 
