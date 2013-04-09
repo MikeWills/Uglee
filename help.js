@@ -1,4 +1,4 @@
-exports.name = '/help'; 
+exports.name = '/helpme'; 
 exports.hidden = true;
 exports.enabled = true;
 exports.matchStart = false;
