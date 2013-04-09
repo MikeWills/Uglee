@@ -292,7 +292,7 @@ global.ShouldBotDJ = function() {
 /* 	============
 	SpeakPlayCout - Announce how many songs remain for each DJ.
 	============ */
-global.SpeakPlayCount = function() {
+global.SpeakPlayCount = function(source, userid) {
 	var count = ['x', 'x', 'x', 'x', 'x'];
 	var x = 0;
 	for (var i in Djs) {
@@ -300,7 +300,11 @@ global.SpeakPlayCount = function() {
 		x++;
 	}
 	var playCount = count[0] + '-' + count[1] + '-' + count[2] + '-' + count[3] + '-' + count[4];
-	Speak("Remaining: " + playCount);
+	if (source !== undefined && userid !== undefined){
+		Speak("Remaining: " + playCount, "", source, userid);
+	} else {
+		Speak("Remaining: " + playCount);
+	}
 };
 
 /*  ============== 
