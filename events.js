@@ -117,8 +117,12 @@ global.OnRegistered = function(data) {
 
 		setTimeout(function() {
 			if (users[0].registered === undefined) {
-				// Greet n00b
-				Speak(welcomeVisitorText, users[0].name);
+				if (Settings["banGuest"] !== undefined && Settings["banGuest"].value === "true") {
+					bot.boot(user.userid, "We're sorry. Due to issues with trolling, we only allow registered users in our room.");
+				} else {
+					// Greet n00b
+					Speak(welcomeVisitorText, users[0].name);
+				}
 			}
 		}, 2500);
 
