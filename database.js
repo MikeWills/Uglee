@@ -302,4 +302,10 @@ global.SetUpRoom = function() {
 			SetValue("djWait", "2", 1);
 		}
 	});
+	// Ban guest accounts from the room.
+	GetValue("banGuest", 0, function(value) {
+		if (value === null) {
+			SetValue("banGuest", "false", 1);
+		}
+	});
 };
