@@ -3,9 +3,7 @@ exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = false;
 exports.handler = function(data, userid, source) {
-	GetValue("isModerating", 0, function(isModerating) {
-		if(isModerating === "true") {
-			Speak(ruleText, AllUsers[userid].name, source, userid);
-		}
-	});
+	if (Settings["isModerating"].value === "true") {
+		Speak(ruleText, AllUsers[userid].name, source, userid);
+	}
 }
