@@ -538,7 +538,7 @@ global.OnAddDJ = function(data) {
 		if (PastDjs[user.userid] !== undefined && 
 		   (PastDjs[user.userid].waitDjs !== 0 && PastDjs[user.userid].remainingPlays === 0)) {
 			bot.remDj(user.userid);
-			Speak("@{u}, please wait " + PastDjs[user.userid].waitDjs + " more DJs before stepping back up.", AllUsers[user.userid].name);
+			Speak("@{u}, please wait " + PastDjs[user.userid].waitDjs + " more DJs before stepping back up.", AllUsers[user.userid].name, "pm", user.userid);
 
 			if (reservedRemovedDjs[user.userid] === undefined) {
 				var removedDj = {
@@ -556,11 +556,11 @@ global.OnAddDJ = function(data) {
 			// If they had songs left copy back to the DJ array
 			if (PastDjs[user.userid] !== undefined) {
 				Djs[user.userid] = PastDjs[user.userid];
-				Speak("@{u}, you have " + Djs[user.userid].remainingPlays + " plays remaining in your set.", AllUsers[user.userid].name, "", user.userid);
+				Speak("@{u}, you have " + Djs[user.userid].remainingPlays + " plays remaining in your set.", AllUsers[user.userid].name, "pm", user.userid);
 				delete PastDjs[user.userid];
 			} else { // New DJ
 				Djs[user.userid] = djInfo;
-				Speak("@{u}, you have " + Djs[user.userid].remainingPlays + " plays in your set.", AllUsers[user.userid].name, "", user.userid);
+				Speak("@{u}, you have " + Djs[user.userid].remainingPlays + " plays in your set.", AllUsers[user.userid].name, "pm", user.userid);
 			}
 
 			SetValue('Djs', JSON.stringify(Djs));
@@ -572,7 +572,7 @@ global.OnAddDJ = function(data) {
 					delete PastDjs[i];
 					SetValue('PastDjs', JSON.stringify(PastDjs));
 					if (AllUsers[i] !== undefined) {
-						Speak("@{u}, you can DJ again at any time.", AllUsers[i].name, "", i);
+						Speak("@{u}, you can DJ again at any time.", AllUsers[i].name, "pm", i);
 					}
 				}
 			}
