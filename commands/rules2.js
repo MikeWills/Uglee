@@ -5,7 +5,7 @@ exports.matchStart = false;
 exports.handler = function(data, userid, source) {
     GetValue("isModerating", 0, function(isModerating) {
 		if(isModerating === "true") {
-			Speak(ruleText);
+			Speak(ruleText, AllUsers[userid].name, source, userid);
 		}
 	});
 }
