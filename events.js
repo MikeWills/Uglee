@@ -534,6 +534,7 @@ global.OnAddDJ = function(data) {
 	if (Settings["isModerating"].value === "true") {
 		if (PastDjs[user.userid] !== undefined && PastDjs[user.userid].waitDjs <= 0){
 			delete PastDjs[user.userid];
+			SetValue('PastDjs', JSON.stringify(PastDjs));
 		}
 		if (PastDjs[user.userid] !== undefined && 
 		   (PastDjs[user.userid].waitDjs !== 0 && PastDjs[user.userid].remainingPlays === 0)) {
@@ -607,7 +608,7 @@ global.OnRemDJ = function(data) {
 
 	// If the bot is moderating the room, save the DJ info in case they steped down early
 	var user = data.user[0];
-	if (Settings["isModerating"].value === "true") {
+	if (Settings["isModerating"].value === "true" && Settings["djWait"].value !== "0") {
 		if (PastDjs[user.userid] === undefined) {
 			PastDjs[user.userid] = Djs[user.userid];
 			PastDjs[user.userid].waitDjs = Settings["djWait"].value;
