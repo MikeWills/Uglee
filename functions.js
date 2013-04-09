@@ -635,7 +635,7 @@ global.LoadRoomSettings = function(roomid) {
 global.ClearDjWait = function() {
 	for (var i in PastDjs) {
 		if (AllUsers[i] !== undefined) {
-			Speak("@{u}, you can DJ again at any time.", AllUsers[i].name, "", i);
+			Speak("@{u}, you can DJ again at any time.", AllUsers[i].name, "pm", i);
 		}
 		delete PastDjs[i];
 		SetValue('PastDjs', JSON.stringify(PastDjs));
