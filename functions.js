@@ -32,7 +32,9 @@ global.Speak = function(text, userName, source, userid) {
 			if (AllUsers[userid].laptop === "android"){
 				bot.speak(textOut);
 			} else {
-				bot.pm(textOut, userid);
+				if (userid !== botUserId) {
+					bot.pm(textOut, userid);
+				}
 			}
 			return;
 		} else {
