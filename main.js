@@ -182,9 +182,11 @@ setInterval(function() {
 		bot.listRooms({
 			skip: 0
 		}, function(data) {
+			//Log("listRooms: " + JSON.stringify(data));
 			ttUp = true;
 			Log("Turntable.FM is up.");
 			bot.roomInfo(false, function(data) {
+				//Log("roomInfo: " + JSON.stringify(data));
 				var users = data.users;
 				for (var i = 0; i < users.length; i++) {
 					if (botUserId == users[i].userid) {
