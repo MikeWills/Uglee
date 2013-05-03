@@ -174,7 +174,7 @@ Log("Done");
 Log("Ready");
 
 // Check that TT is up every 5 minutes. This is so the bot can gracefully restart when the site comes back up.
-setInterval(function() {
+/*setInterval(function() {
 	var ttUp = false;
 	var botInRoom = false;
 	Log("Uptime Check");
@@ -222,7 +222,7 @@ setInterval(function() {
 			process.exit(0);
 		}, 150000); // 2.5 minutes
 	}
-}, 600000); // 10 minutes
+}, 600000); // 10 minutes*/
 
 // Look for users that are idle and boot them
 GetValue('bootOnIdle', 0, function(retVal) {
