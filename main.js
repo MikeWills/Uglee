@@ -15,6 +15,8 @@ global.LastFmNode = require('lastfm').LastFmNode;
 //global.Quotes = require("./quotes.js");
 global.currentRoomId = botRoomId;
 
+Log("==================================================================");
+
 // Setup mySQL
 try {
 	global.mysql = require('mysql');
