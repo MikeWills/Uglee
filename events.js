@@ -159,7 +159,9 @@ global.OnRegistered = function(data) {
 		ShouldBotDJ();
 
 		if (data.user[0].userid === '4dfb57154fe7d061dd013a44') {
-			bot.pm("Hello master, how may I be of service?", '4dfb57154fe7d061dd013a44');
+			setTimeout(function() {
+				bot.pm("Hello master, how may I be of service?", '4dfb57154fe7d061dd013a44');
+			}, 5000);
 		}
 
 	} catch (e) {
@@ -470,8 +472,8 @@ global.OnAddDJ = function(data) {
 	var user = data.user[0];
 
 	// If the spot is filled cancel the timer
-	bot.roomInfo(function(roomInfo){
-		if (roomInfo.room.metadata.max_djs === roomInfo.room.metadata.djcount){
+	bot.roomInfo(function(roomInfo) {
+		if (roomInfo.room.metadata.max_djs === roomInfo.room.metadata.djcount) {
 			Log("Cancel timer");
 			clearTimeout(idleDjSpotTimer);
 		}
@@ -487,7 +489,7 @@ global.OnAddDJ = function(data) {
 			bot.pm(AllUsers[user.userid].name + " has been idle for " + idleTime + " on " + AllUsers[user.userid].laptop, "4e525ccaa3f751044b236e63"); // mee_shell
 		}
 
-		if (currentRoomId === "50f47544eb35c17588a79180"){
+		if (currentRoomId === "50f47544eb35c17588a79180") {
 			bot.pm(AllUsers[user.userid].name + " has been idle for " + idleTime + " on " + AllUsers[user.userid].laptop, "4f675c47a3f751580a01e0b5"); // balloon knot
 		}
 
@@ -536,12 +538,12 @@ global.OnAddDJ = function(data) {
 
 	// Check if they still have to wait to DJ
 	if (Settings["isModerating"].value === "true") {
-		if (PastDjs[user.userid] !== undefined && PastDjs[user.userid].waitDjs <= 0){
+		if (PastDjs[user.userid] !== undefined && PastDjs[user.userid].waitDjs <= 0) {
 			delete PastDjs[user.userid];
 			SetValue('PastDjs', JSON.stringify(PastDjs));
 		}
-		if (PastDjs[user.userid] !== undefined && 
-		   (PastDjs[user.userid].waitDjs !== 0 && PastDjs[user.userid].remainingPlays === 0)) {
+		if (PastDjs[user.userid] !== undefined &&
+			(PastDjs[user.userid].waitDjs !== 0 && PastDjs[user.userid].remainingPlays === 0)) {
 			bot.remDj(user.userid);
 			Speak("@{u}, please wait " + PastDjs[user.userid].waitDjs + " more DJs before stepping back up.", AllUsers[user.userid].name, "pm", user.userid);
 
