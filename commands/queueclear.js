@@ -7,6 +7,7 @@ exports.handler = function(data, userid, source) {
 		if(isMod) {
 			DjQueue = { "length": 0};
 			nextDj = null;
+			QueueStatus();
 		}
 	});
 }
