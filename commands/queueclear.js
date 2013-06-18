@@ -1,4 +1,4 @@
-exports.name = '/endq';
+exports.name = '/clearq';
 exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = false;
