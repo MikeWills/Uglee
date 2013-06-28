@@ -492,10 +492,6 @@ global.OnAddDJ = function(data) {
 			bot.pm(AllUsers[user.userid].name + " has been idle for " + idleTime + " on " + AllUsers[user.userid].laptop, "4e525ccaa3f751044b236e63"); // mee_shell
 		}
 
-		if (currentRoomId === "50f47544eb35c17588a79180") {
-			bot.pm(AllUsers[user.userid].name + " has been idle for " + idleTime + " on " + AllUsers[user.userid].laptop, "4f675c47a3f751580a01e0b5"); // balloon knot
-		}
-
 		Log(AllUsers[user.userid].name + " (" + user.userid + ") has been idle for " + idleTime, "error");
 	}
 
