@@ -133,7 +133,10 @@ global.OnRegistered = function(data) {
 		// Check if User is banned
 		client.query('SELECT userid, banned_by, DATE_FORMAT(timestamp, \'%c/%e/%y\') as timestamp' + ' FROM BANNED WHERE userid LIKE \'' + user.userid + '\'', function cb(error, results, fields) {
 			if (results != null && results.length > 0) {
-				bot.boot(user.userid, 'You were banned from this room by ' + results[0]['banned_by'] + ' on ' + results[0]['timestamp']);
+
+				if (user.userid !== botUserId) {
+					bot.boot(user.userid, 'You were banned from this room by ' + results[0]['banned_by'] + ' on ' + results[0]['timestamp']);
+				}
 			}
 		});
 
@@ -514,7 +517,9 @@ global.OnAddDJ = function(data) {
 		} else {
 			reservedRemovedDjs[user.userid].numBoots++;
 			if (reservedRemovedDjs[user.userid].numBoots >= 3) {
-				bot.boot(user.userid, 'I said this spot was saved.');
+				if (user.userid !== botUserId) {
+					bot.boot(user.userid, 'I said this spot was saved.');
+				}
 			}
 		}
 	}
@@ -556,7 +561,9 @@ global.OnAddDJ = function(data) {
 			} else {
 				reservedRemovedDjs[user.userid].numBoots++;
 				if (reservedRemovedDjs[user.userid].numBoots >= 3) {
-					bot.boot(user.userid, 'Please wait until it is your turn next time.');
+					if (user.userid !== botUserId) {
+						bot.boot(user.userid, 'Please wait until it is your turn next time.');
+					}
 				}
 			}
 		} else {
@@ -614,21 +621,23 @@ global.OnRemDJ = function(data) {
 
 	// If the bot is moderating the room, save the DJ info in case they steped down early
 	var user = data.user[0];
-	if (Settings["isModerating"].value === "true" && Settings["djWait"].value !== "0") {
-		if (PastDjs[user.userid] === undefined) {
-			PastDjs[user.userid] = Djs[user.userid];
-			PastDjs[user.userid].waitDjs = Settings["djWait"].value;
-			SetValue('PastDjs', JSON.stringify(PastDjs));
-		}
-		Log("Past DJs: " + JSON.stringify(PastDjs));
+	if (user.userid !== botUserId) {
+		if (Settings["isModerating"].value === "true" && Settings["djWait"].value !== "0") {
+			if (PastDjs[user.userid] === undefined) {
+				PastDjs[user.userid] = Djs[user.userid];
+				PastDjs[user.userid].waitDjs = Settings["djWait"].value;
+				SetValue('PastDjs', JSON.stringify(PastDjs));
+			}
+			Log("Past DJs: " + JSON.stringify(PastDjs));
 
-		// This timer will reset the wait if no one steps up for 3 minutes.
-		if (idleDjSpotTimer === null || idleDjSpotTimer._idleTimeout === -1) {
-			Log("Setting idle timer");
-			idleDjSpotTimer = setTimeout(function() {
-				ClearDjWait();
-				Log("Idle timer ran");
-			}, 180000); // 3 minutes
+			// This timer will reset the wait if no one steps up for 3 minutes.
+			if (idleDjSpotTimer === null || idleDjSpotTimer._idleTimeout === -1) {
+				Log("Setting idle timer");
+				idleDjSpotTimer = setTimeout(function() {
+					ClearDjWait();
+					Log("Idle timer ran");
+				}, 180000); // 3 minutes
+			}
 		}
 	}
 
