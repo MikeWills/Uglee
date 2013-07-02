@@ -69,6 +69,17 @@ global.lastfm = new LastFmNode({
 	secret: lastfmApiSecret
 });
 
+process.on('message', function(m) {
+    if (m.status && m.msg === 'are_you_there') {
+        process.send({
+            status: true,
+            msg: 'online',
+            process: m.process,
+            name: botName
+        });
+    }
+});
+
 Log("Initializing");
 
 // Initialize global variables
