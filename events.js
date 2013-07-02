@@ -522,7 +522,7 @@ global.OnAddDJ = function(data) {
 			bot.pm(AllUsers[user.userid].name + " has been idle for " + idleTime + " on " + AllUsers[user.userid].laptop, "4e525ccaa3f751044b236e63"); // mee_shell
 		}
 
-		Log(AllUsers[user.userid].name + " (" + user.userid + ") has been idle for " + idleTime, "error");
+		Log(user.userid + " - " + AllUsers[user.userid].name + " has been idle for " + idleTime, "error");
 	}
 
 	// For reserving a spot...
