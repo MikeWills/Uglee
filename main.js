@@ -40,6 +40,30 @@ try {
 	process.exit(0);
 }
 
+function handleDisconnect(client) {
+  client.on('error', function(err) {
+    if (!err.fatal) {
+      return;
+    }
+
+    if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
+      throw err;
+    }
+
+    console.log('Re-connecting lost connection: ' + err.stack);
+
+    client = mysql.createConnection({
+		"host": dbHost,
+		"user": dbLogin,
+		"password": dbPassword
+	});
+    handleDisconnect(client);
+    client.connect();
+  });
+}
+
+handleDisconnect(client);
+
 global.lastfm = new LastFmNode({
 	api_key: lastfmApiKey,
 	secret: lastfmApiSecret
@@ -112,10 +136,7 @@ global.songBootIntervalId = null;
 // This is a catch-all
 process.on("uncaughtException", function(data) {
 	Log(color("**ERROR** Process error ", "red") + data, "error");
-	setTimeout(function() {
-		Log("Shutting down (forever should restart)", "error")
-		process.exit(0);
-	}, 150000); // 2.5 minutes
+	connect(botRoomId);
 });
 
 // Start up bot
@@ -171,60 +192,10 @@ bot.on("rem_moderator", OnRemModerator);
 bot.on("snagged", OnSnagged);
 bot.on("pmmed", OnPmmed);
 bot.on("error", OnError);
+bot.on("disconnected", OnDisconnect);
 Log("Done");
 
 Log("Ready");
-
-// Check that TT is up every 5 minutes. This is so the bot can gracefully restart when the site comes back up.
-/*setInterval(function() {
-	var ttUp = false;
-	var botInRoom = false;
-	Log("Uptime Check");
-	try {
-		bot.listRooms({
-			skip: 0
-		}, function(data) {
-			//Log("listRooms: " + JSON.stringify(data));
-			ttUp = true;
-			Log("Turntable.FM is up.");
-			bot.roomInfo(false, function(data) {
-				//Log("roomInfo: " + JSON.stringify(data));
-				var users = data.users;
-				for (var i = 0; i < users.length; i++) {
-					if (botUserId == users[i].userid) {
-						Log("TT Up and Bot in room");
-						ttUp = true;
-						botInRoom = true;
-					}
-				}
-				if (!botInRoom) {
-					Log("Bot not in room");
-				}
-			});
-		});
-
-		setTimeout(function() {
-			if (botInRoom === false) {
-				bot.roomDeregister();
-				bot.roomRegister(botRoomId);
-			}
-			if (ttUp === false) {
-				Log("Turntable.FM is down.", "error");
-				setTimeout(function() {
-					Log("Shutting down (forever should restart)", "error")
-					process.exit(0);
-				}, 150000); // 2.5 minutes
-			}
-		}, 60000); // 1 minute
-	} catch (e) {
-		Log(color("**DOWN** Turntable.FM is down.", "red"), "error");
-		Log(color("** ERROR TT_UP_CHECK ** ", "red") + e, "error");
-		setTimeout(function() {
-			Log("Shutting down (forever should restart)", "error")
-			process.exit(0);
-		}, 150000); // 2.5 minutes
-	}
-}, 600000); // 10 minutes*/
 
 // Look for users that are idle and boot them
 GetValue('bootOnIdle', 0, function(retVal) {

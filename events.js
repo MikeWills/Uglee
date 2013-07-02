@@ -5,6 +5,37 @@ global.curSongWatchdog = null;
 global.takedownTimer = null;
 global.idleDjSpotTimer = null;
 
+global.OnDisconnect = function(data) {
+	if (!disconnected) {
+		// Set the disconnected flag and display message
+		disconnected = true;
+		Log(color("DISCONNECTED ", "red") + e, "error");
+		// Attempt to reconnect in 10 seconds
+		setTimeout(connect, 10 * 1000, botRoomId);
+	}
+}
+
+global.connect = function(roomid) {
+	// Reset the disconnected flag
+	disconnected = false;
+
+	// Attempt to join the room
+	bot.roomRegister(roomid, function(data) {
+		if (data && data.success) {
+			console.log('Joined ' + data.room.name);
+			StalkMaster();
+		} else {
+			Log(color("DISCONNECTED " + 'Failed to join room', "red"), "error");
+			if (!disconnected) {
+				// Set the disconnected flag
+				disconnected = true;
+				// Try again in 60 seconds
+				setTimeout(connect, 60 * 1000, roomid);
+			}
+		}
+	});
+}
+
 global.OnReady = function(data) {
 	Log(color("EVENT Ready", "blue"));
 	GetValue("maxPlays", 0, function(max) {
