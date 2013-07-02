@@ -23,7 +23,6 @@ global.connect = function(roomid) {
 	bot.roomRegister(roomid, function(data) {
 		if (data && data.success) {
 			console.log('Joined ' + data.room.name);
-			StalkMaster();
 		} else {
 			Log(color("DISCONNECTED " + 'Failed to join room', "red"), "error");
 			if (!disconnected) {
