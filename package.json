@@ -4,12 +4,13 @@
   "description": "A \"fun\" bot for TurnTable.fm",
   "main": "main.js",
   "dependencies": {
-    "mysql": "~0.9.6",
+    "mysql": "~2.0.0-alpha8",
     "forever": "~0.10.0",
-    "ttapi": "~1.5.0",
+    "ttapi": "~3.0.0",
     "util": "~0.4.9",
     "ansi-color": "~0.2.1",
-    "datejs": "~0.0.2"
+    "datejs": "~0.0.2",
+    "lastfm": "~0.8.4"
   },
   "devDependencies": {},
   "scripts": {
