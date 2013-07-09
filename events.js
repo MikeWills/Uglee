@@ -120,7 +120,8 @@ global.OnRoomChanged = function(data) {
 		}, 5000);
 
 	} catch (e) {
-		Log(e + " | " + JSON.stringify(data), "error", "Room Changed");
+		Log(e, "error", "Room Changed");
+		Log(JSON.stringify(data), "error", "Room Changed");
 	}
 };
 
