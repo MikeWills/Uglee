@@ -758,7 +758,7 @@ global.OnSnagged = function(data) {
 
 global.OnPmmed = function(data) {
 	if (AllUsers[data.senderid] !== undefined) {
-		Log(data.senderid + " - " + AllUsers[data.senderid].name + ' PMed: "' + data.text + '"', "log", "PMmed");
+		Log(data.senderid + ' - ' + AllUsers[data.senderid].name + ' PMed: "' + data.text + '"', "log", "PMmed");
 		AllUsers[data.senderid].lastActivity = new Date();
 	}
 

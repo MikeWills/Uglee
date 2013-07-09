@@ -7,7 +7,7 @@ global.Log = function(data, logType, eventType) {
 		eventType = "";
 	}
 
-	if (logType !== undefined) {
+	if (logType === undefined) {
 		logType = "";
 	}
 
