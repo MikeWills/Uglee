@@ -81,7 +81,7 @@ global.TellUser = function(userid, text) {
 			return;
 		}
 	} catch (e) {
-		Log(color("**ERROR** TellUser() ", "red") + e, "error");
+		Log(e, "error", "TellUser()");
 	}
 };
 
