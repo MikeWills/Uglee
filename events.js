@@ -231,11 +231,9 @@ global.OnDeregistered = function(data) {
 			var now = new Date();
 			var username = AllUsers[user.userid].name;
 			if ((now - AllUsers[user.userid].loggedIn) < 30000) {
-				GetValue("gtfo", 0, function(value) {
-					if (value === "true") {
-						SpeakRandom(userLeaveQuickText, username);
-					}
-				});
+				if (Settings["gtfo"].value === "true") {
+					SpeakRandom(userLeaveQuickText, username);
+				}
 			}
 
 			delete AllUsers[user.userid];
@@ -495,12 +493,12 @@ global.OnUpdateVotes = function(data) {
 };
 
 global.OnBootedUser = function(data) {
-	try{
+	try {
 		Log(data.userid + " - " + AllUsers[data.userid].name + " was booted by " + data.modid + "(" + AllUsers[data.modid].name + ") for " + data.reason, "error", "Booted User");
 	} catch (e) {
 		Log(data.userid + " was booted by " + data.modid + " (" + AllUsers[data.modid].name + ") for " + data.reason, "error", "Booted User");
 	}
-	
+
 	if (data.userid === botUserId) {
 		botWasBooted = true;
 		bot.roomDeregister();
@@ -643,7 +641,7 @@ global.OnAddDJ = function(data) {
 };
 
 global.OnRemDJ = function(data) {
-	Log(data.user[0].userid + " - " + data.user[0].name, "","Remove DJ");
+	Log(data.user[0].userid + " - " + data.user[0].name, "", "Remove DJ");
 
 	waitingOnNextDj = false;
 
