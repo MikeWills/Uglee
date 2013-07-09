@@ -120,8 +120,8 @@ global.OnRoomChanged = function(data) {
 			ShouldBotDJ();
 		}, 5000);
 	} else {
-		Log("Cannot connect to room. ErrNo: " + data.errno + "  MsgId: " + data.msgid + "  Err:" data.err, "error", "Room Changed");
-		bot.pm("Cannot connect to room. ErrNo: " + data.errno + "  MsgId: " + data.msgid + "  Err:" data.err, botAdmins[0]);
+		Log("Cannot connect to room. ErrNo: " + data.errno + "  MsgId: " + data.msgid + "  Err: " + data.err, "error", "Room Changed");
+		bot.pm("Cannot connect to room. ErrNo: " + data.errno + "  MsgId: " + data.msgid + "  Err: " + data.err, botAdmins[0]);
 	}
 
 	} catch (e) {
