@@ -131,7 +131,13 @@ global.OnRegistered = function(data) {
 		var users = data.user;
 		for (var i in users) {
 			var user = users[i];
-			user.lastActivity = user.loggedIn = new Date();
+			var newUser = {
+				name: user.name,
+				userid: user.userid,
+				points: user.points,
+				lastActivity = user.loggedIn = new Date(),
+				laptop = user.laptop
+			};
 			AllUsers[user.userid] = user;
 		}
 
