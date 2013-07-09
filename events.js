@@ -96,8 +96,15 @@ global.OnRoomChanged = function(data) {
 		var users = data.users;
 		for (var i in users) {
 			var user = users[i];
-			user.lastActivity = user.loggedIn = new Date();
-			AllUsers[user.userid] = user;
+			var newUser = {
+				name: user.name,
+				userid: user.userid,
+				points: user.points,
+				lastActivity: new Date(),
+				loggedIn: new Date(),
+				laptop: user.laptop
+			};
+			AllUsers[user.userid] = newUser;
 			if (users[i].name !== null) {
 				client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'User(roomid, userid, username, lastseen)' + 'VALUES (?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [currentRoomId, users[i].userid, users[i].name]);
 			}
@@ -135,10 +142,11 @@ global.OnRegistered = function(data) {
 				name: user.name,
 				userid: user.userid,
 				points: user.points,
-				lastActivity = user.loggedIn = new Date(),
-				laptop = user.laptop
+				lastActivity: new Date(),
+				loggedIn: new Date(),
+				laptop: user.laptop
 			};
-			AllUsers[user.userid] = user;
+			AllUsers[user.userid] = newUser;
 		}
 
 		setTimeout(function() {
