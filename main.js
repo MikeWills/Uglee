@@ -15,14 +15,15 @@ global.LastFmNode = require('lastfm').LastFmNode;
 //global.Quotes = require("./quotes.js");
 global.currentRoomId = botRoomId;
 
-Log("==================================================================");
+Log("==================================================================", "log");
 
 // Setup mySQL
 try {
 	global.mysql = require('mysql');
 } catch (e) {
 	Log(e);
-	Log('It is likely that you do not have the mysql node module installed.' + '\nUse the command \'npm install mysql\' to install.', "error");
+	Log('It is likely that you do not have the mysql node module installed.' + 
+		'\nUse the command \'npm install mysql\' to install.', "error", "mySQL");
 	process.exit(0);
 }
 
@@ -36,7 +37,8 @@ try {
 	SetUpDatabase();
 } catch (e) {
 	Log(e);
-	Log('Make sure that a mysql server instance is running and that the ' + 'username and password information in config.js are correct.', "error");
+	Log('Make sure that a mysql server instance is running and that the ' + 
+		'username and password information in config.js are correct.', "error", "mySQL");
 	process.exit(0);
 }
 
@@ -50,7 +52,7 @@ function handleDisconnect(client) {
       throw err;
     }
 
-    console.log('Re-connecting lost connection: ' + err.stack);
+    Log('Re-connecting lost connection: ' + err.stack, "error", "mySQL");
 
     client = mysql.createConnection({
 		"host": dbHost,
@@ -94,7 +96,6 @@ global.lastDjName = "";
 global.currentDj = "";
 global.votedDjs = [];
 global.firstSong = true;
-Log("First song: " + firstSong);
 
 // Queue Data
 global.DjQueue = {
@@ -145,17 +146,17 @@ global.songWarningIntervalId = null;
 global.songBootIntervalId = null;
 
 // This is a catch-all
-process.on("uncaughtException", function(data) {
-	Log(color("**ERROR** Process error ", "red") + data, "error");
+/*process.on("uncaughtException", function(data) {
+	Log(data, "error", "Process error");
 	connect(botRoomId);
-});
+});*/
 
 // Start up bot
 try {
 	global.bot = new Bot(botAuthId, botUserId, botRoomId);
 } catch (e) {
 	setTimeout(function() {
-		Log("Shutting down (forever should restart)", "error")
+		Log("Error loggin in with error of " + e, "error", "Bot login")
 		process.exit(0);
 	}, 150000); // 2.5 minutes
 }
@@ -176,7 +177,7 @@ try {
 		}
 	}
 } catch (e) {
-	Log(color("**ERROR** Load Commands", "red") + e, "error");
+	Log(e, "error", "Load commands");
 }
 Log("Done");
 
@@ -219,7 +220,7 @@ GetValue('bootOnIdle', 0, function(retVal) {
 					//var idleTime = Math.round((startDate - AllUsers[z].lastActivity) / 60000); // for testing minutes
 					//Log(AllUsers[z].name + ": " + idleTime);
 					if (idleTime >= val) {
-						Log("Bot booted " + AllUsers[z].name);
+						Log("Bot booted " + AllUsers[z].name, "log");
 						//bot.bootUser(z, "You have been booted for being idle."); // Uncomment this to activate
 					}
 				}

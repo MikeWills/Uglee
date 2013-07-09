@@ -9,7 +9,7 @@ global.OnDisconnect = function(data) {
 	if (!disconnected) {
 		// Set the disconnected flag and display message
 		disconnected = true;
-		Log(color("DISCONNECTED ", "red") + e, "error");
+		Log(data, "error", "DISCONNECTED");
 		// Attempt to reconnect in 10 seconds
 		setTimeout(connect, 10 * 1000, botRoomId);
 	}
@@ -22,9 +22,9 @@ global.connect = function(roomid) {
 	// Attempt to join the room
 	bot.roomRegister(roomid, function(data) {
 		if (data && data.success) {
-			console.log('Joined ' + data.room.name);
+			Log('Joined ' + data.room.name, "log");
 		} else {
-			Log(color("DISCONNECTED " + 'Failed to join room', "red"), "error");
+			Log(data, "error", "DISCONNECTED");
 			if (!disconnected) {
 				// Set the disconnected flag
 				disconnected = true;
@@ -36,7 +36,7 @@ global.connect = function(roomid) {
 }
 
 global.OnReady = function(data) {
-	Log(color("EVENT Ready", "blue"));
+	Log("Ready", "", "Ready");
 	GetValue("maxPlays", 0, function(max) {
 		totalPlays = Number(max);
 	});
@@ -68,15 +68,13 @@ global.OnReady = function(data) {
 
 global.OnRoomChanged = function(data) {
 	try {
-		// EVENT Room Changed: {"errno":3,"err":"User banned","success":false,"msgid":2}
-		Log(color("EVENT Room Changed to " + data.room.name, "blue"));
-		//Log("EVENT Room Changed: " + JSON.stringify(data));
+		Log(data.room.name, "log", "Room Changed");
 
 		if (botWasBooted) {
 			Speak("You're despicable!");
 			botWasBooted = false;
 		} else {
-			//Speak(startupText);
+			Speak(startupText);
 		}
 
 		if (currentRoomId !== data.room.roomid) {
@@ -122,13 +120,13 @@ global.OnRoomChanged = function(data) {
 		}, 5000);
 
 	} catch (e) {
-		Log(color("**ERROR** Room Changed ", "red") + e, "error");
+		Log(e, "error", "Room Changed");
 	}
 };
 
 global.OnRegistered = function(data) {
 	try {
-		Log(color("EVENT Registered: ", "blue") + data.user[0].name + " (" + data.user[0].userid + ")");
+		Log(data.user[0].userid + " - " + data.user[0].name, "", "Registered");
 
 		if (currentsong != null) {
 			currentsong.listeners++;
@@ -180,6 +178,7 @@ global.OnRegistered = function(data) {
 
 				if (user.userid !== botUserId) {
 					bot.boot(user.userid, 'You were banned from this room by ' + results[0]['banned_by'] + ' on ' + results[0]['timestamp']);
+					Log(user.userid, 'You were banned from this room by ' + results[0]['banned_by'] + ' on ' + results[0]['timestamp'], "log");
 				}
 			}
 		});
@@ -187,7 +186,7 @@ global.OnRegistered = function(data) {
 		// Check if User has an alert
 		client.query('SELECT `userid`,`byName`,`reason` FROM `ALERT` WHERE `userid` LIKE \'' + user.userid + '\'', function cb(error, results, fields) {
 			if (results != null && results.length > 0) {
-				Log("ALERT on user " + AllUsers[user.userid].name + " (" + user.userid + ")");
+				Log("ALERT on user " + AllUsers[user.userid].name + " (" + user.userid + ")", "log");
 				PmAllOnlineMods("ALERT: " + AllUsers[user.userid].name + " has just entered and should be watched. Reason: '" + results[0]['reason'] + "' (by " + results[0]['byName'] + ")");
 			}
 		});
@@ -212,13 +211,13 @@ global.OnRegistered = function(data) {
 		}
 
 	} catch (e) {
-		Log(color("**ERROR** OnRegistered ", "red") + e, "error");
+		Log(e, "error", "Registered");
 	}
 };
 
 global.OnDeregistered = function(data) {
 	try {
-		Log(color("EVENT Deregistered: ", "blue") + data.user[0].name + " (" + data.user[0].userid + ")");
+		Log(data.user[0].userid + " - " + data.user[0].name, "", "Deregistered");
 
 		if (currentsong != null) {
 			currentsong.listeners--;
@@ -255,7 +254,7 @@ global.OnDeregistered = function(data) {
 		ShouldBotDJ();
 
 	} catch (e) {
-		Log(color("**ERROR** OnDeregistered ", "red") + e, "error");
+		Log(e, "error", "Deregistered");
 	}
 };
 
@@ -268,7 +267,7 @@ global.OnSpeak = function(data) {
 };
 
 global.OnEndSong = function(data) {
-	Log(color("EVENT End Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + data.room.metadata.current_song.metadata.song);
+	Log(data.room.metadata.current_song.metadata.artist + " - " + data.room.metadata.current_song.metadata.song, "", "End Song");
 
 	AddSongToDb();
 
@@ -287,7 +286,6 @@ global.OnEndSong = function(data) {
 	// Make sure bot is aware that it is playing a song.
 	if (data.room.metadata.current_dj === botUserId) {
 		botIsPlayingSong = false;
-		Log("Song has ended.");
 	}
 
 	// Bot steps down if needed to after it's song.
@@ -313,7 +311,7 @@ global.OnNewSong = function(data) {
 	} else {
 		lastDjName = "";
 	}
-	Log(color("EVENT New Song: ", "blue") + data.room.metadata.current_song.metadata.artist + " - " + data.room.metadata.current_song.metadata.song + " | Length: " + songLength + " minutes.");
+	Log(data.room.metadata.current_song.metadata.artist + " - " + data.room.metadata.current_song.metadata.song + " | Length: " + songLength + " minutes.", "", "New Song");
 	//Log(color("EVENT New Song: ", "blue") + JSON.stringify(data));
 	danceCount = 0;
 	lameCount = 0;
@@ -345,6 +343,7 @@ global.OnNewSong = function(data) {
 			takedownTimer = setTimeout(function() {
 				takedownTimer = null;
 				bot.remDj(currentDj); // Remove Saved DJ from last newsong call
+				Log(currentDj + " removed for hung song.", "log");
 			}, 15 * 1000); // Current DJ has 10 seconds to skip before they are removed
 		}, (length + 15) * 1000); // Timer expires 10 seconds after the end of the song, if not cleared by a newsong  
 	}
@@ -362,7 +361,6 @@ global.OnNewSong = function(data) {
 	// Make sure bot is aware that it is playing a song.
 	if (data.room.metadata.current_dj === botUserId) {
 		botIsPlayingSong = true;
-		Log("Playing song right now.");
 	}
 
 	if (Djs[currentDj] !== undefined) {
@@ -395,7 +393,7 @@ global.OnNewSong = function(data) {
 					if (OldVotedDjs.indexOf(i) === -1) {
 						Djs[i].afkCount++;
 						if (Djs[i].afkCount >= afkPlayCount) {
-							Log("Remove " + AllUsers[i].name + "(" + i + ")");
+							Log(i + " - " + AllUsers[i].name + " removed for being AFK.", "log");
 							if (i === currentDj) {
 								bootedNextDJ = true;
 								firstSong = true; // this is so everyone else isn't booted when the dj is booted
@@ -403,7 +401,7 @@ global.OnNewSong = function(data) {
 							bot.remDj(i);
 							Speak(msgAFKBoot, AllUsers[i].name, i);
 						} else if (Djs[i].afkCount >= 1) {
-							Log("Warn " + AllUsers[i].name + "(" + i + ")");
+							Log(i + " - " + AllUsers[i].name + " warned for being AFK.", "log");
 							Speak(msgAFKWarn, AllUsers[i].name, i);
 						}
 					} else {
@@ -497,11 +495,12 @@ global.OnUpdateVotes = function(data) {
 };
 
 global.OnBootedUser = function(data) {
-	if (AllUsers[data.userid] !== undefined) {
-		Log(color("EVENT Booted User: ", "blue") + AllUsers[data.modid].name + " (" + data.modid + ") booted " + data.userid + " for " + data.reason, "error");
-	} else {
-		Log(color("EVENT Booted User: ", "blue") + data.modid + " booted " + data.userid + " for " + data.reason, "error");
+	try{
+		Log(data.userid + " - " + AllUsers[data.userid].name + " was booted by " + data.modid + "(" + AllUsers[data.modid].name + ") for " + data.reason, "error", "Booted User");
+	} catch (e) {
+		Log(data.userid + " was booted by " + data.modid + " (" + AllUsers[data.modid].name + ") for " + data.reason, "error", "Booted User");
 	}
+	
 	if (data.userid === botUserId) {
 		botWasBooted = true;
 		bot.roomDeregister();
@@ -510,18 +509,17 @@ global.OnBootedUser = function(data) {
 };
 
 global.OnUpdateUser = function(data) {
-	Log(color("EVENT Update User: ", "blue") + JSON.stringify(data));
+	Log(JSON.stringify(data), "", "Update User");
 };
 
 global.OnAddDJ = function(data) {
-	Log(color("EVENT Add DJ: ", "blue") + data.user[0].name + " (" + data.user[0].userid + ")");
+	Log(data.user[0].name + " (" + data.user[0].userid + ")", "", "Add DJ");
 
 	var user = data.user[0];
 
 	// If the spot is filled cancel the timer
 	bot.roomInfo(function(roomInfo) {
 		if (roomInfo.room.metadata.max_djs === roomInfo.room.metadata.djcount) {
-			Log("Cancel timer");
 			clearTimeout(idleDjSpotTimer);
 		}
 	});
@@ -645,7 +643,7 @@ global.OnAddDJ = function(data) {
 };
 
 global.OnRemDJ = function(data) {
-	Log(color("EVENT Remove DJ: ", "blue") + data.user[0].name + " (" + data.user[0].userid + ")");
+	Log(data.user[0].userid + " - " + data.user[0].name, "","Remove DJ");
 
 	waitingOnNextDj = false;
 
@@ -656,7 +654,6 @@ global.OnRemDJ = function(data) {
 	// If the bot was forcefully removed, disable autodj to make sure it doesn't step up again.
 	if (data.user[0].userid === botUserId) {
 		botDJing = false;
-		Log("Bot no longer DJing");
 	}
 
 	// If the bot is moderating the room, save the DJ info in case they steped down early
@@ -672,7 +669,6 @@ global.OnRemDJ = function(data) {
 
 			// This timer will reset the wait if no one steps up for 3 minutes.
 			if (idleDjSpotTimer === null || idleDjSpotTimer._idleTimeout === -1) {
-				Log("Setting idle timer");
 				idleDjSpotTimer = setTimeout(function() {
 					ClearDjWait();
 					Log("Idle timer ran");
@@ -693,9 +689,9 @@ global.OnRemDJ = function(data) {
 
 global.OnNewModerator = function(data) {
 	if (AllUsers[data.userid] !== undefined) {
-		Log(color("EVENT New Moderator: ", "blue") + AllUsers[data.userid].name + " (" + data.userid + ") is now a moderator.", "error");
+		Log(data.userid + " - " + AllUsers[data.userid].name + " is now a moderator.", "error", "New Moderator");
 	} else {
-		Log(color("EVENT New Moderator: ", "blue") + data.userid + " is now a moderator.", "error");
+		Log(data.userid + " is now a moderator.", "error", "New Moderator");
 	}
 
 	var text = "Current mods online are: ";
@@ -708,7 +704,7 @@ global.OnNewModerator = function(data) {
 			}
 		}
 		setTimeout(function() {
-			Log(color("Mods online: ", "red") + text, "error");
+			Log(text, "log", "Mods online");
 		}, 2000);
 	});
 
@@ -717,9 +713,9 @@ global.OnNewModerator = function(data) {
 
 global.OnRemModerator = function(data) {
 	if (AllUsers[data.userid] !== undefined) {
-		Log(color("EVENT Remove Moderator: ", "blue") + AllUsers[data.userid].name + " (" + data.userid + ") is no longer a moderator.", "error");
+		Log(data.userid + " - " + AllUsers[data.userid].name + " is no longer a moderator.", "error", "Remove Moderator");
 	} else {
-		Log(color("EVENT Remove Moderator: ", "blue") + data.userid + " is no longer a moderator.", "error");
+		Log(data.userid + " is no longer a moderator.", "error", "Remove Moderator");
 	}
 
 	var text = "Current mods online are: ";
@@ -732,7 +728,7 @@ global.OnRemModerator = function(data) {
 			}
 		}
 		setTimeout(function() {
-			Log(color("Mods online: ", "red") + text, "error");
+			Log(text, "log", "Mods online");
 		}, 2000);
 	});
 
@@ -751,7 +747,6 @@ global.OnSnagged = function(data) {
 
 	// Add the song if there are 2 or more snags.
 	if (currentsong.snags === 2) {
-		Log("Snagging the song " + currentsong.song + " by " + currentsong.artist);
 		bot.vote('up');
 		alreadyVoted = true;
 		bot.playlistAll(function(data) {
@@ -763,10 +758,7 @@ global.OnSnagged = function(data) {
 
 global.OnPmmed = function(data) {
 	if (AllUsers[data.senderid] !== undefined) {
-		Log(color("EVENT PMmed: ", "blue") + AllUsers[data.senderid].name + ' (' + data.senderid + ') PMed: "' + data.text + '"', "error");
-		if (data.senderid !== botAdmins[0]) {
-			bot.pm(AllUsers[data.senderid].name + ' sent the following command: "' + data.text + '"', botAdmins[0]);
-		}
+		Log(data.senderid + " - " + AllUsers[data.senderid].name + ' PMed: "' + data.text + '"', "log", "PMmed");
 		AllUsers[data.senderid].lastActivity = new Date();
 	}
 
@@ -774,21 +766,21 @@ global.OnPmmed = function(data) {
 };
 
 global.OnError = function(data) {
-	Log(color("EVENT **ERROR**: ", "red") + JSON.stringify(data), "error");
+	Log(JSON.stringify(data), "error", "ERROR");
 };
 
 global.OnTcpConnect = function(socket) {
-	Log(color("EVENT TCP Connect: ", "blue") + socket);
+	Log(JSON.stringify(socket), "", "TCP Connect");
 };
 
 global.OnTcpMessage = function(socket, msg) {
-	Log(color("EVENT TCP Message: ", "blue") + socket + msg);
+	Log(JSON.stringify(socket) + "|" + JSON.stringify(msg), "", "TCP Message");
 };
 
 global.OnTcpEnd = function(socket) {
-	Log(color("EVENT TCP End: ", "blue") + socket);
+	Log(JSON.stringify(socket), "", "TCP End");
 };
 
 global.OnHttpRequest = function(request, response) {
-	Log(color("EVENT HTTP Request: ", "blue") + request + response);
+	Log(JSON.stringify(request) + "|" + JSON.stringify(response), "", "HTTP Request");
 };

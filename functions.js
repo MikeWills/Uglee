@@ -1,15 +1,35 @@
 /* 	==============
 	Log - Log the information to the console
 	============== */
-global.Log = function(data, type) {
-	if (logtoconsole) {
-		var now = new Date();
-		//console.log(botName, ">>>", new Date().setTimezone("CST").toISOString(), " | ", data);
-		console.log(botName, ">>>", new Date().toISOString(), " | ", data);
+global.Log = function(data, logType, eventType) {
+
+	if (eventType === undefined) {
+		eventType = "";
 	}
-	if (type !== undefined && type === "error" && !logtoconsole) {
-		var now = new Date();
-		console.log(botName, ">>>", new Date().toISOString(), " | ", data);
+
+	if (logType !== undefined) {
+		logType = "";
+	}
+
+	if (logtoconsole || (logType === "error" || logType === "log")) {
+
+		var logTime = new Date().toString("yyyy-MM-dd hh:mm:ss")
+		var logText = botName + " >>> " + logTime + " | ";
+
+		if (eventType !== "" && logType !== "error") {
+			logText += color("EVENT " + eventType + ": ", "blue");
+		}
+
+		if (eventType !== "" && logType === "error") {
+			logText += color("**ERROR** EVENT " + eventType + ": ", "red");
+		}
+
+		if (eventType === "" && logType === "error") {
+			logText += color("**ERROR**: ", "red");
+		}
+
+		logText += data;
+		console.log(logText);
 	}
 };
 
@@ -29,7 +49,7 @@ global.Speak = function(text, userName, source, userid) {
 
 	if (source !== undefined) {
 		if (source === "pm") {
-			if (AllUsers[userid].laptop === "android"){
+			if (AllUsers[userid].laptop === "android") {
 				bot.speak(textOut);
 			} else {
 				if (userid !== botUserId) {
@@ -302,7 +322,7 @@ global.SpeakPlayCount = function(source, userid) {
 		x++;
 	}
 	var playCount = count[0] + '-' + count[1] + '-' + count[2] + '-' + count[3] + '-' + count[4];
-	if (source !== undefined && userid !== undefined){
+	if (source !== undefined && userid !== undefined) {
 		Speak("Remaining: " + playCount, "", source, userid);
 	} else {
 		Speak("Remaining: " + playCount);
@@ -572,7 +592,7 @@ global.LoadDjs = function(data) {
 	var ttdjs = data.room.metadata.djs;
 
 	GetValue("PastDjs", 10, function(results) {
-		if (results !== null){
+		if (results !== null) {
 			PastDjs = JSON.parse(results);
 		}
 		Log("Past DJs: " + JSON.stringify(PastDjs));
@@ -644,6 +664,6 @@ global.ClearDjWait = function() {
 	}
 };
 
-global.AprilFool = function(forwards){
+global.AprilFool = function(forwards) {
 	return forwards.split('').reverse().join('');
 }
