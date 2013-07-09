@@ -146,10 +146,10 @@ global.songWarningIntervalId = null;
 global.songBootIntervalId = null;
 
 // This is a catch-all
-/*process.on("uncaughtException", function(data) {
+process.on("uncaughtException", function(data) {
 	Log(data, "error", "Process error");
 	connect(botRoomId);
-});*/
+});
 
 // Start up bot
 try {
