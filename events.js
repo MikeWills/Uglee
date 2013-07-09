@@ -68,6 +68,7 @@ global.OnReady = function(data) {
 
 global.OnRoomChanged = function(data) {
 	try {
+		if (data.success){
 		Log(data.room.name, "log", "Room Changed");
 
 		if (botWasBooted) {
@@ -118,6 +119,10 @@ global.OnRoomChanged = function(data) {
 		setTimeout(function() {
 			ShouldBotDJ();
 		}, 5000);
+	} else {
+		Log("Cannot connect to room. ErrNo: " + data.errno + "  MsgId: " + data.msgid + "  Err:" data.err, "error", "Room Changed");
+		bot.pm("Cannot connect to room. ErrNo: " + data.errno + "  MsgId: " + data.msgid + "  Err:" data.err, botAdmins[0]);
+	}
 
 	} catch (e) {
 		Log(e, "error", "Room Changed");
