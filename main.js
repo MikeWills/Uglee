@@ -22,7 +22,7 @@ try {
 	global.mysql = require('mysql');
 } catch (e) {
 	Log(e);
-	Log('It is likely that you do not have the mysql node module installed.' + 
+	Log('It is likely that you do not have the mysql node module installed.' +
 		'\nUse the command \'npm install mysql\' to install.', "error", "mySQL");
 	process.exit(0);
 }
@@ -37,31 +37,24 @@ try {
 	SetUpDatabase();
 } catch (e) {
 	Log(e);
-	Log('Make sure that a mysql server instance is running and that the ' + 
+	Log('Make sure that a mysql server instance is running and that the ' +
 		'username and password information in config.js are correct.', "error", "mySQL");
 	process.exit(0);
 }
 
 function handleDisconnect(client) {
-  client.on('error', function(err) {
-    if (!err.fatal) {
-      return;
-    }
+	client.on('error', function(err) {
+		if (!err.fatal) {
+			return;
+		}
 
-    if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
-      throw err;
-    }
+		if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
+			throw err;
+		}
 
-    Log('Re-connecting lost connection: ' + err.stack, "error", "mySQL");
-
-    client = mysql.createConnection({
-		"host": dbHost,
-		"user": dbLogin,
-		"password": dbPassword
+		Log('Re-connecting lost connection: ' + err.stack, "error", "mySQL");
+		process.exit(0);
 	});
-    handleDisconnect(client);
-    client.connect();
-  });
 }
 
 handleDisconnect(client);
@@ -72,14 +65,14 @@ global.lastfm = new LastFmNode({
 });
 
 process.on('message', function(m) {
-    if (m.status && m.msg === 'are_you_there') {
-        process.send({
-            status: true,
-            msg: 'online',
-            process: m.process,
-            name: botName
-        });
-    }
+	if (m.status && m.msg === 'are_you_there') {
+		process.send({
+			status: true,
+			msg: 'online',
+			process: m.process,
+			name: botName
+		});
+	}
 });
 
 Log("Initializing");
