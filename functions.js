@@ -187,10 +187,10 @@ global.Command = function(source, data) {
 		}
 		var idx = findAction(command, chat_responses);
 		if (idx != -1) {
-			Speak(chat_responses[idx].response1, data.name);
+			Speak(chat_responses[idx].response1, data.name, source, userid);
 			if (chat_responses[idx].response2 !== "") {
 				setTimeout(function() {
-					Speak(chat_responses[idx].response2, data.name);
+					Speak(chat_responses[idx].response2, data.name, source, userid);
 				}, 500);
 			}
 		}
