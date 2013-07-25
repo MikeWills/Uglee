@@ -1,6 +1,6 @@
 exports.name = ':fire:';
 exports.hidden = true;
-exports.enabled = true;
+exports.enabled = false;
 exports.matchStart = true;
 exports.handler = function(data, userid, source) {
 	console.log("Fire called");
