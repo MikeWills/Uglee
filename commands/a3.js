@@ -1,7 +1,7 @@
 exports.name = ':punch:';
 exports.hidden = true;
 exports.enabled = true;
-exports.matchStart = false;
+exports.matchStart = true;
 exports.handler = function(data, userid, source) {
 	if (userid !== botUserId) {
 		IsMod(userid, function(isMod) {
