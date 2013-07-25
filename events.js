@@ -265,9 +265,23 @@ global.OnDeregistered = function(data) {
 global.OnSpeak = function(data) {
 	//Log(color("EVENT Speak: ", "blue") + JSON.stringify(data));
 	Command("speak", data);
+
 	if (AllUsers[data.userid] !== undefined) {
 		AllUsers[data.userid].lastActivity = new Date();
 	}
+};
+
+global.OnPmmed = function(data) {
+	consle.log(JSON.stringify(data));
+
+	if (AllUsers[data.senderid] !== undefined) {
+		Log(data.senderid + ' - ' + AllUsers[data.senderid].name + ' PMed: "' + data.text + '"', "log", "PMmed");
+		AllUsers[data.senderid].lastActivity = new Date();
+	}
+
+	console.log("PM ran")
+
+	Command("pm", data);
 };
 
 global.OnEndSong = function(data) {
@@ -758,15 +772,6 @@ global.OnSnagged = function(data) {
 		});
 		bot.snag();
 	}
-};
-
-global.OnPmmed = function(data) {
-	if (AllUsers[data.senderid] !== undefined) {
-		Log(data.senderid + ' - ' + AllUsers[data.senderid].name + ' PMed: "' + data.text + '"', "log", "PMmed");
-		AllUsers[data.senderid].lastActivity = new Date();
-	}
-
-	Command("pm", data);
 };
 
 global.OnError = function(data) {
