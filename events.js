@@ -272,7 +272,7 @@ global.OnSpeak = function(data) {
 };
 
 global.OnPmmed = function(data) {
-	consle.log(JSON.stringify(data));
+	console.log(JSON.stringify(data));
 
 	if (AllUsers[data.senderid] !== undefined) {
 		Log(data.senderid + ' - ' + AllUsers[data.senderid].name + ' PMed: "' + data.text + '"', "log", "PMmed");
