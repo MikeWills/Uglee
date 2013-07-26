@@ -1,4 +1,4 @@
-exports.name = '/bop';
+exports.name = '/b';
 exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = false;
