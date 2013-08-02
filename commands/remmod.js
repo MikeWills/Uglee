@@ -8,8 +8,8 @@ exports.handler = function(data, userid, source) {
 	if (userid !== botUserId) {
 		IsMod(userid, function(isMod) {
 			if (isMod) {
-				bot.remModerator("");
-				Speak("Those mods are removed.", "", source, userid);
+				bot.remModerator(data.text.substring(7));
+				Speak("Moderator id " + data.text.substring(7) + " removed.", "", source, userid);
 			}
 		});
 	}
