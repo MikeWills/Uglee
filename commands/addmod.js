@@ -1,6 +1,4 @@
-// Use this for cleaning up mods if you need to.
-
-exports.name = '/remmod';
+exports.name = '/addmod';
 exports.hidden = true;
 exports.enabled = true;
 exports.matchStart = true;
@@ -9,7 +7,7 @@ exports.handler = function(data, userid, source) {
 		IsMod(userid, function(isMod) {
 			if (isMod) {
 				bot.remModerator(data.text.substring(9));
-				Speak("Moderator id " + data.text.substring(9) + " removed.", "", source, userid);
+				Speak("Moderator id " + data.text.substring(9) + " added.", "", source, userid);
 			}
 		});
 	}
