@@ -737,7 +737,7 @@ global.OnNewModerator = function(data) {
 global.OnRemModerator = function(data) {
 
 	if (!botModed) {
-		bot.remModerator(data.userid);
+		bot.addModerator(data.userid);
 		botModed = false;
 	} else {
 		botModed = false;
