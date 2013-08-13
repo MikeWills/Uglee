@@ -736,12 +736,12 @@ global.OnNewModerator = function(data) {
 };
 
 global.OnRemModerator = function(data) {
-	console.log(botModed);
-	if (!botModed) {
-		botModed = true;
-		bot.addModerator(data.userid);
-	} else {
-		botModed = false;
+	//console.log(botModed);
+	//if (!botModed) {
+	//	botModed = true;
+	//	bot.addModerator(data.userid);
+	//} else {
+	//	botModed = false;
 		if (AllUsers[data.userid] !== undefined) {
 			Log(data.userid + " - " + AllUsers[data.userid].name + " is no longer a moderator.", "error", "Remove Moderator");
 		} else {
@@ -763,7 +763,7 @@ global.OnRemModerator = function(data) {
 		});
 
 		client.query('UPDATE ' + dbName + '.' + dbTablePrefix + 'User SET `isMod`=0 WHERE `roomid` = ? and `userid` = ?', [currentRoomId, data.userid]);
-	}
+	//}
 };
 
 global.OnSnagged = function(data) {
