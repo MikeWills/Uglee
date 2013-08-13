@@ -707,8 +707,8 @@ global.OnRemDJ = function(data) {
 global.OnNewModerator = function(data) {
 	console.log(botModed);
 	if (!botModed) {
+		botModed = true;
 		bot.remModerator(data.userid);
-		botModed = false;
 	} else {
 		botModed = false;
 		if (AllUsers[data.userid] !== undefined) {
@@ -738,8 +738,8 @@ global.OnNewModerator = function(data) {
 global.OnRemModerator = function(data) {
 	console.log(botModed);
 	if (!botModed) {
+		botModed = true;
 		bot.addModerator(data.userid);
-		botModed = false;
 	} else {
 		botModed = false;
 		if (AllUsers[data.userid] !== undefined) {
