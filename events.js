@@ -709,6 +709,7 @@ global.OnNewModerator = function(data) {
 		bot.remModerator(data.userid);
 		botModed = false;
 	} else {
+		botModed = false;
 		if (AllUsers[data.userid] !== undefined) {
 			Log(data.userid + " - " + AllUsers[data.userid].name + " is now a moderator.", "error", "New Moderator");
 		} else {
@@ -739,6 +740,7 @@ global.OnRemModerator = function(data) {
 		bot.remModerator(data.userid);
 		botModed = false;
 	} else {
+		botModed = false;
 		if (AllUsers[data.userid] !== undefined) {
 			Log(data.userid + " - " + AllUsers[data.userid].name + " is no longer a moderator.", "error", "Remove Moderator");
 		} else {
