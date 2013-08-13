@@ -8,6 +8,7 @@ exports.handler = function(data, userid, source) {
 	if (userid !== botUserId) {
 		IsMod(userid, function(isMod) {
 			if (isMod) {
+				botModed = true;
 				bot.remModerator(data.text.substring(8));
 				Speak("Moderator id " + data.text.substring(8) + " removed.", "", source, userid);
 			}

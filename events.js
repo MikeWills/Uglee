@@ -4,6 +4,7 @@ var bootedNextDJ = false;
 global.curSongWatchdog = null;
 global.takedownTimer = null;
 global.idleDjSpotTimer = null;
+global.botModed = false;
 
 global.OnDisconnect = function(data) {
 	if (!disconnected) {
@@ -68,61 +69,61 @@ global.OnReady = function(data) {
 
 global.OnRoomChanged = function(data) {
 	try {
-		if (data.success){
-		Log(data.room.name, "log", "Room Changed");
+		if (data.success) {
+			Log(data.room.name, "log", "Room Changed");
 
-		if (botWasBooted) {
-			Speak("You're despicable!");
-			botWasBooted = false;
-		} else {
-			Speak(startupText);
-		}
-
-		if (currentRoomId !== data.room.roomid) {
-			currentRoomId = data.room.roomid;
-			SetUpRoom();
-			SetValue("roomName", data.room.name);
-		}
-
-		LoadRoomSettings(data.room.roomid);
-
-		if (data.room.metadata.current_song != null) {
-			PopulateSongData(data);
-		}
-
-		// Keep track of all users
-		Log("Loading Users");
-		var users = data.users;
-		for (var i in users) {
-			var user = users[i];
-			var newUser = {
-				name: user.name,
-				userid: user.userid,
-				points: user.points,
-				lastActivity: new Date(),
-				loggedIn: new Date(),
-				laptop: user.laptop
-			};
-			AllUsers[user.userid] = newUser;
-			if (users[i].name !== null) {
-				client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'User(roomid, userid, username, lastseen)' + 'VALUES (?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [currentRoomId, users[i].userid, users[i].name]);
+			if (botWasBooted) {
+				Speak("You're despicable!");
+				botWasBooted = false;
+			} else {
+				//Speak(startupText);
 			}
+
+			if (currentRoomId !== data.room.roomid) {
+				currentRoomId = data.room.roomid;
+				SetUpRoom();
+				SetValue("roomName", data.room.name);
+			}
+
+			LoadRoomSettings(data.room.roomid);
+
+			if (data.room.metadata.current_song != null) {
+				PopulateSongData(data);
+			}
+
+			// Keep track of all users
+			Log("Loading Users");
+			var users = data.users;
+			for (var i in users) {
+				var user = users[i];
+				var newUser = {
+					name: user.name,
+					userid: user.userid,
+					points: user.points,
+					lastActivity: new Date(),
+					loggedIn: new Date(),
+					laptop: user.laptop
+				};
+				AllUsers[user.userid] = newUser;
+				if (users[i].name !== null) {
+					client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'User(roomid, userid, username, lastseen)' + 'VALUES (?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [currentRoomId, users[i].userid, users[i].name]);
+				}
+			}
+
+			setTimeout(function() {
+				LoadDjs(data);
+			}, 2500);
+
+			currentDj = data.room.metadata.current_dj;
+
+			// Check if the bot should DJ.
+			setTimeout(function() {
+				ShouldBotDJ();
+			}, 5000);
+		} else {
+			Log("Cannot connect to room id " + botRoomId + ". ErrNo: " + data.errno + "  MsgId: " + data.msgid + "  Err: " + data.err, "error", "Room Changed");
+			bot.pm("Cannot connect to room id " + botRoomId + ". ErrNo: " + data.errno + "  MsgId: " + data.msgid + "  Err: " + data.err, botAdmins[0]);
 		}
-
-		setTimeout(function() {
-			LoadDjs(data);
-		}, 2500);
-
-		currentDj = data.room.metadata.current_dj;
-
-		// Check if the bot should DJ.
-		setTimeout(function() {
-			ShouldBotDJ();
-		}, 5000);
-	} else {
-		Log("Cannot connect to room id " + botRoomId + ". ErrNo: " + data.errno + "  MsgId: " + data.msgid + "  Err: " + data.err, "error", "Room Changed");
-		bot.pm("Cannot connect to room id " + botRoomId + ". ErrNo: " + data.errno + "  MsgId: " + data.msgid + "  Err: " + data.err, botAdmins[0]);
-	}
 
 	} catch (e) {
 		Log(e, "error", "Room Changed");
@@ -704,54 +705,62 @@ global.OnRemDJ = function(data) {
 };
 
 global.OnNewModerator = function(data) {
-	console.log(JSON.stringify(data));
-
-
-	if (AllUsers[data.userid] !== undefined) {
-		Log(data.userid + " - " + AllUsers[data.userid].name + " is now a moderator.", "error", "New Moderator");
+	if (!botModed) {
+		bot.remModerator(data.userid);
+		botModed = false;
 	} else {
-		Log(data.userid + " is now a moderator.", "error", "New Moderator");
-	}
-
-	var text = "Current mods online are: ";
-
-	bot.roomInfo(function(data) {
-		var mods = data.room.metadata.moderator_id;
-		for (var i = 0; i < mods.length; i++) {
-			if (AllUsers[mods[i]] !== undefined) {
-				text += AllUsers[mods[i]].name + ", ";
-			}
+		if (AllUsers[data.userid] !== undefined) {
+			Log(data.userid + " - " + AllUsers[data.userid].name + " is now a moderator.", "error", "New Moderator");
+		} else {
+			Log(data.userid + " is now a moderator.", "error", "New Moderator");
 		}
-		setTimeout(function() {
-			Log(text, "log", "Mods online");
-		}, 2000);
-	});
 
-	client.query('UPDATE ' + dbName + '.' + dbTablePrefix + 'User SET `isMod`=1 WHERE `roomid` = ? and `userid` = ?', [currentRoomId, data.userid]);
+		var text = "Current mods online are: ";
+
+		bot.roomInfo(function(data) {
+			var mods = data.room.metadata.moderator_id;
+			for (var i = 0; i < mods.length; i++) {
+				if (AllUsers[mods[i]] !== undefined) {
+					text += AllUsers[mods[i]].name + ", ";
+				}
+			}
+			setTimeout(function() {
+				Log(text, "log", "Mods online");
+			}, 2000);
+		});
+
+		client.query('UPDATE ' + dbName + '.' + dbTablePrefix + 'User SET `isMod`=1 WHERE `roomid` = ? and `userid` = ?', [currentRoomId, data.userid]);
+	}
 };
 
 global.OnRemModerator = function(data) {
-	if (AllUsers[data.userid] !== undefined) {
-		Log(data.userid + " - " + AllUsers[data.userid].name + " is no longer a moderator.", "error", "Remove Moderator");
+
+	if (!botModed) {
+		bot.remModerator(data.userid);
+		botModed = false;
 	} else {
-		Log(data.userid + " is no longer a moderator.", "error", "Remove Moderator");
-	}
-
-	var text = "Current mods online are: ";
-
-	bot.roomInfo(function(data) {
-		var mods = data.room.metadata.moderator_id;
-		for (var i = 0; i < mods.length; i++) {
-			if (AllUsers[mods[i]] !== undefined) {
-				text += AllUsers[mods[i]].name + ", ";
-			}
+		if (AllUsers[data.userid] !== undefined) {
+			Log(data.userid + " - " + AllUsers[data.userid].name + " is no longer a moderator.", "error", "Remove Moderator");
+		} else {
+			Log(data.userid + " is no longer a moderator.", "error", "Remove Moderator");
 		}
-		setTimeout(function() {
-			Log(text, "log", "Mods online");
-		}, 2000);
-	});
 
-	client.query('UPDATE ' + dbName + '.' + dbTablePrefix + 'User SET `isMod`=0 WHERE `roomid` = ? and `userid` = ?', [currentRoomId, data.userid]);
+		var text = "Current mods online are: ";
+
+		bot.roomInfo(function(data) {
+			var mods = data.room.metadata.moderator_id;
+			for (var i = 0; i < mods.length; i++) {
+				if (AllUsers[mods[i]] !== undefined) {
+					text += AllUsers[mods[i]].name + ", ";
+				}
+			}
+			setTimeout(function() {
+				Log(text, "log", "Mods online");
+			}, 2000);
+		});
+
+		client.query('UPDATE ' + dbName + '.' + dbTablePrefix + 'User SET `isMod`=0 WHERE `roomid` = ? and `userid` = ?', [currentRoomId, data.userid]);
+	}
 };
 
 global.OnSnagged = function(data) {
