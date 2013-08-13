@@ -705,6 +705,7 @@ global.OnRemDJ = function(data) {
 };
 
 global.OnNewModerator = function(data) {
+	console.log(botModed);
 	if (!botModed) {
 		bot.remModerator(data.userid);
 		botModed = false;
@@ -735,7 +736,7 @@ global.OnNewModerator = function(data) {
 };
 
 global.OnRemModerator = function(data) {
-
+	console.log(botModed);
 	if (!botModed) {
 		bot.addModerator(data.userid);
 		botModed = false;
