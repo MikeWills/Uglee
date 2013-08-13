@@ -76,7 +76,7 @@ global.OnRoomChanged = function(data) {
 				Speak("You're despicable!");
 				botWasBooted = false;
 			} else {
-				//Speak(startupText);
+				Speak(startupText);
 			}
 
 			if (currentRoomId !== data.room.roomid) {
