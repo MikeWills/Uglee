@@ -704,6 +704,9 @@ global.OnRemDJ = function(data) {
 };
 
 global.OnNewModerator = function(data) {
+	Log(JSON.stringify(data));
+
+
 	if (AllUsers[data.userid] !== undefined) {
 		Log(data.userid + " - " + AllUsers[data.userid].name + " is now a moderator.", "error", "New Moderator");
 	} else {
