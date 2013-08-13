@@ -704,7 +704,7 @@ global.OnRemDJ = function(data) {
 };
 
 global.OnNewModerator = function(data) {
-	Log(JSON.stringify(data));
+	console.log(JSON.stringify(data));
 
 
 	if (AllUsers[data.userid] !== undefined) {
