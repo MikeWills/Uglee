@@ -391,7 +391,7 @@ global.OnNewSong = function(data) {
 				Log("Remove DJ " + AllUsers[lastDj].name + " after reaching max plays.");
 				bot.remDj(lastDj);
 				Speak("Thanks for the awesome songs @" + AllUsers[lastDj].name + "!");
-				Speak("Please wait " + Settings["djWait"].value + "DJs before DJing again.", "", "pm",lastDj);
+				Speak("Please wait " + Settings["djWait"].value + " DJs before DJing again.", "", "pm",lastDj);
 				SetValue('Djs', JSON.stringify(Djs));
 			}
 			setTimeout(function() {
