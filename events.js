@@ -128,7 +128,7 @@ global.OnRoomChanged = function(data) {
 	} catch (e) {
 		Log(e, "error", "Room Changed");
 		Log(JSON.stringify(data), "error", "Room Changed");
-		setTimeout(connect, 15 * 60 * 1000, roomid);
+		setTimeout(connect, 20 * 60 * 1000, roomid);
 	}
 };
 
