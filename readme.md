@@ -1,24 +1,7 @@
-Welcome to Uglee 2.0. The funbot/moderator bot you can have fun with. While this bot has much to come, it is stable enough for you to start using.
+At one time, this was a TurnTable.fm bot. Sice they closed shop. This will become a Plug.DJ bot. I don't know where I am taking this yet. 
 
-Installation:
-`npm install`
+Current Features
 
-Start the bot:
-`./startUglee.sh`
-
-Most of the configuration settings are stored in the database, so a database is required.
-
-Version Notes
-====
-Note when upgrading to this next release be sure to run the following SQL commands.
-
-    ALTER TABLE  `bots_User` ADD  `isMod` BIT NOT NULL
-
-Core Functions
-====
-* The bot can AutoDJ
-* The bot can AutoBop if 40% of the room or more is bopping (or lames if 40% or more of the room lames).
-* You can ban users
-* The bot can have per-room settings. So you can move it between rooms easily.
-* The bot can keep track of the play count and boot after so many songs. (Beta, known issues)
-* The bot can use a DJ queue. (This feature isn't well tested and is in alpha stage)
+* Autowoot
+* Handles hung songs
+* Welcomes incoming people
