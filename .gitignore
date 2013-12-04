@@ -1,16 +1,3 @@
-.settings.xml
-.c9revisions/
 *.log
 *.out
-node_modules/
 *.sublime-*
-commands/test.js
-uglee2.js
-uglee.js
-drunkenRegular.js
-UgleeMix.js
-ugleeToo.js
-buttheadBot.js
-dr_keepitdown.js
-
-WayneBot.js
