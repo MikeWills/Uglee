@@ -1,7 +1,7 @@
 (function() {
 
   var wootButton = document.getElementById("woot");
-  var mehButton = document.getElementById("woot");
+  var mehButton = document.getElementById("meh");
   var hungSongCheck;
 
   hook = function(apiEvent, callback) {
