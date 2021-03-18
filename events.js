@@ -156,6 +156,16 @@ global.OnRegistered = function(data) {
 		}
 
 		setTimeout(function() {
+			if (Settings["welcomeMsg"] !== undefined && Settings["welcomeMsg"].value === "true") {
+				if (AllUsers[data.user[0].userid] !== undefined) {
+					var d = new Date();
+					var dayOfWeek = d.getDay();
+					Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name, "pm", data.user[0].userid);
+				}
+			}
+		}, 2500);
+
+		setTimeout(function() {
 			if (users[0].registered === undefined) {
 				if (Settings["banGuest"] !== undefined && Settings["banGuest"].value === "true") {
 					bot.boot(user.userid, "We're sorry. Due to issues with trolling, we only allow registered users in our room.");
@@ -188,35 +198,6 @@ global.OnRegistered = function(data) {
 				PmAllOnlineMods("ALERT: " + AllUsers[user.userid].name + " has just entered and should be watched. Reason: '" + results[0]['reason'] + "' (by " + results[0]['byName'] + ")");
 			}
 		});
-
-		setTimeout(function() {
-			var PastGuest = false;
-			client.query('SELECT `userid`, `username` from ' + dbName + '.' + dbTablePrefix + ' WHERE `userid` = ' + data.user[0].userid + ' and `roomid` = ' + currentRoomId, function cb(error, results, fields) {
-				if (results != null && results.length > 0){
-					PastGuest = true;
-				}
-			});
-
-			if (!PastGuest){
-				if (Settings["welcomeMsg"] !== undefined && Settings["welcomeMsg"].value === "true") {
-					if (AllUsers[data.user[0].userid] !== undefined) {
-						var d = new Date();
-						var dayOfWeek = d.getDay();
-						//Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name, "pm", data.user[0].userid);
-						Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name);
-					}
-				}
-			}  
-			else {
-				if (Settings["welcomeMsg"] !== undefined && Settings["welcomeMsg"].value === "true") {
-					if (AllUsers[data.user[0].userid] !== undefined) {
-						var d = new Date();
-						var dayOfWeek = d.getDay();
-						Speak(welcomeText, AllUsers[data.user[0].userid].name);
-					};
-				}
-			}
-		}, 2500);
 
 		// Mark the user as back in the room
 		if (Settings["enableQueue"] !== undefined && Settings["enableQueue"].value === "true") {
@@ -304,7 +285,6 @@ global.OnPmmed = function(data) {
 };
 
 global.OnEndSong = function(data) {
-	Log("OnEndSong");
 	Log(data.room.metadata.current_song.metadata.artist + " - " + data.room.metadata.current_song.metadata.song, "", "End Song");
 
 	AddSongToDb();
@@ -316,8 +296,6 @@ global.OnEndSong = function(data) {
 
 	// Post song results
 	var endsongresponse = currentsong.song + ' stats: :+1: ' + currentsong.up + ' :-1: ' + currentsong.down + ' <3 ' + currentsong.snags;
-	Log(endsongresponse);
-	Log(Settings["songstats"].value);
 
 	if (Settings["songstats"].value === "true") {
 		Speak(endsongresponse);
@@ -329,7 +307,7 @@ global.OnEndSong = function(data) {
 	}
 
 	// Bot steps down if needed to after it's song.
-	if (botStepDownAfterSong) { 
+	if (botStepDownAfterSong) {
 		Speak(stepDownText);
 		setTimeout(function() {
 			bot.remDj();
@@ -342,7 +320,6 @@ global.OnEndSong = function(data) {
 };
 
 global.OnNewSong = function(data) {
-	Log("OnNewSong");
 	var songLength = Number(data.room.metadata.current_song.metadata.length) / 60;
 	var length = data.room.metadata.current_song.metadata.length;
 	lastDj = currentDj;
