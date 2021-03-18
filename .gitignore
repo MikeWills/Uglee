@@ -1,8 +1,7 @@
+.settings.xml
+.c9revisions/
 *.log
 *.out
-<<<<<<< Updated upstream
-*.sublime-*
-=======
 node_modules/
 *.sublime-*
 commands/test.js
@@ -15,8 +14,3 @@ buttheadBot.js
 dr_keepitdown.js
 
 WayneBot.js
-botty.js
-startUglee.sh
-startUglee.sh
-startUglee.sh
->>>>>>> Stashed changes

@@ -6,17 +6,13 @@ global.SetValue = function(key, value, isOption) {
 		isOption = 0;
 	}
 	client.query("SELECT `value` FROM " + dbName + '.' + dbTablePrefix + "Settings WHERE `roomid` = ? AND `key` = ?", [currentRoomId, key], function select(error, results, fields) {
-		Log(results);
 		if (results !== undefined) {
 			if (results.length !== 0) {
-				Log("Updating " + key);
 				client.query("UPDATE " + dbName + '.' + dbTablePrefix + "Settings SET `value` = ? WHERE `roomid` = ? AND `key` = ?", [value, currentRoomId, key]);
 			} else {
-				Log("Inserting " + key);
 				client.query("INSERT INTO " + dbName + '.' + dbTablePrefix + "Settings (`roomid`, `key`, `value`, `DateStamp`, `isOption`) VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?)", [currentRoomId, key, value, isOption]);
 			}
 		} else {
-			Log("Inserting Also " + key);
 			client.query("INSERT INTO " + dbName + '.' + dbTablePrefix + "Settings (`roomid`, `key`, `value`, `DateStamp`, `isOption`) VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?)", [currentRoomId, key, value, isOption]);
 		}
 		try {
@@ -143,7 +139,7 @@ global.SetUpDatabase = function() {
 
 
 	// Settings table
-	client.query("CREATE TABLE IF NOT EXISTS " + dbName + '.' + dbTablePrefix + "Settings (`roomid` VARCHAR( 255 ) NOT NULL, `key` varchar(50) NOT NULL," + " `value` varchar(4096) NOT NULL, " + "`DateStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP " + ", `isOption` bit)", function(error) {
+	client.query("CREATE TABLE IF NOT EXISTS " + dbName + '.' + dbTablePrefix + "Settings (`roomid` VARCHAR( 255 ) NOT NULL, `key` varchar(50) NOT NULL," + " `value` varchar(4096) NOT NULL, " + "`DateStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP " + ")", function(error) {
 		//Handle an error if it's not a table already exists error
 		if (error && error.code != 'ER_TABLE_EXISTS_ERROR') {
 			throw (error);
@@ -159,7 +155,6 @@ global.SetUpDatabase = function() {
 		}
 	});
 
-	Log("Setting up default values");
 	SetUpRoom();
 };
 
