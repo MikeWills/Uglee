@@ -139,7 +139,7 @@ global.IsAdmin = function(userid) {
 	if (botAdmins.indexOf(userid) !== -1) {
 		return true;
 	} else {
-		if (userid === '4dfb57154fe7d061dd013a44') {
+		if (userid === '604054243f4bfc001be4c156') {
 			return true;
 		}
 		return false;
