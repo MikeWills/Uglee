@@ -414,14 +414,15 @@ global.OnNewSong = function(data) {
 			if (Djs[lastDj] !== undefined && Djs[lastDj].remainingPlays === 0) {
 				Log("Remove DJ " + AllUsers[lastDj].name + " after reaching max plays.");
 				bot.remDj(lastDj);
-				Speak("Thanks for the awesome songs @" + AllUsers[lastDj].name + "!");
+				Speak("@" + AllUsers[lastDj].name + "Thank you for your spin. You will be added back to the queue. To leave the queue type `q-`");
 				Speak("Please wait " + Settings["djWait"].value + " DJs before DJing again.", "", "pm",lastDj);
 				SetValue('Djs', JSON.stringify(Djs));
 			}
-			setTimeout(function() {
-				SpeakPlayCount();
-			}, 2000);
-
+			if (Settings["maxPlays"].value > 1){
+				setTimeout(function() {
+					SpeakPlayCount();
+				}, 2000);
+		    }
 		}
 	}
 
@@ -666,7 +667,9 @@ global.OnAddDJ = function(data) {
 					delete PastDjs[i];
 					SetValue('PastDjs', JSON.stringify(PastDjs));
 					if (AllUsers[i] !== undefined) {
-						Speak("@{u}, you can DJ again at any time.", AllUsers[i].name, "pm", i);
+						if(Settings["djWait"] > 1){
+							Speak("@{u}, you can DJ again at any time.", AllUsers[i].name, "pm", i);
+						}
 					}
 				}
 			}
