@@ -332,7 +332,7 @@ global.SpeakPlayCount = function(source, userid) {
 /*  ============== 
  	AddToQueue - Add a person to the queue
 	============== */
-global.AddToQueue = function(userid) {
+global.AddToQueue = function(userid, silent) {
 	var text = "";
 	GetValue("enableQueue", 0, function(queueEnabled) {
 		if (queueEnabled === "true") {
@@ -349,7 +349,9 @@ global.AddToQueue = function(userid) {
 					};
 					DjQueue.length++;
 
-					text = "@" + DjQueue[userid].name + ", you have been added to the queue. There is a total of " + DjQueue.length + " now.";
+					if (silent == "false"){
+						text = "@" + DjQueue[userid].name + ", you have been added to the queue. There is a total of " + DjQueue.length + " now.";
+					}
 					Speak(text);
 					SetValue('DjQueue', JSON.stringify(DjQueue));
 					if (nextDj === null) {
@@ -470,7 +472,7 @@ global.NextDjOnQueue = function() {
 				if (!queueRefreshIntervalRunning) {
 					Log("Ask for DJ");
 					GetValue("nextDjQueueTimeout", 0, function(nextDjQueueTimeout) {
-						var text = "It is now @" + DjQueue[nextDj].name + "'s turn to DJ! You have " + nextDjQueueTimeout + " seconds to step up.";
+						var text = "It is now @" + DjQueue[nextDj].name + " 's turn to DJ! You have " + nextDjQueueTimeout + " seconds to step up.";
 						waitingOnNextDj = true;
 						Speak(text);
 						bot.pm("It's your turn to DJ.", nextDj);
@@ -502,7 +504,7 @@ global.CheckForNextDjFromQueue = function() {
 				DjQueue.length--;
 
 				if (pastDj.afkCount >= 2) {
-					Speak("Sorry @" + pastDj.name + ", you missed out! Whatta looser! You can add yourself back to the queue, but pay attention this time.");
+					Speak("Sorry @" + pastDj.name + ", you didn't step up in time. These things happen, you can add yourself back to the queue.");
 				} else {
 					DjQueue[nextDj] = pastDj;
 					DjQueue.length++;

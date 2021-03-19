@@ -10,5 +10,5 @@ exports.handler = function(data, userid, source) {
 			DjQueue = { "length": 0};
 			nextDj = null;
 		}
-	});
+	}); 
 }

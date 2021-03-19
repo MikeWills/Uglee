@@ -226,7 +226,7 @@ global.OnRegistered = function(data) {
 				DjQueue.length++;
 				SetValue('DjQueue', JSON.stringify(DjQueue));
 			}
-			bot.pm("Greetings @" + data.user[0].name + ". If you would like to DJ, please type 'q+' to get added to the queue.", data.user[0].userid);
+			//bot.pm("Greetings @" + data.user[0].name + ". If you would like to DJ, please type 'q+' to get added to the queue.", data.user[0].userid);
 		}
 
 		ShouldBotDJ();
@@ -415,7 +415,9 @@ global.OnNewSong = function(data) {
 				Log("Remove DJ " + AllUsers[lastDj].name + " after reaching max plays.");
 				bot.remDj(lastDj);
 				Speak("@" + AllUsers[lastDj].name + "Thank you for your spin. You will be added back to the queue. To leave the queue type `q-`");
-				Speak("Please wait " + Settings["djWait"].value + " DJs before DJing again.", "", "pm",lastDj);
+				if ((Settings["djWait"].value > 1) || (DjQueue.length > 1)){
+					Speak("Please wait " + Settings["djWait"].value + " DJs before DJing again.", "", "pm",lastDj);
+				}
 				SetValue('Djs', JSON.stringify(Djs));
 			}
 			if (Settings["maxPlays"].value > 1){
@@ -571,12 +573,6 @@ global.OnAddDJ = function(data) {
 	var idleTime = Math.round((startDate - AllUsers[user.userid].lastActivity) / 60000); // in minutes
 	if (idleTime > 60) {
 		bot.pm(AllUsers[user.userid].name + " has been idle for " + idleTime + " on " + AllUsers[user.userid].laptop, botAdmins[0]);
-
-		if (currentRoomId == "4ea390ac14169c0cc3caa078") {
-			bot.pm(AllUsers[user.userid].name + " has been idle for " + idleTime + " on " + AllUsers[user.userid].laptop, "4e13aa77a3f75114c6069dbc"); // mikeb
-			bot.pm(AllUsers[user.userid].name + " has been idle for " + idleTime + " on " + AllUsers[user.userid].laptop, "4e525ccaa3f751044b236e63"); // mee_shell
-		}
-
 		Log(user.userid + " - " + AllUsers[user.userid].name + " has been idle for " + idleTime, "error");
 	}
 
@@ -627,26 +623,30 @@ global.OnAddDJ = function(data) {
 		if (PastDjs[user.userid] !== undefined && PastDjs[user.userid].waitDjs <= 0) {
 			delete PastDjs[user.userid];
 			SetValue('PastDjs', JSON.stringify(PastDjs));
-		}
+		}	
+		
 		if (PastDjs[user.userid] !== undefined &&
 			(PastDjs[user.userid].waitDjs !== 0 && PastDjs[user.userid].remainingPlays === 0)) {
-			bot.remDj(user.userid);
-			Speak("@{u}, please wait " + PastDjs[user.userid].waitDjs + " more DJs before stepping back up.", AllUsers[user.userid].name, "pm", user.userid);
+				Log("DJ Q Len: " + DjQueue.length);
+				if (DjQueue.length > 0){	
+					bot.remDj(user.userid);
+					Speak("@{u}, please wait " + PastDjs[user.userid].waitDjs + " more DJs before stepping back up.", AllUsers[user.userid].name, "pm", user.userid);
 
-			if (reservedRemovedDjs[user.userid] === undefined) {
-				var removedDj = {
-					userid: user.userid,
-					numBoots: 1
-				}
-				reservedRemovedDjs[user.userid] = removedDj;
-			} else {
-				reservedRemovedDjs[user.userid].numBoots++;
-				if (reservedRemovedDjs[user.userid].numBoots >= 3) {
-					if (user.userid !== botUserId) {
-						bot.boot(user.userid, 'Please wait until it is your turn next time.');
+					if (reservedRemovedDjs[user.userid] === undefined) {
+						var removedDj = {
+							userid: user.userid,
+							numBoots: 1
+						}		
+						reservedRemovedDjs[user.userid] = removedDj;
+					} else {
+						reservedRemovedDjs[user.userid].numBoots++;
+						if (reservedRemovedDjs[user.userid].numBoots >= 3) {
+							if (user.userid !== botUserId) {
+								bot.boot(user.userid, 'Please wait until it is your turn next time.');
+							}
+						}
 					}
 				}
-			}
 		} else {
 			// If they had songs left copy back to the DJ array
 			if (PastDjs[user.userid] !== undefined) {
@@ -726,7 +726,7 @@ global.OnRemDJ = function(data) {
 	SetValue('Djs', JSON.stringify(Djs));
 
 	// Re-add the user to the queue if one is active
-	AddToQueue(data.user[0].userid);
+	AddToQueue(data.user[0].userid, "true");
 
 	// Check if the bot should DJ.
 	ShouldBotDJ();
