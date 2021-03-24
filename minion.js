@@ -1,10 +1,10 @@
 // Bot details
-global.botAuthId = "auth+live+#######";
-global.botUserId = "######";
-global.botRoomId = "######";
-global.botName = "botName";
+global.botAuthId = "FSkXBpYZXMhirrmUPUzsjUDu";
+global.botUserId = "60581bfb47b5e3001bd563d2";
+global.botRoomId = "604131d63f4bfc001809d4a8";
+global.botName = "miniom";
 global.botLaptop = "mac";
-global.botAdmins = ["#####", "######"]; // This can be 1 or more people
+global.botAdmins = ["604054243f4bfc001be4c156", "######"]; // This can be 1 or more people
 
 global.botWebsite = "";
 global.botTwitter = "";
@@ -16,9 +16,9 @@ global.botHangout = "";
 // Database Details
 global.dbHost = "localhost";
 global.dbName = "tt_bots";
-global.dbTablePrefix = "bots_";
-global.dbLogin = "username";
-global.dbPassword = "password";
+global.dbTablePrefix = "minion_";
+global.dbLogin = "ttfm";
+global.dbPassword = "8jSGVKD0S4I%aXD2mVy2";
 
 global.lastfmApiKey = "";
 global.lastfmApiSecret = "";
@@ -39,7 +39,7 @@ global.welcomeDaily =  ["Welcome to the room @{u}! Be sure to familiarize yourse
  						"Welcome to the room @{u}! Be sure to familiarize yourself with the !rules.",  // Friday
  						"Welcome to the room @{u}! Be sure to familiarize yourself with the !rules."]; // Saturday
 global.ruleText = "[1] No more dubstep. [2] I will tell you how many songs you can play for each set (1-4) [3] Please wait the number DJ(s) I tell you between sets (I will suspend the wait if seats stay open). [4] While DJing hit awesome for the other DJs to show your support. [5] Be nice.";
-global.startupText = "Oi! Ten thousand cycles will give you such a crick in the neck.";
+global.startupText = "Banana!";
 
 global.awesomeText = 		   ["I love it!", 
 					  			"This song is awesome!", 

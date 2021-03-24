@@ -361,9 +361,11 @@ global.AddToQueue = function(userid, silent) {
 					// TODO respond with place in line
 				}
 			} else {
-				text = "@" + AllUsers[userid].name + ", seriously?!? Can't you wait until you're OFF the TABLE before adding yourself to the queue again? FAIL! ";
+				text = "@" + AllUsers[userid].name + ", seriously?!? You are already DJing.";
 				Speak(text);
 			}
+		} else {
+			Speak("There is no queue right now, if there is a spot open feel free to step up. Djs on deck, please step down after your next spin so others have a chance to spin.");
 		}
 	});
 };

@@ -189,33 +189,48 @@ global.OnRegistered = function(data) {
 			}
 		});
 
-		setTimeout(function() {
+		// Look to see if the newly entered person is new or has previously visited. 
+		setTimeout(function () {
 			var PastGuest = false;
-			client.query('SELECT `userid`, `username` from ' + dbName + '.' + dbTablePrefix + ' WHERE `userid` = ' + data.user[0].userid + ' and `roomid` = ' + currentRoomId, function cb(error, results, fields) {
-				if (results != null && results.length > 0){
+			Log("Past Guest: " + PastGuest);
+			client.query('SELECT `userid`, `username` from ' + dbName + '.' + dbTablePrefix + "User WHERE `userid` = '" + data.user[0].userid + "' and `roomid` = '" + currentRoomId + "'", function cb(error, results, fields) {
+				Log("Old User: " + results.length);
+				if (results != null && results.length > 0) {
 					PastGuest = true;
+				}
+
+				Log("Past Guest: " + PastGuest);
+				if (!PastGuest) {
+					if (Settings["welcomeMsg"] !== undefined && Settings["welcomeMsg"].value === "true") {
+						if (AllUsers[data.user[0].userid] !== undefined) {
+							var d = new Date();
+							var dayOfWeek = d.getDay();
+							//Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name, "pm", data.user[0].userid);
+							Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name);
+							GetValue("enableQueue", 0, function (results) {
+								if (results == "true") {
+									Speak("To spin some tunes, type q+ to get in line.")
+								}
+							});
+						}
+					}
+				}
+				else {
+					if (Settings["welcomeMsg"] !== undefined && Settings["welcomeMsg"].value === "true") {
+						if (AllUsers[data.user[0].userid] !== undefined) {
+							var d = new Date();
+							var dayOfWeek = d.getDay();
+							Speak(welcomeText, AllUsers[data.user[0].userid].name);
+							GetValue("enableQueue", 0, function (results) {
+								if (results == "true") {
+									Speak("The queue is active, type q+ to get in line.")
+								}
+							});
+						};
+					}
 				}
 			});
 
-			if (!PastGuest){
-				if (Settings["welcomeMsg"] !== undefined && Settings["welcomeMsg"].value === "true") {
-					if (AllUsers[data.user[0].userid] !== undefined) {
-						var d = new Date();
-						var dayOfWeek = d.getDay();
-						//Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name, "pm", data.user[0].userid);
-						Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name);
-					}
-				}
-			}  
-			else {
-				if (Settings["welcomeMsg"] !== undefined && Settings["welcomeMsg"].value === "true") {
-					if (AllUsers[data.user[0].userid] !== undefined) {
-						var d = new Date();
-						var dayOfWeek = d.getDay();
-						Speak(welcomeText, AllUsers[data.user[0].userid].name);
-					};
-				}
-			}
 		}, 2500);
 
 		// Mark the user as back in the room
@@ -411,7 +426,7 @@ global.OnNewSong = function(data) {
 
 	if (lastDj !== undefined) {
 		if (Settings["isModerating"].value === "true") {
-			if (Djs[lastDj] !== undefined && Djs[lastDj].remainingPlays === 0) {
+			if (Djs[lastDj] !== undefined && Djs[lastDj].remainingPlays <= 0) {
 				Log("Remove DJ " + AllUsers[lastDj].name + " after reaching max plays.");
 				bot.remDj(lastDj);
 				Speak("@" + AllUsers[lastDj].name + "Thank you for your spin. You will be added back to the queue. To leave the queue type `q-`");
@@ -626,7 +641,7 @@ global.OnAddDJ = function(data) {
 		}	
 		
 		if (PastDjs[user.userid] !== undefined &&
-			(PastDjs[user.userid].waitDjs !== 0 && PastDjs[user.userid].remainingPlays === 0)) {
+			(PastDjs[user.userid].waitDjs !== 0 && PastDjs[user.userid].remainingPlays <= 0)) {
 				Log("DJ Q Len: " + DjQueue.length);
 				if (DjQueue.length > 0){	
 					bot.remDj(user.userid);
@@ -727,6 +742,14 @@ global.OnRemDJ = function(data) {
 
 	// Re-add the user to the queue if one is active
 	AddToQueue(data.user[0].userid, "true");
+
+	// Automatically end the queue, not enough people.
+	if (Djs.length <= 3){
+		SetValue("enableQueue", "false");
+		Speak("We are no longer using a queue.");
+		DjQueue = { "length": 0};
+		nextDj = null;
+	}
 
 	// Check if the bot should DJ.
 	ShouldBotDJ();
