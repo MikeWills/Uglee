@@ -1,7 +1,7 @@
 /* 	==============
 	Log - Log the information to the console
 	============== */
-global.Log = function(data, logType, eventType) {
+global.Log = function (data, logType, eventType) {
 
 	if (eventType === undefined) {
 		eventType = "";
@@ -36,7 +36,7 @@ global.Log = function(data, logType, eventType) {
 /* 	==============
 	Speak - Puts text in to the chatroom.
 	============== */
-global.Speak = function(text, userName, source, userid) {
+global.Speak = function (text, userName, source, userid) {
 	var textOut = "";
 
 	if (userName !== undefined) {
@@ -70,7 +70,7 @@ global.Speak = function(text, userName, source, userid) {
 /* 	==============
 	TellUser - If the user can get a PM it sends them a PM otherwise it sends posts in chatroom
 	============== */
-global.TellUser = function(userid, text) {
+global.TellUser = function (userid, text) {
 	var textOut = "";
 	try {
 		if (NoPM()) {
@@ -88,7 +88,7 @@ global.TellUser = function(userid, text) {
 /* 	==============
 	SpeakRandom - Takes an array of options to speak and speaks one of them.
 	============== */
-global.SpeakRandom = function(array, userName) {
+global.SpeakRandom = function (array, userName) {
 	var textOut = "";
 	var rand = Math.ceil(Math.random() * array.length) - 1;
 
@@ -101,8 +101,8 @@ global.SpeakRandom = function(array, userName) {
 	Speak(textOut);
 }
 
-global.PmAllOnlineMods = function(text) {
-	bot.roomInfo(function(data) {
+global.PmAllOnlineMods = function (text) {
+	bot.roomInfo(function (data) {
 		var moderators = data.room.metadata.moderator_id;
 		for (var i = 0; i < moderators.length; i++) {
 			if (AllUsers[moderators[i]] !== undefined) {
@@ -115,8 +115,8 @@ global.PmAllOnlineMods = function(text) {
 /* 	==============
 	IsMod - Checks if the user is a moderator
 	============== */
-global.IsMod = function(userid, callback) {
-	bot.roomInfo(function(data) {
+global.IsMod = function (userid, callback) {
+	bot.roomInfo(function (data) {
 		var moderators = data.room.metadata.moderator_id;
 		if (IsAdmin(userid)) {
 			callback(true);
@@ -135,7 +135,7 @@ global.IsMod = function(userid, callback) {
 /* 	==============
 	IsAdmin - Checks if the user is the bot administrator
 	============== */
-global.IsAdmin = function(userid) {
+global.IsAdmin = function (userid) {
 	if (botAdmins.indexOf(userid) !== -1) {
 		return true;
 	} else {
@@ -149,7 +149,7 @@ global.IsAdmin = function(userid) {
 /* 	==============
 	NoPM - Checks if the user can't get a PM
 	============== */
-global.NoPM = function(userid) {
+global.NoPM = function (userid) {
 	// TODO
 	return false;
 }
@@ -157,7 +157,7 @@ global.NoPM = function(userid) {
 /* 	==============
 	Command - This is the main logic for processing commands.
 	============== */
-global.Command = function(source, data) {
+global.Command = function (source, data) {
 	var isPM = source === "pm" ? true : false;
 	var userid = "";
 	if (isPM) {
@@ -189,7 +189,7 @@ global.Command = function(source, data) {
 		if (idx != -1) {
 			Speak(chat_responses[idx].response1, data.name, source, userid);
 			if (chat_responses[idx].response2 !== "") {
-				setTimeout(function() {
+				setTimeout(function () {
 					Speak(chat_responses[idx].response2, data.name, source, userid);
 				}, 500);
 			}
@@ -198,7 +198,7 @@ global.Command = function(source, data) {
 
 	result = data.text.match(/\/tableflip/);
 	if (result) {
-		setTimeout(function() {
+		setTimeout(function () {
 			Speak("/tablefix");
 		}, 2000);
 	}
@@ -207,7 +207,7 @@ global.Command = function(source, data) {
 /* 	==============
 	AwesomeSong - Awesome (or vote up) this song.
 	============== */
-global.AwesomeSong = function() {
+global.AwesomeSong = function () {
 	bot.vote("up");
 	SpeakRandom(awesomeText);
 	alreadyVoted = true;
@@ -216,9 +216,9 @@ global.AwesomeSong = function() {
 /* 	==============
 	LameSong - Lame (or down vote) this song.
 	============== */
-global.LameSong = function() {
+global.LameSong = function () {
 	bot.vote('up');
-	setTimeout(function() {
+	setTimeout(function () {
 		bot.vote('down');
 	}, 1000);
 	SpeakRandom(lameText);
@@ -228,7 +228,7 @@ global.LameSong = function() {
 /* 	==============
 	DidUserLeaveQuickly - If a person is in the room for less than 30 seonds it'll give a comment.
 	============== */
-global.DidUserLeaveQuickly = function(userid) {
+global.DidUserLeaveQuickly = function (userid) {
 	var now = new Date();
 	var loggedIn = AllUsers[userid].loggedIn;
 	var timeOn = now = loggedIn;
@@ -240,7 +240,7 @@ global.DidUserLeaveQuickly = function(userid) {
 /* 	==============
 	PopulateSongData - Gets the require information for a song for further processing.
 	============== */
-global.PopulateSongData = function(data) {
+global.PopulateSongData = function (data) {
 	currentsong.id = data.room.metadata.current_song._id;
 	currentsong.artist = data.room.metadata.current_song.metadata.artist;
 	currentsong.song = data.room.metadata.current_song.metadata.song;
@@ -257,7 +257,7 @@ global.PopulateSongData = function(data) {
 /* 	==============
 	findAction - Finds misc chat-only commands.
 	============== */
-global.findAction = function(query, arr) {
+global.findAction = function (query, arr) {
 	query = escape(query);
 	for (var i = 0, l = arr.length; i < l; i++) {
 		var item = arr[i];
@@ -271,11 +271,11 @@ global.findAction = function(query, arr) {
 	ShouldBotDJ - Checks auto dj. That bot allows for 1 open spot (if DJing) 
 				  and will step down if all slots are full
 	============== */
-global.ShouldBotDJ = function() {
-	GetValue("autodj", 0, function(value) {
+global.ShouldBotDJ = function () {
+	GetValue("autodj", 0, function (value) {
 		if (value === "true") {
-			setTimeout(function() {
-				bot.roomInfo(function(data) {
+			setTimeout(function () {
+				bot.roomInfo(function (data) {
 					if (data.room.metadata.listeners !== 1) {
 						//if (data.room.metadata.djcount <= (data.room.metadata.max_djs - 2)) {
 						if (data.room.metadata.djcount <= 2) {
@@ -292,7 +292,7 @@ global.ShouldBotDJ = function() {
 						if (data.room.metadata.djcount > 3) {
 							if (botDJing && !botIsPlayingSong) {
 								Speak(stepDownText);
-								setTimeout(function() {
+								setTimeout(function () {
 									bot.remDj();
 								}, 500)
 								botDJing = false;
@@ -314,7 +314,7 @@ global.ShouldBotDJ = function() {
 /* 	============
 	SpeakPlayCout - Announce how many songs remain for each DJ.
 	============ */
-global.SpeakPlayCount = function(source, userid) {
+global.SpeakPlayCount = function (source, userid) {
 	var count = ['x', 'x', 'x', 'x', 'x'];
 	var x = 0;
 	for (var i in Djs) {
@@ -330,11 +330,11 @@ global.SpeakPlayCount = function(source, userid) {
 };
 
 /*  ============== 
- 	AddToQueue - Add a person to the queue
+	  AddToQueue - Add a person to the queue
 	============== */
-global.AddToQueue = function(userid, silent) {
+global.AddToQueue = function (userid, silent) {
 	var text = "";
-	GetValue("enableQueue", 0, function(queueEnabled) {
+	GetValue("enableQueue", 0, function (queueEnabled) {
 		if (queueEnabled === "true") {
 			// Check if they are a DJ
 			if (Djs[userid] === undefined) {
@@ -349,7 +349,7 @@ global.AddToQueue = function(userid, silent) {
 					};
 					DjQueue.length++;
 
-					if (silent == "false"){
+					if (silent == "false") {
 						text = "@" + DjQueue[userid].name + ", you have been added to the queue. There is a total of " + DjQueue.length + " now.";
 					}
 					Speak(text);
@@ -373,11 +373,11 @@ global.AddToQueue = function(userid, silent) {
 /* 	============== 
 	InsertInQueue - Inserts a person in to the middle of the queue
 	============== */
-global.InsertInQueue = function(userid, position) {
+global.InsertInQueue = function (userid, position) {
 	// TODO fix bugs in here
 	var text = "";
 
-	GetValue("enableQueue", 0, function(queueEnabled) {
+	GetValue("enableQueue", 0, function (queueEnabled) {
 		if (queueEnabled === "true") {
 			// Check if they are a DJ 
 			if (Djs.indexOf(userid) == -1) {
@@ -398,8 +398,8 @@ global.InsertInQueue = function(userid, position) {
 /* 	============== 
 	RemoveFromQueue - Removes a user from the queue
 	============== */
-global.RemoveFromQueue = function(userid) {
-	GetValue("enableQueue", 0, function(queueEnabled) {
+global.RemoveFromQueue = function (userid) {
+	GetValue("enableQueue", 0, function (queueEnabled) {
 		if (queueEnabled === "true") {
 			if (DjQueue[userid] !== undefined) {
 				delete DjQueue[userid];
@@ -414,8 +414,8 @@ global.RemoveFromQueue = function(userid) {
 /* 	==============
 	NewDjFromQueue - This checks to see if the DJ that just stepped up is the next DJ in the queueEnabled
 	============== */
-global.NewDjFromQueue = function(data) {
-	GetValue("enableQueue", 0, function(queueEnabled) {
+global.NewDjFromQueue = function (data) {
+	GetValue("enableQueue", 0, function (queueEnabled) {
 		if (queueEnabled === "true") {
 			var text = "";
 			if (DjQueue.length > 0 && (nextDj !== null || nextDj === undefined)) {
@@ -445,10 +445,10 @@ global.NewDjFromQueue = function(data) {
 /* ============== */
 /* NextDjOnQueue - This lets the room know who is next to DJ */
 /* ============== */
-global.NextDjOnQueue = function() {
+global.NextDjOnQueue = function () {
 	qPosn = 0;
 	nextDj = null;
-	GetValue("enableQueue", 0, function(queueEnabled) {
+	GetValue("enableQueue", 0, function (queueEnabled) {
 		if (queueEnabled === "true" && !waitingOnNextDj) {
 			Log("Waiting on next DJ " + waitingOnNextDj);
 			if (DjQueue.length > 0) {
@@ -473,7 +473,7 @@ global.NextDjOnQueue = function() {
 				//Log("queueRefreshIntervalId: " + queueRefreshIntervalId);
 				if (!queueRefreshIntervalRunning) {
 					Log("Ask for DJ");
-					GetValue("nextDjQueueTimeout", 0, function(nextDjQueueTimeout) {
+					GetValue("nextDjQueueTimeout", 0, function (nextDjQueueTimeout) {
 						var text = "It is now @" + DjQueue[nextDj].name + " 's turn to DJ! You have " + nextDjQueueTimeout + " seconds to step up.";
 						waitingOnNextDj = true;
 						Speak(text);
@@ -493,10 +493,10 @@ global.NextDjOnQueue = function() {
 /* ============== */
 /* CheckForNextDjFromQueue */
 /* ============== */
-global.CheckForNextDjFromQueue = function() {
+global.CheckForNextDjFromQueue = function () {
 	if (nextDj !== null) {
 		var currentTime = new Date();
-		GetValue("nextDjQueueTimeout", 0, function(nextDjQueueTimeout) {
+		GetValue("nextDjQueueTimeout", 0, function (nextDjQueueTimeout) {
 			if (currentTime.getTime() - nextDjTime.getTime() > (Number(nextDjQueueTimeout) * 1000)) {
 				var pastDj = DjQueue[nextDj];
 				Log(pastDj);
@@ -528,9 +528,9 @@ global.CheckForNextDjFromQueue = function() {
 /* ============== */
 /* QueueStatus */
 /* ============== */
-global.QueueStatus = function() {
+global.QueueStatus = function () {
 
-	GetValue("enableQueue", 0, function(queueEnabled) {
+	GetValue("enableQueue", 0, function (queueEnabled) {
 		if (queueEnabled === "true") {
 			var djList = "";
 
@@ -563,7 +563,7 @@ global.QueueStatus = function() {
 	});
 };
 
-global.dateDiff = function(a, b, format) {
+global.dateDiff = function (a, b, format) {
 	var milliseconds = a - b;
 	var minutes = milliseconds / 60000;
 	var days = milliseconds / 86400000;
@@ -591,18 +591,18 @@ global.dateDiff = function(a, b, format) {
 	}
 };
 
-global.LoadDjs = function(data) {
+global.LoadDjs = function (data) {
 	Log("Loading Djs");
 	var ttdjs = data.room.metadata.djs;
 
-	GetValue("PastDjs", 10, function(results) {
+	GetValue("PastDjs", 10, function (results) {
 		if (results !== null) {
 			PastDjs = JSON.parse(results);
 		}
 		Log("Past DJs: " + JSON.stringify(PastDjs));
 	});
 
-	GetValue("Djs", 10, function(results) {
+	GetValue("Djs", 10, function (results) {
 		if (results !== null) {
 			if (results.length !== 0 && results !== " ") {
 				var jsonResult = JSON.parse(results);
@@ -641,13 +641,13 @@ global.LoadDjs = function(data) {
 			}
 		}
 
-		setTimeout(function() {
+		setTimeout(function () {
 			SetValue('Djs', JSON.stringify(Djs));
 		}, 5000);
 	});
 };
 
-global.LoadRoomSettings = function(roomid) {
+global.LoadRoomSettings = function (roomid) {
 	client.query("SELECT `key`, `value` FROM " + dbName + '.' + dbTablePrefix + "Settings WHERE `isOption` = 1 and `roomid` = ?", [currentRoomId], function select(error, results, fields) {
 		for (i in results) {
 			var setting = {
@@ -658,7 +658,7 @@ global.LoadRoomSettings = function(roomid) {
 	});
 };
 
-global.ClearDjWait = function() {
+global.ClearDjWait = function () {
 	for (var i in PastDjs) {
 		if (AllUsers[i] !== undefined) {
 			Speak("@{u}, you can DJ again at any time.", AllUsers[i].name, "pm", i);
@@ -668,6 +668,6 @@ global.ClearDjWait = function() {
 	}
 };
 
-global.AprilFool = function(forwards) {
+global.AprilFool = function (forwards) {
 	return forwards.split('').reverse().join('');
 }

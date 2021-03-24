@@ -6,7 +6,7 @@ global.takedownTimer = null;
 global.idleDjSpotTimer = null;
 global.botModed = false;
 
-global.OnDisconnect = function(data) {
+global.OnDisconnect = function (data) {
 	if (!disconnected) {
 		// Set the disconnected flag and display message
 		disconnected = true;
@@ -16,12 +16,12 @@ global.OnDisconnect = function(data) {
 	}
 }
 
-global.connect = function(roomid) {
+global.connect = function (roomid) {
 	// Reset the disconnected flag
 	disconnected = false;
 
 	// Attempt to join the room
-	bot.roomRegister(roomid, function(data) {
+	bot.roomRegister(roomid, function (data) {
 		if (data && data.success) {
 			Log('Joined ' + data.room.name, "log");
 		} else {
@@ -36,14 +36,14 @@ global.connect = function(roomid) {
 	});
 }
 
-global.OnReady = function(data) {
+global.OnReady = function (data) {
 	Log("Ready", "", "Ready");
-	GetValue("maxPlays", 0, function(max) {
+	GetValue("maxPlays", 0, function (max) {
 		totalPlays = Number(max);
 	});
 
 	// Get the cached version of the DJ queue
-	GetValue("DjQueue", 10, function(results) {
+	GetValue("DjQueue", 10, function (results) {
 		if (results !== null) {
 			if (results.length !== 0) {
 				Log(results);
@@ -59,7 +59,7 @@ global.OnReady = function(data) {
 	});
 
 	// Get the subscribers for the PM list
-	GetValue("Subscribers", 0, function(results) {
+	GetValue("Subscribers", 0, function (results) {
 		if (results !== null) {
 			var jsonResult = JSON.parse(results);
 			Subscribers = jsonResult;
@@ -67,7 +67,7 @@ global.OnReady = function(data) {
 	});
 }
 
-global.OnRoomChanged = function(data) {
+global.OnRoomChanged = function (data) {
 	try {
 		if (data.success) {
 			Log(data.room.name, "log", "Room Changed");
@@ -110,14 +110,14 @@ global.OnRoomChanged = function(data) {
 				}
 			}
 
-			setTimeout(function() {
+			setTimeout(function () {
 				LoadDjs(data);
 			}, 2500);
 
 			currentDj = data.room.metadata.current_dj;
 
 			// Check if the bot should DJ.
-			setTimeout(function() {
+			setTimeout(function () {
 				ShouldBotDJ();
 			}, 5000);
 		} else {
@@ -132,7 +132,7 @@ global.OnRoomChanged = function(data) {
 	}
 };
 
-global.OnRegistered = function(data) {
+global.OnRegistered = function (data) {
 	try {
 		Log(data.user[0].userid + " - " + data.user[0].name, "", "Registered");
 
@@ -155,7 +155,7 @@ global.OnRegistered = function(data) {
 			AllUsers[user.userid] = newUser;
 		}
 
-		setTimeout(function() {
+		setTimeout(function () {
 			if (users[0].registered === undefined) {
 				if (Settings["banGuest"] !== undefined && Settings["banGuest"].value === "true") {
 					bot.boot(user.userid, "We're sorry. Due to issues with trolling, we only allow registered users in our room.");
@@ -247,7 +247,7 @@ global.OnRegistered = function(data) {
 		ShouldBotDJ();
 
 		if (data.user[0].userid === '4dfb57154fe7d061dd013a44') {
-			setTimeout(function() {
+			setTimeout(function () {
 				bot.pm("Hello master, how may I be of service?", '4dfb57154fe7d061dd013a44');
 			}, 5000);
 		}
@@ -257,7 +257,7 @@ global.OnRegistered = function(data) {
 	}
 };
 
-global.OnDeregistered = function(data) {
+global.OnDeregistered = function (data) {
 	try {
 		Log(data.user[0].userid + " - " + data.user[0].name, "", "Deregistered");
 
@@ -298,7 +298,7 @@ global.OnDeregistered = function(data) {
 	}
 };
 
-global.OnSpeak = function(data) {
+global.OnSpeak = function (data) {
 	//Log(color("EVENT Speak: ", "blue") + JSON.stringify(data));
 	Command("speak", data);
 
@@ -307,7 +307,7 @@ global.OnSpeak = function(data) {
 	}
 };
 
-global.OnPmmed = function(data) {
+global.OnPmmed = function (data) {
 	//console.log(JSON.stringify(data));
 
 	if (AllUsers[data.senderid] !== undefined) {
@@ -318,7 +318,7 @@ global.OnPmmed = function(data) {
 	Command("pm", data);
 };
 
-global.OnEndSong = function(data) {
+global.OnEndSong = function (data) {
 	Log("OnEndSong");
 	Log(data.room.metadata.current_song.metadata.artist + " - " + data.room.metadata.current_song.metadata.song, "", "End Song");
 
@@ -344,9 +344,9 @@ global.OnEndSong = function(data) {
 	}
 
 	// Bot steps down if needed to after it's song.
-	if (botStepDownAfterSong) { 
+	if (botStepDownAfterSong) {
 		Speak(stepDownText);
-		setTimeout(function() {
+		setTimeout(function () {
 			bot.remDj();
 		}, 500)
 		botDJing = false;
@@ -356,7 +356,7 @@ global.OnEndSong = function(data) {
 	clearTimeout(songBootIntervalId);
 };
 
-global.OnNewSong = function(data) {
+global.OnNewSong = function (data) {
 	Log("OnNewSong");
 	var songLength = Number(data.room.metadata.current_song.metadata.length) / 60;
 	var length = data.room.metadata.current_song.metadata.length;
@@ -392,11 +392,11 @@ global.OnNewSong = function(data) {
 		}
 
 		// Set a new watchdog timer for the current song.
-		curSongWatchdog = setTimeout(function() {
+		curSongWatchdog = setTimeout(function () {
 			curSongWatchdog = null;
 			Speak("@{u}, you have 15 seconds to skip your stuck song before you are removed", lastDjName, "", currentDj);
 			//START THE 10 SEC TIMER
-			takedownTimer = setTimeout(function() {
+			takedownTimer = setTimeout(function () {
 				takedownTimer = null;
 				bot.remDj(currentDj); // Remove Saved DJ from last newsong call
 				Log(currentDj + " removed for hung song.", "log");
@@ -408,7 +408,7 @@ global.OnNewSong = function(data) {
 	if (botDJing) {
 		var rand = Math.ceil(Math.random() * 20);
 		var wait = rand * 1000;
-		setTimeout(function() {
+		setTimeout(function () {
 			bot.vote('up');
 			alreadyVoted = true;
 		}, wait);
@@ -424,24 +424,26 @@ global.OnNewSong = function(data) {
 		SetValue('Djs', JSON.stringify(Djs));
 	}
 
-	if (lastDj !== undefined) {
-		if (Settings["isModerating"].value === "true") {
-			if (Djs[lastDj] !== undefined && Djs[lastDj].remainingPlays <= 0) {
-				Log("Remove DJ " + AllUsers[lastDj].name + " after reaching max plays.");
-				bot.remDj(lastDj);
-				Speak("@" + AllUsers[lastDj].name + "Thank you for your spin. You will be added back to the queue. To leave the queue type `q-`");
-				if ((Settings["djWait"].value > 1) || (DjQueue.length > 1)){
-					Speak("Please wait " + Settings["djWait"].value + " DJs before DJing again.", "", "pm",lastDj);
+	setTimeout(function () {
+		if (lastDj !== undefined) {
+			if (Settings["isModerating"].value === "true") {
+				if (Djs[lastDj] !== undefined && Djs[lastDj].remainingPlays <= 0) {
+					Log("Remove DJ " + AllUsers[lastDj].name + " after reaching max plays.");
+					bot.remDj(lastDj);
+					Speak("@" + AllUsers[lastDj].name + "Thank you for your spin. You will be added back to the queue. To leave the queue type `q-`");
+					if ((Settings["djWait"].value > 1) || (DjQueue.length > 1)) {
+						Speak("Please wait " + Settings["djWait"].value + " DJs before DJing again.", "", "pm", lastDj);
+					}
+					SetValue('Djs', JSON.stringify(Djs));
 				}
-				SetValue('Djs', JSON.stringify(Djs));
+				if (Settings["maxPlays"].value > 1) {
+					setTimeout(function () {
+						SpeakPlayCount();
+					}, 2000);
+				}
 			}
-			if (Settings["maxPlays"].value > 1){
-				setTimeout(function() {
-					SpeakPlayCount();
-				}, 2000);
-		    }
 		}
-	}
+	}, 5000);
 
 	var OldVotedDjs = votedDjs;
 	votedDjs = [];
@@ -482,10 +484,10 @@ global.OnNewSong = function(data) {
 		if (songLength >= Number(maxLength)) {
 			Speak("@{u} While we appreciate your song, we like to keep songs under " + maxLength + " minutes. You will be asked to skip after several minutes.", AllUsers[currentDj].name);
 			var bootTimeout = Number(Settings["bootsonglength"].value) * 60000;
-			songWarningIntervalId = setTimeout(function() {
+			songWarningIntervalId = setTimeout(function () {
 				Speak("@{u} Okay, that is enough. You have 60 seconds to skip before I do it for you.", AllUsers[currentDj].name);
 			}, bootTimeout - 60000);
-			songBootIntervalId = setTimeout(function() {
+			songBootIntervalId = setTimeout(function () {
 				Speak("@{u} Well, you can't listen can you? Times up!", AllUsers[currentDj].name);
 				bot.remDj(currentDj);
 			}, bootTimeout);
@@ -493,11 +495,11 @@ global.OnNewSong = function(data) {
 	}
 };
 
-global.OnNoSong = function(data) {
+global.OnNoSong = function (data) {
 	//Log(color("EVENT No Song: ", "red") + JSON.stringify(data));
 };
 
-global.OnUpdateVotes = function(data) {
+global.OnUpdateVotes = function (data) {
 	//Log(blue + "EVENT Update Votes: " + reset + JSON.stringify(data));
 	if (data.room.metadata.votelog[0][1] == "down") {
 		if (Settings["lamer"].value === "true" && botUserId !== data.room.metadata.votelog[0][0]) {
@@ -550,11 +552,11 @@ global.OnUpdateVotes = function(data) {
 				alreadyVoted = true;
 			}
 		}
-	} catch (e) {}
+	} catch (e) { }
 
 };
 
-global.OnBootedUser = function(data) {
+global.OnBootedUser = function (data) {
 	try {
 		Log(data.userid + " - " + AllUsers[data.userid].name + " was booted by " + data.modid + "(" + AllUsers[data.modid].name + ") for " + data.reason, "error", "Booted User");
 	} catch (e) {
@@ -568,17 +570,17 @@ global.OnBootedUser = function(data) {
 	}
 };
 
-global.OnUpdateUser = function(data) {
+global.OnUpdateUser = function (data) {
 	Log(JSON.stringify(data), "", "Update User");
 };
 
-global.OnAddDJ = function(data) {
+global.OnAddDJ = function (data) {
 	Log(data.user[0].name + " (" + data.user[0].userid + ")", "", "Add DJ");
 
 	var user = data.user[0];
 
 	// If the spot is filled cancel the timer
-	bot.roomInfo(function(roomInfo) {
+	bot.roomInfo(function (roomInfo) {
 		if (roomInfo.room.metadata.max_djs === roomInfo.room.metadata.djcount) {
 			clearTimeout(idleDjSpotTimer);
 		}
@@ -638,30 +640,30 @@ global.OnAddDJ = function(data) {
 		if (PastDjs[user.userid] !== undefined && PastDjs[user.userid].waitDjs <= 0) {
 			delete PastDjs[user.userid];
 			SetValue('PastDjs', JSON.stringify(PastDjs));
-		}	
-		
+		}
+
 		if (PastDjs[user.userid] !== undefined &&
 			(PastDjs[user.userid].waitDjs !== 0 && PastDjs[user.userid].remainingPlays <= 0)) {
-				Log("DJ Q Len: " + DjQueue.length);
-				if (DjQueue.length > 0){	
-					bot.remDj(user.userid);
-					Speak("@{u}, please wait " + PastDjs[user.userid].waitDjs + " more DJs before stepping back up.", AllUsers[user.userid].name, "pm", user.userid);
+			Log("DJ Q Len: " + DjQueue.length);
+			if (DjQueue.length > 0) {
+				bot.remDj(user.userid);
+				Speak("@{u}, please wait " + PastDjs[user.userid].waitDjs + " more DJs before stepping back up.", AllUsers[user.userid].name, "pm", user.userid);
 
-					if (reservedRemovedDjs[user.userid] === undefined) {
-						var removedDj = {
-							userid: user.userid,
-							numBoots: 1
-						}		
-						reservedRemovedDjs[user.userid] = removedDj;
-					} else {
-						reservedRemovedDjs[user.userid].numBoots++;
-						if (reservedRemovedDjs[user.userid].numBoots >= 3) {
-							if (user.userid !== botUserId) {
-								bot.boot(user.userid, 'Please wait until it is your turn next time.');
-							}
+				if (reservedRemovedDjs[user.userid] === undefined) {
+					var removedDj = {
+						userid: user.userid,
+						numBoots: 1
+					}
+					reservedRemovedDjs[user.userid] = removedDj;
+				} else {
+					reservedRemovedDjs[user.userid].numBoots++;
+					if (reservedRemovedDjs[user.userid].numBoots >= 3) {
+						if (user.userid !== botUserId) {
+							bot.boot(user.userid, 'Please wait until it is your turn next time.');
 						}
 					}
 				}
+			}
 		} else {
 			// If they had songs left copy back to the DJ array
 			if (PastDjs[user.userid] !== undefined) {
@@ -682,7 +684,7 @@ global.OnAddDJ = function(data) {
 					delete PastDjs[i];
 					SetValue('PastDjs', JSON.stringify(PastDjs));
 					if (AllUsers[i] !== undefined) {
-						if(Settings["djWait"] > 1){
+						if (Settings["djWait"] > 1) {
 							Speak("@{u}, you can DJ again at any time.", AllUsers[i].name, "pm", i);
 						}
 					}
@@ -702,7 +704,7 @@ global.OnAddDJ = function(data) {
 	ShouldBotDJ();
 };
 
-global.OnRemDJ = function(data) {
+global.OnRemDJ = function (data) {
 	Log(data.user[0].userid + " - " + data.user[0].name, "", "Remove DJ");
 
 	waitingOnNextDj = false;
@@ -729,7 +731,7 @@ global.OnRemDJ = function(data) {
 
 			// This timer will reset the wait if no one steps up for 3 minutes.
 			if (idleDjSpotTimer === null || idleDjSpotTimer._idleTimeout === -1) {
-				idleDjSpotTimer = setTimeout(function() {
+				idleDjSpotTimer = setTimeout(function () {
 					ClearDjWait();
 					Log("Idle timer ran");
 				}, 180000); // 3 minutes
@@ -744,10 +746,10 @@ global.OnRemDJ = function(data) {
 	AddToQueue(data.user[0].userid, "true");
 
 	// Automatically end the queue, not enough people.
-	if (Djs.length <= 3){
+	if (Djs.length <= 3) {
 		SetValue("enableQueue", "false");
 		Speak("We are no longer using a queue.");
-		DjQueue = { "length": 0};
+		DjQueue = { "length": 0 };
 		nextDj = null;
 	}
 
@@ -755,7 +757,7 @@ global.OnRemDJ = function(data) {
 	ShouldBotDJ();
 };
 
-global.OnNewModerator = function(data) {
+global.OnNewModerator = function (data) {
 	console.log(botModed);
 	if (!botModed) {
 		botModed = true;
@@ -770,14 +772,14 @@ global.OnNewModerator = function(data) {
 
 		var text = "Current mods online are: ";
 
-		bot.roomInfo(function(data) {
+		bot.roomInfo(function (data) {
 			var mods = data.room.metadata.moderator_id;
 			for (var i = 0; i < mods.length; i++) {
 				if (AllUsers[mods[i]] !== undefined) {
 					text += AllUsers[mods[i]].name + ", ";
 				}
 			}
-			setTimeout(function() {
+			setTimeout(function () {
 				Log(text, "log", "Mods online");
 			}, 2000);
 		});
@@ -786,38 +788,38 @@ global.OnNewModerator = function(data) {
 	}
 };
 
-global.OnRemModerator = function(data) {
+global.OnRemModerator = function (data) {
 	//console.log(botModed);
 	//if (!botModed) {
 	//	botModed = true;
 	//	bot.addModerator(data.userid);
 	//} else {
 	//	botModed = false;
-		if (AllUsers[data.userid] !== undefined) {
-			Log(data.userid + " - " + AllUsers[data.userid].name + " is no longer a moderator.", "error", "Remove Moderator");
-		} else {
-			Log(data.userid + " is no longer a moderator.", "error", "Remove Moderator");
-		}
+	if (AllUsers[data.userid] !== undefined) {
+		Log(data.userid + " - " + AllUsers[data.userid].name + " is no longer a moderator.", "error", "Remove Moderator");
+	} else {
+		Log(data.userid + " is no longer a moderator.", "error", "Remove Moderator");
+	}
 
-		var text = "Current mods online are: ";
+	var text = "Current mods online are: ";
 
-		bot.roomInfo(function(data) {
-			var mods = data.room.metadata.moderator_id;
-			for (var i = 0; i < mods.length; i++) {
-				if (AllUsers[mods[i]] !== undefined) {
-					text += AllUsers[mods[i]].name + ", ";
-				}
+	bot.roomInfo(function (data) {
+		var mods = data.room.metadata.moderator_id;
+		for (var i = 0; i < mods.length; i++) {
+			if (AllUsers[mods[i]] !== undefined) {
+				text += AllUsers[mods[i]].name + ", ";
 			}
-			setTimeout(function() {
-				Log(text, "log", "Mods online");
-			}, 2000);
-		});
+		}
+		setTimeout(function () {
+			Log(text, "log", "Mods online");
+		}, 2000);
+	});
 
-		client.query('UPDATE ' + dbName + '.' + dbTablePrefix + 'User SET `isMod`=0 WHERE `roomid` = ? and `userid` = ?', [currentRoomId, data.userid]);
+	client.query('UPDATE ' + dbName + '.' + dbTablePrefix + 'User SET `isMod`=0 WHERE `roomid` = ? and `userid` = ?', [currentRoomId, data.userid]);
 	//}
 };
 
-global.OnSnagged = function(data) {
+global.OnSnagged = function (data) {
 	//Log(color("EVENT Snagged: ", "blue") + JSON.stringify(data));
 	//Increase song snag count
 	currentsong.snags++;
@@ -831,29 +833,29 @@ global.OnSnagged = function(data) {
 	if (currentsong.snags === 2) {
 		bot.vote('up');
 		alreadyVoted = true;
-		bot.playlistAll(function(data) {
+		bot.playlistAll(function (data) {
 			bot.playlistAdd(currentsong.id, data.list.length);
 		});
 		bot.snag();
 	}
 };
 
-global.OnError = function(data) {
+global.OnError = function (data) {
 	Log(JSON.stringify(data), "error", "ERROR");
 };
 
-global.OnTcpConnect = function(socket) {
+global.OnTcpConnect = function (socket) {
 	Log(JSON.stringify(socket), "", "TCP Connect");
 };
 
-global.OnTcpMessage = function(socket, msg) {
+global.OnTcpMessage = function (socket, msg) {
 	Log(JSON.stringify(socket) + "|" + JSON.stringify(msg), "", "TCP Message");
 };
 
-global.OnTcpEnd = function(socket) {
+global.OnTcpEnd = function (socket) {
 	Log(JSON.stringify(socket), "", "TCP End");
 };
 
-global.OnHttpRequest = function(request, response) {
+global.OnHttpRequest = function (request, response) {
 	Log(JSON.stringify(request) + "|" + JSON.stringify(response), "", "HTTP Request");
 };
