@@ -6,7 +6,7 @@ exports.handler = function(data, userid, source) {
 	IsMod(userid, function(isMod) {
 		if(isMod) {
 			SetValue("isModerating", "false");
-			Speak("I am no longer moderating this room!")
+			Speak("Cancel my subscription because I am done with your issues.")
 		}
 	});
 }

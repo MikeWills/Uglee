@@ -241,6 +241,12 @@ global.SetUpRoom = function() {
 			SetValue("announcement", "", 1);
 		}
 	});
+	// Bot gives an announcement every x minutes. (not enabled yet)
+	GetValue("announceTimer", 0, function(value) {
+		if (value === null) {
+			SetValue("announceTimer", "240", 1);
+		}
+	});
 	// Get the f**k out!
 	GetValue("gtfo", 0, function(value) {
 		if (value === null) {

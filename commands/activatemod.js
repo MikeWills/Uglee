@@ -6,7 +6,7 @@ exports.handler = function(data, userid, source) {
 	IsMod(userid, function(isMod) {
 		if(isMod) {
 			SetValue("isModerating", "true");
-			Speak("I am now moderating this room!")
+			Speak("I'm not bossy, I'm the boss.")
 		}
 	});
 }

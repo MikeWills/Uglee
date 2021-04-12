@@ -1,2 +1,3 @@
 #!/bin/bash
-./node_modules/.bin/forever -o out.log -e err.log start botty.js
+cd /root/ttfm/uglee
+forever -o botty.log -e botty_err.log start botty.js

@@ -10,10 +10,10 @@ exports.handler = function(data, userid, source) {
 
         if (data.text.substring(5) == "on") {
           setVal = "true";
-          Speak("I am now moderating this room!")
+          Speak("I'm not bossy, I'm the boss.")
         } else if (data.text.substring(5) == "off") {
           setVal = "false";
-          Speak("I am no longer moderating this room!")
+          Speak("Cancel my subscription because I am done with your issues.")
         } else {
           return;
         }

@@ -8,7 +8,7 @@ exports.handler = function(data, userid, source) {
 			if(isMod) {
 				clearTimeout(songWarningIntervalId);
 				clearTimeout(songBootIntervalId);
-				Speak("Okay, we are letting you play the whole thing you lucky dog.");
+				Speak("Okay, just this one time :wink:");
 			}
 		});
 	}

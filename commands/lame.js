@@ -21,6 +21,6 @@ exports.handler = function(data, userid, source) {
 			}
 		}
 	} else {
-		Speak("HEY! I made my choice!");
+		Speak("The difference between pizza and your opinion is that I only asked for pizza.");
 	}
 }

@@ -1,0 +1,6 @@
+Line 673 of bot.js:
+const rq = {api: 'room.stop_song', roomid: this.roomId, current_song: this.currentSongId, djid: this.currentDjId };
+the djid part at the end is the addition.
+frankly, it was a guess, but it worked 
+
+via IMGrumpy

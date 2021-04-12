@@ -113,6 +113,7 @@ global.alreadyVoted = false;
 global.Subscribers = [];
 global.reserveredFor = null;
 global.reservedRemovedDjs = {};
+global.announcementTimer = 0;
 
 // DJing bot
 global.botDJing = false;
@@ -153,6 +154,9 @@ try {
 		process.exit(0);
 	}, 150000); // 2.5 minutes
 }
+
+// Mark the bot as a bot.
+bot._send({api: "user.set_bot"});
 
 // Load commands
 try {
@@ -220,4 +224,19 @@ GetValue('bootOnIdle', 0, function(retVal) {
 			});
 		}, 3600000); // 1 Hour
 	}
+});
+
+GetValue("announceTimer", 0, function (value) {
+	Log("Announcement Timer Setting: " + value);
+	global.announcementTimer = Number(value);
+	global.announcementTimer = global.announcementTimer * 60000;
+	Log("Announcement Timer: " + global.announcementTimer);
+
+	// Give an occasional announcement
+	setInterval(function () {
+		GetValue("announcement", 0, function(value) {
+			Speak(value);
+		});
+		Log("Announcement fired");
+	}, global.announcementTimer);
 });

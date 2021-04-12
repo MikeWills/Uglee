@@ -12,14 +12,14 @@ exports.handler = function(data, userid, source) {
                     Speak(data.name + ', you rolled a ' + roll + ', Awesome!', null, source, userid);
                     bot.vote('up');
                     alreadyVoted = true;
-                } /*else if(roll === 1) {
+                } else if(roll === 1) {
                     Speak(data.name + ', you rolled a ' + roll + ', Lame!', null, source, userid);
                     bot.vote('up');
                     setTimeout(function() {
                         bot.vote('down');
                     }, 1000);
                     alreadyVoted = true;
-                }*/ else {
+                } else {
                     Speak(data.name + ', you rolled a ' + roll + ', bummer.', null, source, userid);
                     alreadyVoted = true;
                 }

@@ -73,7 +73,7 @@ global.OnRoomChanged = function (data) {
 			Log(data.room.name, "log", "Room Changed");
 
 			if (botWasBooted) {
-				Speak("You're despicable!");
+				Speak("Throw me to the wolves and I'll come back leading the pack.");
 				botWasBooted = false;
 			} else {
 				Speak(startupText);
@@ -166,10 +166,6 @@ global.OnRegistered = function (data) {
 			}
 		}, 2500);
 
-		if (data.user[0].name !== null) {
-			client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'User(roomid, userid, username, lastseen)' + 'VALUES (?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [currentRoomId, data.user[0].userid, data.user[0].name]);
-		}
-
 		// Check if User is banned
 		client.query('SELECT userid, banned_by, DATE_FORMAT(timestamp, \'%c/%e/%y\') as timestamp' + ' FROM BANNED WHERE userid LIKE \'' + user.userid + '\'', function cb(error, results, fields) {
 			if (results != null && results.length > 0) {
@@ -200,37 +196,38 @@ global.OnRegistered = function (data) {
 				}
 
 				Log("Past Guest: " + PastGuest);
-				if (!PastGuest) {
-					if (Settings["welcomeMsg"] !== undefined && Settings["welcomeMsg"].value === "true") {
-						if (AllUsers[data.user[0].userid] !== undefined) {
-							var d = new Date();
-							var dayOfWeek = d.getDay();
-							//Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name, "pm", data.user[0].userid);
+				if (Settings["welcomeMsg"] !== undefined && Settings["welcomeMsg"].value === "true") {
+					if (AllUsers[data.user[0].userid] !== undefined) {
+						var d = new Date();
+						var dayOfWeek = d.getDay();
+						if (!PastGuest) {
 							Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name);
+							//Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name, "pm", data.user[0].userid);
 							GetValue("enableQueue", 0, function (results) {
 								if (results == "true") {
 									Speak("To spin some tunes, type q+ to get in line.")
-								}
+								} else {
+									Speak("There is no queue right now. Please hop up if there is space.");
+								};
 							});
 						}
-					}
-				}
-				else {
-					if (Settings["welcomeMsg"] !== undefined && Settings["welcomeMsg"].value === "true") {
-						if (AllUsers[data.user[0].userid] !== undefined) {
-							var d = new Date();
-							var dayOfWeek = d.getDay();
+						else {
 							Speak(welcomeText, AllUsers[data.user[0].userid].name);
 							GetValue("enableQueue", 0, function (results) {
 								if (results == "true") {
 									Speak("The queue is active, type q+ to get in line.")
-								}
+								} else {
+									Speak("There is no queue right now. Please hop up if there is space.");
+								};
 							});
-						};
+						}
 					}
 				}
 			});
 
+			if (data.user[0].name !== null) {
+				client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'User(roomid, userid, username, lastseen)' + 'VALUES (?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [currentRoomId, data.user[0].userid, data.user[0].name]);
+			}
 		}, 2500);
 
 		// Mark the user as back in the room
@@ -500,7 +497,7 @@ global.OnNoSong = function (data) {
 };
 
 global.OnUpdateVotes = function (data) {
-	//Log(blue + "EVENT Update Votes: " + reset + JSON.stringify(data));
+	//Log(color("EVENT Update Votes: ", "blue") + JSON.stringify(data));
 	if (data.room.metadata.votelog[0][1] == "down") {
 		if (Settings["lamer"].value === "true" && botUserId !== data.room.metadata.votelog[0][0]) {
 			SpeakRandom(downVoteText);
@@ -575,6 +572,7 @@ global.OnUpdateUser = function (data) {
 };
 
 global.OnAddDJ = function (data) {
+	Log(JSON.stringify(data), "", "Add DJ");
 	Log(data.user[0].name + " (" + data.user[0].userid + ")", "", "Add DJ");
 
 	var user = data.user[0];
@@ -642,6 +640,7 @@ global.OnAddDJ = function (data) {
 			SetValue('PastDjs', JSON.stringify(PastDjs));
 		}
 
+		Log("Past DJS: " + JSON.stringify(PastDjs));
 		if (PastDjs[user.userid] !== undefined &&
 			(PastDjs[user.userid].waitDjs !== 0 && PastDjs[user.userid].remainingPlays <= 0)) {
 			Log("DJ Q Len: " + DjQueue.length);
@@ -663,8 +662,37 @@ global.OnAddDJ = function (data) {
 						}
 					}
 				}
+			} else {
+				// If they had songs left copy back to the DJ array
+				if (PastDjs[user.userid] !== undefined) {
+					Djs[user.userid] = PastDjs[user.userid];
+					Djs[user.userid].remainingPlays = Number(Settings["maxPlays"].value);
+					Speak("@{u}, you have " + Djs[user.userid].remainingPlays + " plays remaining in your set.", AllUsers[user.userid].name, "pm", user.userid);
+					delete PastDjs[user.userid];
+				} else { // New DJ
+					Djs[user.userid] = djInfo;
+					Speak("@{u}, you have " + Djs[user.userid].remainingPlays + " plays in your set.", AllUsers[user.userid].name, "pm", user.userid);
+				}
+
+				SetValue('Djs', JSON.stringify(Djs));
+
+				// Drop the waiting count by 1 for everyone else.
+				for (var i in PastDjs) {
+					PastDjs[i].waitDjs--;
+					if (PastDjs[i].waitDjs === 0) {
+						delete PastDjs[i];
+						SetValue('PastDjs', JSON.stringify(PastDjs));
+						if (AllUsers[i] !== undefined) {
+							if (Settings["djWait"] > 1) {
+								Speak("@{u}, you can DJ again at any time.", AllUsers[i].name, "pm", i);
+							}
+						}
+					}
+				}
+				Log("Past DJs: " + JSON.stringify(PastDjs));
 			}
 		} else {
+			Log("Not a past DJ");
 			// If they had songs left copy back to the DJ array
 			if (PastDjs[user.userid] !== undefined) {
 				Djs[user.userid] = PastDjs[user.userid];
@@ -706,6 +734,7 @@ global.OnAddDJ = function (data) {
 
 global.OnRemDJ = function (data) {
 	Log(data.user[0].userid + " - " + data.user[0].name, "", "Remove DJ");
+	Log(JSON.stringify(data), "", "Remove DJ");
 
 	waitingOnNextDj = false;
 
@@ -742,16 +771,21 @@ global.OnRemDJ = function (data) {
 	delete Djs[user.userid];
 	SetValue('Djs', JSON.stringify(Djs));
 
-	// Re-add the user to the queue if one is active
-	AddToQueue(data.user[0].userid, "true");
+	// if the queue is active
+	GetValue("enableQueue", 0, function (queueEnabled) {
+		if (queueEnabled === "true") {
+			// Re-add the user to the queue if one is active
+			AddToQueue(data.user[0].userid, "true");
+		};
+	});
 
 	// Automatically end the queue, not enough people.
-	if (Djs.length <= 3) {
-		SetValue("enableQueue", "false");
-		Speak("We are no longer using a queue.");
-		DjQueue = { "length": 0 };
-		nextDj = null;
-	}
+	//if (Djs.length <= 3) {
+	//	SetValue("enableQueue", "false");
+	//	Speak("We are no longer using a queue.");
+	//	DjQueue = { "length": 0 };
+	//	nextDj = null;
+	//}
 
 	// Check if the bot should DJ.
 	ShouldBotDJ();
