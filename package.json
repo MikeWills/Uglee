@@ -10,7 +10,7 @@
     "util": "~0.4.9",
     "ansi-color": "~0.2.1",
     "datejs": "~0.0.2",
-    "lastfm": "~0.8.4"
+    "lastfm": "~0.8.4" 
   },
   "devDependencies": {},
   "scripts": {

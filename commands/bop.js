@@ -2,11 +2,11 @@ exports.name = '/b';
 exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = false;
-exports.handler = function(data, userid, source) {
+exports.handler = function (data, userid, source) {
 	var text = " ";
 	for (var i in Djs) {
 		if (i !== currentDj) {
-			if (votedDjs.indexOf(i) == -1){
+			if (votedDjs.indexOf(i) == -1) {
 				text += "@" + AllUsers[i].name + " ";
 			}
 		}

@@ -2,9 +2,9 @@ exports.name = '/realcount';
 exports.hidden = true;
 exports.enabled = true;
 exports.matchStart = true;
-exports.handler = function(data, userid, source) {
+exports.handler = function (data, userid, source) {
 	if (Settings["isModerating"].value === "true") {
-		IsMod(userid, function(isMod) {
+		IsMod(userid, function (isMod) {
 			if (isMod) {
 				var count = data.text.substring(11).split("-");
 				if (count.length !== 5) {

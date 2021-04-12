@@ -2,8 +2,8 @@ exports.name = '/watch';
 exports.hidden = true;
 exports.enabled = true;
 exports.matchStart = true;
-exports.handler = function(data, userid, source) {
-    IsMod(userid, function(isMod) {
+exports.handler = function (data, userid, source) {
+    IsMod(userid, function (isMod) {
         if (isMod) {
             //Get name and userid
             var strings = data.text.substring(7).split(" | ");

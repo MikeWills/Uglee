@@ -2,7 +2,7 @@ exports.name = '/wait';
 exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = false;
-exports.handler = function(data, userid, source) {
+exports.handler = function (data, userid, source) {
 	if (Settings["isModerating"].value === "true") {
 		if (PastDjs[userid] === undefined) {
 			Speak("@{u}, you can DJ at any time.", AllUsers[userid].name, source, userid);

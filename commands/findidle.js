@@ -2,11 +2,11 @@ exports.name = 'findidle';
 exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = false;
-exports.handler = function(data, userid, source) {
+exports.handler = function (data, userid, source) {
 	if (source === "pm") {
-		IsMod(userid, function(isMod) {
+		IsMod(userid, function (isMod) {
 			if (isMod) {
-				GetValue("idleTime", 0, function(val) {
+				GetValue("idleTime", 0, function (val) {
 					var pmText = "The following users have been idle for more than " + val + " hours: ";
 					for (var z in AllUsers) {
 						var startDate = new Date();

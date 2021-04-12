@@ -17,7 +17,7 @@ global.Log = function (data, logType, eventType) {
 		var logText = botName + " >>> " + logTime + " | ";
 
 		if (eventType !== "" && logType !== "error") {
-			logText += color("EVENT " + eventType + ": ", "blue");
+			logText += color("EVENT " + eventType + ": ", "blue"); 
 		}
 
 		if (eventType !== "" && logType === "error") {

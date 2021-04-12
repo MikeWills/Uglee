@@ -2,8 +2,8 @@ exports.name = '/botinfo';
 exports.hidden = true;
 exports.enabled = true;
 exports.matchStart = false;
-exports.handler = function(data, userid, source) {
-	if(IsAdmin(userid)) {
+exports.handler = function (data, userid, source) {
+	if (IsAdmin(userid)) {
 		bot.modifyProfile({
 			name: botName,
 			website: botWebsite,

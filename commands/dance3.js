@@ -24,3 +24,4 @@ exports.handler = function (data, userid, source) {
 		Speak("People say I act like I don't care. It's not an act.");
 	}
 }
+ 

@@ -2,7 +2,7 @@ exports.name = '/allpastnames';
 exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = true;
-exports.handler = function(data, userid, source) {
+exports.handler = function (data, userid, source) {
     if (source != 'pm') {
         Speak('That is a PM-only command.');
     } else {

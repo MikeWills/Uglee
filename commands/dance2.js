@@ -23,4 +23,4 @@ exports.handler = function (data, userid, source) {
 	} else {
 		Speak("People say I act like I don't care. It's not an act.");
 	}
-}
+} 

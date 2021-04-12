@@ -2,8 +2,8 @@ exports.name = '/unban';
 exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = true;
-exports.handler = function(data, userid, source) {
-    IsMod(userid, function(isMod) {
+exports.handler = function (data, userid, source) {
+    IsMod(userid, function (isMod) {
         if (isMod) {
             //Get name and userid
             var givenname = data.text.substring(7);
@@ -17,7 +17,7 @@ exports.handler = function(data, userid, source) {
 }
 
 function removeFromBanList(userid, name, bannedby) {
-    client.query('DELETE FROM ' + dbName + '.BANNED WHERE userid = ?', [userid], function(error, results, fields) {
+    client.query('DELETE FROM ' + dbName + '.BANNED WHERE userid = ?', [userid], function (error, results, fields) {
         if (error == null) {
             bot.speak(name + ' has been unbanned.');
         } else {

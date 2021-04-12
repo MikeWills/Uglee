@@ -10,6 +10,6 @@ exports.handler = function(data, userid, source) {
 				Speak(":punch:");
 				alreadyVoted = true;
 			}
-		});
+		}); 
 	}
 }

@@ -18,7 +18,7 @@ global.OnDisconnect = function (data) {
 
 global.connect = function (roomid) {
 	// Reset the disconnected flag
-	disconnected = false;
+	disconnected = false; 
 
 	// Attempt to join the room
 	bot.roomRegister(roomid, function (data) {

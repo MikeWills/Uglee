@@ -19,7 +19,7 @@ Log("==================================================================", "log")
 
 // Setup mySQL
 try {
-	global.mysql = require('mysql');
+	global.mysql = require('mysql'); 
 } catch (e) {
 	Log(e);
 	Log('It is likely that you do not have the mysql node module installed.' +
@@ -43,7 +43,7 @@ try {
 }
 
 function handleDisconnect(client) {
-	client.on('error', function(err) {
+	client.on('error', function (err) {
 		if (!err.fatal) {
 			return;
 		}
@@ -64,7 +64,7 @@ global.lastfm = new LastFmNode({
 	secret: lastfmApiSecret
 });
 
-process.on('message', function(m) {
+process.on('message', function (m) {
 	if (m.status && m.msg === 'are_you_there') {
 		process.send({
 			status: true,
@@ -140,7 +140,7 @@ global.songWarningIntervalId = null;
 global.songBootIntervalId = null;
 
 // This is a catch-all
-process.on("uncaughtException", function(data) {
+process.on("uncaughtException", function (data) {
 	Log(data, "error", "Process error");
 	connect(botRoomId);
 });
@@ -149,14 +149,14 @@ process.on("uncaughtException", function(data) {
 try {
 	global.bot = new Bot(botAuthId, botUserId, botRoomId);
 } catch (e) {
-	setTimeout(function() {
+	setTimeout(function () {
 		Log("Error loggin in with error of " + e, "error", "Bot login")
 		process.exit(0);
 	}, 150000); // 2.5 minutes
 }
 
 // Mark the bot as a bot.
-bot._send({api: "user.set_bot"});
+bot._send({ api: "user.set_bot" });
 
 // Load commands
 try {
@@ -207,10 +207,10 @@ Log("Done");
 Log("Ready");
 
 // Look for users that are idle and boot them
-GetValue('bootOnIdle', 0, function(retVal) {
+GetValue('bootOnIdle', 0, function (retVal) {
 	if (retVal === "true") {
-		setInterval(function() {
-			GetValue("idleTime", 0, function(val) {
+		setInterval(function () {
+			GetValue("idleTime", 0, function (val) {
 				for (var z in AllUsers) {
 					var startDate = new Date();
 					var idleTime = Math.round((startDate - AllUsers[z].lastActivity) / 3600000); // in hours
@@ -234,7 +234,7 @@ GetValue("announceTimer", 0, function (value) {
 
 	// Give an occasional announcement
 	setInterval(function () {
-		GetValue("announcement", 0, function(value) {
+		GetValue("announcement", 0, function (value) {
 			Speak(value);
 		});
 		Log("Announcement fired");

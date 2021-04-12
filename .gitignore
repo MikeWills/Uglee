@@ -6,18 +6,7 @@
 node_modules/
 *.sublime-*
 commands/test.js
-uglee2.js
-uglee.js
-drunkenRegular.js
-UgleeMix.js
-ugleeToo.js
-buttheadBot.js
-dr_keepitdown.js
-
-WayneBot.js
-botty.js
-startUglee.sh
-startUglee.sh
 startUglee.sh
 >>>>>>> Stashed changes
 .DS_Store
+botty.js

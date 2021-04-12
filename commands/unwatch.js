@@ -2,8 +2,8 @@ exports.name = '/unwatch';
 exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = true;
-exports.handler = function(data, userid, source) {
-    IsMod(userid, function(isMod) {
+exports.handler = function (data, userid, source) {
+    IsMod(userid, function (isMod) {
         if (isMod) {
             //Get name and userid
             var givenname = data.text.substring(9);
@@ -17,7 +17,7 @@ exports.handler = function(data, userid, source) {
 }
 
 function removeFromWatchList(userid, name, bannedby, requesteduser) {
-    client.query('DELETE FROM ' + dbName + '.ALERT WHERE userid = ?', [userid], function(error, results, fields) {
+    client.query('DELETE FROM ' + dbName + '.ALERT WHERE userid = ?', [userid], function (error, results, fields) {
         if (error == null) {
             bot.pm(name + ' has been removed from the watch list.', requesteduser);
         } else {

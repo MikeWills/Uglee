@@ -3,4 +3,4 @@ const rq = {api: 'room.stop_song', roomid: this.roomId, current_song: this.curre
 the djid part at the end is the addition.
 frankly, it was a guess, but it worked 
 
-via IMGrumpy
+via IMGrumpy 

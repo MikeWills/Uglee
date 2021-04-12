@@ -3,7 +3,7 @@ exports.name = '/bestplays';
 exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = false;
-exports.handler = function(data, userid, source) {
+exports.handler = function (data, userid, source) {
 	client.query('SELECT CONCAT(song,\' by \',artist) AS TRACK, UP FROM ' + dbName + '.' + dbTablePrefix + 'Song WHERE `roomid` = ? and `song` <> "untitled" and `artist` <> "Unknown" ORDER BY UP DESC LIMIT 3', [currentRoomId], function select(error, results, fields) {
 		var response = 'The song plays I\'ve heard with the most awesomes: ';
 		for (i in results) {

@@ -19,7 +19,7 @@ exports.handler = function (data, userid, source) {
                         Speak("Queue: Off");
                     }
                 });
-            }, 200);
+            }, 200); 
 
             // Get the moderation status
             setTimeout(function () {

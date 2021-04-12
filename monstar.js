@@ -17,7 +17,7 @@
 //
 // Put this script in your bot directory, add the code on lines 36-45
 // to your bot, add your bot's path to the process_list array below 
-// and run with "node monstar.js".
+// and run with "node monstar.js". 
 //
 // Note: you could run a bunch of bots from one script, but it may start to
 // get confusing with all of the logs in one terminal.  This process is so

@@ -2,20 +2,20 @@ exports.name = 'roll';
 exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = false;
-exports.handler = function(data, userid, source) {
+exports.handler = function (data, userid, source) {
     var roll = Math.ceil(Math.random() * 6);
-    if(currentsong.djid == data.userid) {
-        if(!alreadyVoted) {
-            if(!alreadyRolled) {
+    if (currentsong.djid == data.userid) {
+        if (!alreadyVoted) {
+            if (!alreadyRolled) {
                 alreadyRolled = true;
-                if(roll > 4) {
+                if (roll > 4) {
                     Speak(data.name + ', you rolled a ' + roll + ', Awesome!', null, source, userid);
                     bot.vote('up');
                     alreadyVoted = true;
-                } else if(roll === 1) {
+                } else if (roll === 1) {
                     Speak(data.name + ', you rolled a ' + roll + ', Lame!', null, source, userid);
                     bot.vote('up');
-                    setTimeout(function() {
+                    setTimeout(function () {
                         bot.vote('down');
                     }, 1000);
                     alreadyVoted = true;

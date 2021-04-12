@@ -2,9 +2,9 @@ exports.name = '/ammmod';
 exports.hidden = true;
 exports.enabled = true;
 exports.matchStart = true;
-exports.handler = function(data, userid, source) {
+exports.handler = function (data, userid, source) {
   if (currentRoomId === "4ea390ac14169c0cc3caa078") {
-    IsMod(userid, function(isMod) {
+    IsMod(userid, function (isMod) {
       if (isMod) {
 
         var setVal = "";

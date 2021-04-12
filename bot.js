@@ -9,7 +9,7 @@ global.botAdmins = ["#####", "######"]; // This can be 1 or more people
 global.botWebsite = "";
 global.botTwitter = "";
 global.botFacebook = "";
-global.botAbout = "";
+global.botAbout = ""; 
 global.botTopartists = "";
 global.botHangout = "";
 
