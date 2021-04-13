@@ -16,10 +16,10 @@ exports.handler = function (data, userid, source) {
             for (var i in Djs) {
                 Djs[i].remainingPlays = Number(1);
             }
-            SpeakPlayCount();
 
             bot.speak("Just because something works doesn't mean it can't be improved. So we are going to 'One and Done'.");
-            bot.speak("Mods, can you fix the playcount so it works correctly? Use the '/realcount' command.");
+            SpeakPlayCount();
+            //bot.speak("Mods, can you fix the playcount so it works correctly? Use the '/realcount' command.");
         }
     });
 } 
