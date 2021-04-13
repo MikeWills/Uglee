@@ -427,7 +427,11 @@ global.OnNewSong = function (data) {
 				if (Djs[lastDj] !== undefined && Djs[lastDj].remainingPlays <= 0) {
 					Log("Remove DJ " + AllUsers[lastDj].name + " after reaching max plays.");
 					bot.remDj(lastDj);
-					Speak("@" + AllUsers[lastDj].name + "Thank you for your spin. You will be added back to the queue. To leave the queue type `q-`");
+					if(Settings["enableQueue"].value === "true"){
+						Speak("@" + AllUsers[lastDj].name + "Thank you for your spin. You will be added back to the queue. To leave the queue type `q-`");
+					} else {
+						Speak("@" + AllUsers[lastDj].name + "Thank you for your spin.");
+					}
 					if ((Settings["djWait"].value > 1) || (DjQueue.length > 1)) {
 						Speak("Please wait " + Settings["djWait"].value + " DJs before DJing again.", "", "pm", lastDj);
 					}
