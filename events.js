@@ -135,6 +135,7 @@ global.OnRoomChanged = function (data) {
 global.OnRegistered = function (data) {
 	try {
 		Log(data.user[0].userid + " - " + data.user[0].name, "", "Registered");
+		//Log(JSON.stringify(data), "", "DJ Data");
 
 		if (currentsong != null) {
 			currentsong.listeners++;
@@ -153,6 +154,10 @@ global.OnRegistered = function (data) {
 				laptop: user.laptop
 			};
 			AllUsers[user.userid] = newUser;
+		}
+
+		if((data.user[0].bot === true) && (data.user[0].userid !== global.botUserId)){
+			Speak(":eyes: So I'm not the only bot in your life? What is @" + data.user[0].name + " doing here? :cry:")
 		}
 
 		setTimeout(function () {
