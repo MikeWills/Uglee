@@ -747,9 +747,6 @@ global.OnRemDJ = function (data) {
 
 	waitingOnNextDj = false;
 
-	/* Notify the next DJ on the list */
-	NextDjOnQueue();
-
 	// If the bot is removed from the table, mark the bot as not DJing. 
 	// If the bot was forcefully removed, disable autodj to make sure it doesn't step up again.
 	if (data.user[0].userid === botUserId) {
@@ -787,6 +784,9 @@ global.OnRemDJ = function (data) {
 			AddToQueue(data.user[0].userid, "true");
 		};
 	});
+
+	/* Notify the next DJ on the list */
+	NextDjOnQueue();
 
 	// Automatically end the queue, not enough people.
 	//if (Djs.length <= 3) {

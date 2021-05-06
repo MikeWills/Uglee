@@ -1,8 +1,8 @@
 //Removes the user from the stage
-exports.name = '/stagedive';
-exports.hidden = true;
+exports.name = '/discord';
+exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = false;
 exports.handler = function (data) {
-    bot.remDj(data.userid);
+    Speak(global.discord);
 }

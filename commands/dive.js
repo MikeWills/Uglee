@@ -1,5 +1,4 @@
 //Removes the user from the stage
-
 exports.name = '/dive';
 exports.hidden = false;
 exports.enabled = true;
