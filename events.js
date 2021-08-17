@@ -18,7 +18,7 @@ global.OnDisconnect = function (data) {
 
 global.connect = function (roomid) {
 	// Reset the disconnected flag
-	disconnected = false; 
+	disconnected = false;
 
 	// Attempt to join the room
 	bot.roomRegister(roomid, function (data) {
@@ -137,121 +137,124 @@ global.OnRegistered = function (data) {
 		Log(data.user[0].userid + " - " + data.user[0].name, "", "Registered");
 		//Log(JSON.stringify(data), "", "DJ Data");
 
-		if (currentsong != null) {
-			currentsong.listeners++;
-		}
+		if (data.user[0].name != "Guest") {  // Ignore guest accounts
 
-		//Add new user(s) to cache
-		var users = data.user;
-		for (var i in users) {
-			var user = users[i];
-			var newUser = {
-				name: user.name,
-				userid: user.userid,
-				points: user.points,
-				lastActivity: new Date(),
-				loggedIn: new Date(),
-				laptop: user.laptop
-			};
-			AllUsers[user.userid] = newUser;
-		}
+			if (currentsong != null) {
+				currentsong.listeners++;
+			}
 
-		if((data.user[0].bot === true) && (data.user[0].userid !== global.botUserId)){
-			Speak(":eyes: So I'm not the only bot in your life? What is @" + data.user[0].name + " doing here? :cry:")
-		}
+			//Add new user(s) to cache
+			var users = data.user;
+			for (var i in users) {
+				var user = users[i];
+				var newUser = {
+					name: user.name,
+					userid: user.userid,
+					points: user.points,
+					lastActivity: new Date(),
+					loggedIn: new Date(),
+					laptop: user.laptop
+				};
+				AllUsers[user.userid] = newUser;
+			}
 
-		setTimeout(function () {
-			if (users[0].registered === undefined) {
-				if (Settings["banGuest"] !== undefined && Settings["banGuest"].value === "true") {
-					bot.boot(user.userid, "We're sorry. Due to issues with trolling, we only allow registered users in our room.");
-				} else {
-					// Greet n00b
-					Speak(welcomeVisitorText, users[0].name);
+			if ((data.user[0].bot === true) && (data.user[0].userid !== global.botUserId)) {
+				Speak(":eyes: So I'm not the only bot in your life? What is @" + data.user[0].name + " doing here? :cry:")
+			}
+
+			setTimeout(function () {
+				if (users[0].registered === undefined) {
+					if (Settings["banGuest"] !== undefined && Settings["banGuest"].value === "true") {
+						bot.boot(user.userid, "We're sorry. Due to issues with trolling, we only allow registered users in our room.");
+					} else {
+						// Greet n00b
+						Speak(welcomeVisitorText, users[0].name);
+					}
 				}
-			}
-		}, 2500);
+			}, 2500);
 
-		// Check if User is banned
-		client.query('SELECT userid, banned_by, DATE_FORMAT(timestamp, \'%c/%e/%y\') as timestamp' + ' FROM BANNED WHERE userid LIKE \'' + user.userid + '\'', function cb(error, results, fields) {
-			if (results != null && results.length > 0) {
-
-				if (user.userid !== botUserId) {
-					bot.boot(user.userid, 'You were banned from this room by ' + results[0]['banned_by'] + ' on ' + results[0]['timestamp']);
-					Log(user.userid, 'You were banned from this room by ' + results[0]['banned_by'] + ' on ' + results[0]['timestamp'], "log");
-				}
-			}
-		});
-
-		// Check if User has an alert
-		client.query('SELECT `userid`,`byName`,`reason` FROM `ALERT` WHERE `userid` LIKE \'' + user.userid + '\'', function cb(error, results, fields) {
-			if (results != null && results.length > 0) {
-				Log("ALERT on user " + AllUsers[user.userid].name + " (" + user.userid + ")", "log");
-				PmAllOnlineMods("ALERT: " + AllUsers[user.userid].name + " has just entered and should be watched. Reason: '" + results[0]['reason'] + "' (by " + results[0]['byName'] + ")");
-			}
-		});
-
-		// Look to see if the newly entered person is new or has previously visited. 
-		setTimeout(function () {
-			var PastGuest = false;
-			Log("Past Guest: " + PastGuest);
-			client.query('SELECT `userid`, `username` from ' + dbName + '.' + dbTablePrefix + "User WHERE `userid` = '" + data.user[0].userid + "' and `roomid` = '" + currentRoomId + "'", function cb(error, results, fields) {
-				Log("Old User: " + results.length);
+			// Check if User is banned
+			client.query('SELECT userid, banned_by, DATE_FORMAT(timestamp, \'%c/%e/%y\') as timestamp' + ' FROM BANNED WHERE userid LIKE \'' + user.userid + '\'', function cb(error, results, fields) {
 				if (results != null && results.length > 0) {
-					PastGuest = true;
-				}
 
-				Log("Past Guest: " + PastGuest);
-				if (Settings["welcomeMsg"] !== undefined && Settings["welcomeMsg"].value === "true") {
-					if (AllUsers[data.user[0].userid] !== undefined) {
-						var d = new Date();
-						var dayOfWeek = d.getDay();
-						if (!PastGuest) {
-							Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name);
-							//Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name, "pm", data.user[0].userid);
-							GetValue("enableQueue", 0, function (results) {
-								if (results == "true") {
-									Speak("To spin some tunes, type q+ to get in line.")
-								} else {
-									Speak("There is no queue right now. Please hop up if there is space.");
-								};
-							});
-						}
-						else {
-							Speak(welcomeText, AllUsers[data.user[0].userid].name);
-							GetValue("enableQueue", 0, function (results) {
-								if (results == "true") {
-									Speak("The queue is active, type q+ to get in line.")
-								} else {
-									Speak("There is no queue right now. Please hop up if there is space.");
-								};
-							});
-						}
+					if (user.userid !== botUserId) {
+						bot.boot(user.userid, 'You were banned from this room by ' + results[0]['banned_by'] + ' on ' + results[0]['timestamp']);
+						Log(user.userid, 'You were banned from this room by ' + results[0]['banned_by'] + ' on ' + results[0]['timestamp'], "log");
 					}
 				}
 			});
 
-			if (data.user[0].name !== null) {
-				client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'User(roomid, userid, username, lastseen)' + 'VALUES (?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [currentRoomId, data.user[0].userid, data.user[0].name]);
-			}
-		}, 2500);
+			// Check if User has an alert
+			client.query('SELECT `userid`,`byName`,`reason` FROM `ALERT` WHERE `userid` LIKE \'' + user.userid + '\'', function cb(error, results, fields) {
+				if (results != null && results.length > 0) {
+					Log("ALERT on user " + AllUsers[user.userid].name + " (" + user.userid + ")", "log");
+					PmAllOnlineMods("ALERT: " + AllUsers[user.userid].name + " has just entered and should be watched. Reason: '" + results[0]['reason'] + "' (by " + results[0]['byName'] + ")");
+				}
+			});
 
-		// Mark the user as back in the room
-		if (Settings["enableQueue"] !== undefined && Settings["enableQueue"].value === "true") {
-			if (DjQueue[data.user[0].userid] !== undefined) {
-				DjQueue[data.user[0].userid].isAfk = false;
-				DjQueue[data.user[0].userid].akfTime = null;
-				DjQueue.length++;
-				SetValue('DjQueue', JSON.stringify(DjQueue));
-			}
-			//bot.pm("Greetings @" + data.user[0].name + ". If you would like to DJ, please type 'q+' to get added to the queue.", data.user[0].userid);
-		}
-
-		ShouldBotDJ();
-
-		if (data.user[0].userid === '4dfb57154fe7d061dd013a44') {
+			// Look to see if the newly entered person is new or has previously visited. 
 			setTimeout(function () {
-				bot.pm("Hello master, how may I be of service?", '4dfb57154fe7d061dd013a44');
-			}, 5000);
+				var PastGuest = false;
+				Log("Past Guest: " + PastGuest);
+				client.query('SELECT `userid`, `username` from ' + dbName + '.' + dbTablePrefix + "User WHERE `userid` = '" + data.user[0].userid + "' and `roomid` = '" + currentRoomId + "'", function cb(error, results, fields) {
+					Log("Old User: " + results.length);
+					if (results != null && results.length > 0) {
+						PastGuest = true;
+					}
+
+					Log("Past Guest: " + PastGuest);
+					if (Settings["welcomeMsg"] !== undefined && Settings["welcomeMsg"].value === "true") {
+						if (AllUsers[data.user[0].userid] !== undefined) {
+							var d = new Date();
+							var dayOfWeek = d.getDay();
+							if (!PastGuest) {
+								Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name);
+								//Speak(welcomeDaily[dayOfWeek], AllUsers[data.user[0].userid].name, "pm", data.user[0].userid);
+								GetValue("enableQueue", 0, function (results) {
+									if (results == "true") {
+										Speak("To spin some tunes, type q+ to get in line.")
+									} else {
+										Speak("There is no queue right now. Please hop up if there is space.");
+									};
+								});
+							}
+							else {
+								Speak(welcomeText, AllUsers[data.user[0].userid].name);
+								GetValue("enableQueue", 0, function (results) {
+									if (results == "true") {
+										Speak("The queue is active, type q+ to get in line.")
+									} else {
+										Speak("There is no queue right now. Please hop up if there is space.");
+									};
+								});
+							}
+						}
+					}
+				});
+
+				if (data.user[0].name !== null) {
+					client.query('INSERT INTO ' + dbName + '.' + dbTablePrefix + 'User(roomid, userid, username, lastseen)' + 'VALUES (?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()', [currentRoomId, data.user[0].userid, data.user[0].name]);
+				}
+			}, 2500);
+
+			// Mark the user as back in the room
+			if (Settings["enableQueue"] !== undefined && Settings["enableQueue"].value === "true") {
+				if (DjQueue[data.user[0].userid] !== undefined) {
+					DjQueue[data.user[0].userid].isAfk = false;
+					DjQueue[data.user[0].userid].akfTime = null;
+					DjQueue.length++;
+					SetValue('DjQueue', JSON.stringify(DjQueue));
+				}
+				//bot.pm("Greetings @" + data.user[0].name + ". If you would like to DJ, please type 'q+' to get added to the queue.", data.user[0].userid);
+			}
+
+			ShouldBotDJ();
+
+			if (data.user[0].userid === '4dfb57154fe7d061dd013a44') {
+				setTimeout(function () {
+					bot.pm("Hello master, how may I be of service?", '4dfb57154fe7d061dd013a44');
+				}, 5000);
+			}
 		}
 
 	} catch (e) {
@@ -262,38 +265,42 @@ global.OnRegistered = function (data) {
 global.OnDeregistered = function (data) {
 	try {
 		Log(data.user[0].userid + " - " + data.user[0].name, "", "Deregistered");
+		//Log(JSON.stringify(data), "", "DJ Data");
 
-		if (currentsong != null) {
-			currentsong.listeners--;
-		}
+		if (data.user[0].name != "Guest") {  // Ignore guest accounts
 
-		// Remove the user(s) from cache
-		var users = data.user;
-		for (var i in users) {
-			var user = users[i];
+			if (currentsong != null) {
+				currentsong.listeners--;
+			}
 
-			var now = new Date();
-			var username = AllUsers[user.userid].name;
-			if ((now - AllUsers[user.userid].loggedIn) < 30000) {
-				if (Settings["gtfo"].value === "true") {
-					SpeakRandom(userLeaveQuickText, username);
+			// Remove the user(s) from cache
+			var users = data.user;
+			for (var i in users) {
+				var user = users[i];
+
+				var now = new Date();
+				var username = AllUsers[user.userid].name;
+				if ((now - AllUsers[user.userid].loggedIn) < 30000) {
+					if (Settings["gtfo"].value === "true") {
+						SpeakRandom(userLeaveQuickText, username);
+					}
+				}
+
+				delete AllUsers[user.userid];
+			}
+
+			// Mark the user as AFK (or out of the room in this case)
+			if (Settings["enableQueue"].value === "true") {
+				if (DjQueue[data.user[0].userid] !== undefined) {
+					DjQueue[data.user[0].userid].isAfk = true;
+					DjQueue[data.user[0].userid].akfTime = new Date();
+					DjQueue.length--;
+					SetValue('DjQueue', JSON.stringify(DjQueue));
 				}
 			}
 
-			delete AllUsers[user.userid];
+			ShouldBotDJ();
 		}
-
-		// Mark the user as AFK (or out of the room in this case)
-		if (Settings["enableQueue"].value === "true") {
-			if (DjQueue[data.user[0].userid] !== undefined) {
-				DjQueue[data.user[0].userid].isAfk = true;
-				DjQueue[data.user[0].userid].akfTime = new Date();
-				DjQueue.length--;
-				SetValue('DjQueue', JSON.stringify(DjQueue));
-			}
-		}
-
-		ShouldBotDJ();
 
 	} catch (e) {
 		Log(e, "error", "Deregistered");
@@ -432,7 +439,7 @@ global.OnNewSong = function (data) {
 				if (Djs[lastDj] !== undefined && Djs[lastDj].remainingPlays <= 0) {
 					Log("Remove DJ " + AllUsers[lastDj].name + " after reaching max plays.");
 					bot.remDj(lastDj);
-					if(Settings["enableQueue"].value === "true"){
+					if (Settings["enableQueue"].value === "true") {
 						Speak("@" + AllUsers[lastDj].name + " Thank you for your spin. You will be added back to the queue. To leave the queue type `q-`");
 					} else {
 						Speak("@" + AllUsers[lastDj].name + " Thank you for your spin.");
@@ -506,7 +513,7 @@ global.OnNoSong = function (data) {
 };
 
 global.OnUpdateVotes = function (data) {
-	//Log(color("EVENT Update Votes: ", "blue") + JSON.stringify(data));
+	Log(color("EVENT Update Votes: ", "blue") + JSON.stringify(data));
 	if (data.room.metadata.votelog[0][1] == "down") {
 		if (Settings["lamer"].value === "true" && botUserId !== data.room.metadata.votelog[0][0]) {
 			SpeakRandom(downVoteText);
