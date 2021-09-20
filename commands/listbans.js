@@ -3,11 +3,13 @@ exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = true;
 exports.handler = function (data, userid, source) {
-    client.query('SELECT banned_by, DATE_FORMAT(timestamp, ' + '\'%c/%d/%y\') AS date, username FROM (SELECT * FROM ' + dbName + '.BANNED) a INNER JOIN (SELECT * FROM (SELECT *' + ' FROM ' + dbName + '.' + dbTablePrefix + 'User ORDER BY lastseen DESC) as test GROUP BY ' + 'userid) b ON a.userid = b.userid', function cb(error, results, fields) {
-        var rp = 'Banned users: ';
+    //client.query('SELECT banned_by, DATE_FORMAT(timestamp, ' + '\'%c/%d/%y\') AS date, username FROM ' + dbName + '.BANNED) b INNER JOIN ' + dbName + '.' + dbTablePrefix + ' u on u.userid = b.userid', function cb(error, results, fields) {
+        client.query('SELECT banned_by, timestamp, username FROM ' + dbName + '.BANNED b INNER JOIN ' + dbName + '.' + dbTablePrefix + 'User u on u.userid = b.userid', function cb(error, results, fields) {
+            Speak('Banned users: ');
         for (i in results) {
-            rp += results[i]['username'] + ' (banned ' + results[i]['date'] + ' by ' + results[i]['banned_by'] + '), ';
+            Speak(results[i]['username'] + ' (banned on ' + results[i]['timestamp'] + ' by ' + results[i]['banned_by'] + '), ');
         }
-        Speak(rp.substring(0, rp.length - 2), "", source, userid);
     });
 }
+
+// SELECT banned_by, timestamp, username FROM tt_bots.BANNED b INNER JOIN tt_bots.botty_User u on u.userid = b.userid
