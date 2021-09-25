@@ -127,7 +127,7 @@ global.SetUpDatabase = function () {
 	});
 
 	// User table
-	client.query('CREATE TABLE ' + dbName + '.' + dbTablePrefix + 'User(`roomid` VARCHAR( 255 ) NOT NULL, userid VARCHAR(255), ' + 'username VARCHAR(255), ' + 'lastseen DATETIME, isMod BIT(1),' + 'PRIMARY KEY (userid, username))', function (error) {
+	client.query('CREATE TABLE ' + dbName + '.' + dbTablePrefix + 'User(`roomid` VARCHAR( 255 ) NOT NULL, userid VARCHAR(255), ' + 'username VARCHAR(255), ' + 'lastseen DATETIME, isMod BIT(1),' + 'PRIMARY KEY (roomid, userid, username))', function (error) {
 		//Handle an error if it's not a table already exists error
 		if (error && error.code != 'ER_TABLE_EXISTS_ERROR') {
 			throw (error);
